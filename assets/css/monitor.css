@@ -1,3 +1,4 @@
+/* ═══════════════════════
    MONITOR BEZEL
    ═══════════════════════ */
 .monitor-bezel {
@@ -8,7 +9,8 @@
     border-radius: 22px;
     display: flex;
     flex-direction: column;
-    padding: 6px 16px 16px; /* Slightly slimmer top bezel, a bit more side/bottom breathing room */
+    padding: 6px 16px 16px;
+    /* Slightly slimmer top bezel, a bit more side/bottom breathing room */
     box-shadow:
         0 0 0 3px var(--bezel-ring),
         0 0 0 6px #111,
@@ -31,8 +33,10 @@
     height: 100vh;
     border-radius: 0;
     box-shadow: none;
-    padding: 0; /* let header + screen touch the viewport edges */
-    background: transparent; /* remove outer bezel color on sides/bottom */
+    padding: 0;
+    /* let header + screen touch the viewport edges */
+    background: transparent;
+    /* remove outer bezel color on sides/bottom */
 }
 
 .monitor-bezel.is-minimized {
@@ -43,23 +47,29 @@
 
 .monitor-bezel.is-maximized .window-header {
     padding: 8px 16px;
-    background: var(--bezel); /* keep a dark app bar at the top */
+    background: var(--bezel);
+    /* keep a dark app bar at the top */
 }
 
 .monitor-bezel.is-maximized .screen {
     margin-top: 0;
-    border-radius: 0; /* CRT fills below the app bar */
+    border-radius: 0;
+    /* CRT fills below the app bar */
 }
 
 /* ═══════════════════════
    SCREEN (glass)
    ═══════════════════════ */
 .screen {
-    position: relative; /* Keep CRT effects inside the screen only */
-    flex: 1; /* Fills the rest of the bezel */
+    position: relative;
+    /* Keep CRT effects inside the screen only */
+    flex: 1;
+    /* Fills the rest of the bezel */
     width: 100%;
-    margin-top: 4px; /* Little gap below header so the rounded top is visible */
-    border-radius: 14px; /* Rounded on all corners to echo bezel curve */
+    margin-top: 4px;
+    /* Little gap below header so the rounded top is visible */
+    border-radius: 14px;
+    /* Rounded on all corners to echo bezel curve */
     overflow: hidden;
     background: var(--bg-screen);
 }
@@ -126,8 +136,10 @@
 
 /* ═══════════ WINDOW HEADER ═══════════ */
 .window-header {
-    height: 22px; /* Smaller header so controls/title don't feel oversized */
-    background: transparent; /* No separate grey bar; part of bezel */
+    height: 22px;
+    /* Smaller header so controls/title don't feel oversized */
+    background: transparent;
+    /* No separate grey bar; part of bezel */
     border-bottom: none;
     display: flex;
     align-items: center;
@@ -147,9 +159,9 @@
     height: 14px;
     border-radius: 50%;
     cursor: pointer;
-    border: 1.5px solid rgba(0,0,0,0.3);
-    box-shadow: inset -1px -1px 2px rgba(0,0,0,0.4),
-                inset 1px 1px 2px rgba(255,255,255,0.4);
+    border: 1.5px solid rgba(0, 0, 0, 0.3);
+    box-shadow: inset -1px -1px 2px rgba(0, 0, 0, 0.4),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.4);
     transition: transform 0.1s;
 }
 
@@ -158,19 +170,29 @@
     filter: brightness(0.8);
 }
 
-.control.close { background-color: #ff5f57; }
-.control.minimize { background-color: #ffbd2e; }
-.control.maximize { background-color: #28c840; }
+.control.close {
+    background-color: #ff5f57;
+}
+
+.control.minimize {
+    background-color: #ffbd2e;
+}
+
+.control.maximize {
+    background-color: #28c840;
+}
 
 .window-title {
-    position: absolute; /* still centered over bezel */
+    position: absolute;
+    /* still centered over bezel */
     left: 50%;
     transform: translateX(-50%);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     font-size: 13px;
     font-weight: 500;
     color: #e5e5e5;
-    margin-right: 0; /* Remove previous margin */
+    margin-right: 0;
+    /* Remove previous margin */
 }
 
 /* ═══════════════════════
@@ -196,4 +218,3 @@
     flex: 1 1 auto;
     overflow-y: auto;
 }
-

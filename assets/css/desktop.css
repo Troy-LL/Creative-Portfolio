@@ -192,7 +192,7 @@
 }
 
 /* Adjacent sibling magnification — pure CSS */
-.dock-icon:hover + .dock-icon {
+.dock-icon:hover+.dock-icon {
     transform: scale(1.15) translateY(-4px);
 }
 
@@ -353,5 +353,3 @@
 .about-value {
     text-align: right;
 }
-
-/* ═══════════════════════
