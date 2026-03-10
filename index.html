@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Terminal Portfolio</title>
+    <meta name="description"
+        content="Interactive SQL-styled terminal portfolio. Query my resume, projects, and contact info.">
+
+    <!-- VT323 Pixel Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/TextPlugin.min.js" defer></script>
+    <!-- Lenis Smooth Scroll -->
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js" defer></script>
+</head>
+
+<body>
+
+    <!-- macOS-style desktop shown when the app is minimized -->
+    <div class="desktop" id="desktop">
+
+        <!-- Wallpaper layer -->
+        <div class="desktop-wallpaper"></div>
+
+        <!-- Menu Bar -->
+        <div class="desktop-menubar">
+            <div class="menubar-left">
+                <span class="apple-logo">T</span>
+                <span class="menubar-app-name">SQL_TERM</span>
+                <span class="menubar-item">File</span>
+                <span class="menubar-item">View</span>
+                <span class="menubar-item">Help</span>
+            </div>
+            <div class="menubar-right">
+                <span class="menubar-status">⌨ guest</span>
+                <span class="menubar-clock" id="menubarClock"></span>
+            </div>
+        </div>
+
+        <!-- Desktop Icons (top-right) -->
+        <div class="desktop-icons-area">
+            <div class="desktop-file-icon" data-command="SELECT * FROM resume">
+                <div class="file-icon__img">🗂</div>
+                <div class="file-icon__label">resume.db</div>
+            </div>
+            <div class="desktop-file-icon" data-command="SELECT * FROM projects">
+                <div class="file-icon__img">📁</div>
+                <div class="file-icon__label">projects.db</div>
+            </div>
+            <div class="desktop-file-icon" data-command="SELECT * FROM contact">
+                <div class="file-icon__img">📇</div>
+                <div class="file-icon__label">contact.db</div>
+            </div>
+        </div>
+
+        <!-- Dock -->
+        <div class="desktop-dock">
+            <div class="dock-icon" data-command="" title="SQL Terminal">
+                <div class="dock-icon__img">🖥</div>
+                <div class="dock-dot"></div>
+            </div>
+            <div class="dock-divider"></div>
+            <div class="dock-icon" data-app="about" title="About">
+                <div class="dock-icon__img">👤</div>
+                <div class="dock-dot"></div>
+            </div>
+            <div class="dock-icon" data-command="SELECT * FROM resume" title="Resume">
+                <div class="dock-icon__img">🗂</div>
+                <div class="dock-dot"></div>
+            </div>
+            <div class="dock-icon" data-command="SELECT * FROM projects" title="Projects">
+                <div class="dock-icon__img">📁</div>
+                <div class="dock-dot"></div>
+            </div>
+            <div class="dock-icon" data-command="SELECT * FROM contact" title="Contact">
+                <div class="dock-icon__img">📇</div>
+                <div class="dock-dot"></div>
+            </div>
+        </div>
+
+        <!-- About "app" window -->
+        <div class="about-overlay" id="aboutOverlay">
+            <div class="about-window">
+                <div class="about-titlebar">
+                    <div class="about-dots">
+                        <span class="about-dot about-dot--close"></span>
+                        <span class="about-dot"></span>
+                        <span class="about-dot"></span>
+                    </div>
+                    <div class="about-title">About This Profile</div>
+                </div>
+                <div class="about-body">
+                    <div class="about-avatar">T</div>
+                    <div class="about-main">
+                        <h2 class="about-name">Troy Lauren T. Lazaro</h2>
+                        <p class="about-role">IT Student · Community Leader</p>
+                        <div class="about-grid">
+                            <div class="about-row">
+                                <span class="about-label">Profile</span>
+                                <span class="about-value">SQL_TERM v2.0 – Portfolio</span>
+                            </div>
+                            <div class="about-row">
+                                <span class="about-label">User</span>
+                                <span class="about-value">guest@portfolio</span>
+                            </div>
+                            <div class="about-row">
+                                <span class="about-label">Location</span>
+                                <span class="about-value">Caloocan, NCR, Philippines</span>
+                            </div>
+                            <div class="about-row">
+                                <span class="about-label">Focus</span>
+                                <span class="about-value">Leadership · Community · Tech Advocacy</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ═══════ MONITOR BEZEL ═══════ -->
+<div class="monitor-bezel">
+    <div class="window-header">
+        <div class="window-controls">
+            <span class="control close" title="Shutdown"></span>
+            <span class="control minimize" title="Minimize"></span>
+            <span class="control maximize" title="Fullscreen"></span>
+        </div>
+        <div class="window-title">portfolio</div>
+    </div>
+
+    <div class="screen">
+        <div class="scanlines"></div>
+
+            <!-- CRT overlays -->
+            <div class="scanlines"></div>
+            <div class="screen-vignette"></div>
+            <div class="flicker-layer"></div>
+
+            <!-- ═══════ TERMINAL ═══════ -->
+            <div class="terminal" id="terminal">
+
+                <!-- Output area — results get injected here -->
+                <div id="output">
+                    <div class="terminal-banner">
+                        SQL_TERM v2.0 - PORTFOLIO DATABASE
+                    </div>
+                    <pre class="line dim">Type <span class="bright">HELP</span> to see available commands.</pre>
+                    <pre class="line">&nbsp;</pre>
+                </div>
+
+                <!-- Input row -->
+                <div class="input-row" id="inputRow">
+                    <span class="prompt">guest@portfolio ~&gt;</span>
+                    <span class="input-mirror">
+                        <span id="inputDisplay"></span><span class="cursor-block"></span>
+                    </span>
+                    <!-- Real input: invisible but captures all keystrokes -->
+                    <input id="cmd" type="text" autofocus autocomplete="off" spellcheck="false"
+                        aria-label="SQL command input">
+                </div>
+
+            </div><!-- /terminal -->
+        </div><!-- /screen -->
+    </div><!-- /monitor-bezel -->
+
+
+    <script src="script.js" defer></script>
+</body>
+
+</html>
