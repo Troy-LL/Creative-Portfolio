@@ -1,0 +1,42 @@
+/* ═══════════════════════════════════════════
+   SQL TERMINAL PORTFOLIO — PHOSPHOR CRT THEME
+   ═══════════════════════════════════════════ */
+
+/* ── Tokens ── */
+:root {
+    --green: #33ff66;
+    --green-dim: #1a9940;
+    --green-glow: rgba(51, 255, 102, 0.55);
+    --bg-screen: #0a1a0a;
+    --bg-body: #111;
+    --bezel: #1c1c1c;
+    --bezel-ring: #333;
+    --font: 'VT323', 'Courier New', monospace;
+    --line-h: 1.55;
+    --fs: clamp(1rem, 2.2vw, 1.35rem);
+}
+
+/* ── Reset ── */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #000;
+    font-family: var(--font);
+    font-size: var(--fs);
+    color: var(--green);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    -webkit-font-smoothing: none;
+    /* keep pixels sharp */
+    -moz-osx-font-smoothing: auto;
+}
+

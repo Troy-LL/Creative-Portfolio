@@ -1,0 +1,169 @@
+/* ── Terminal Banner ── */
+.terminal-banner {
+    border: 2px solid var(--green);
+    padding: 0.6rem 1rem;
+    margin-bottom: 1rem;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: var(--green);
+    font-family: var(--font);
+    font-size: calc(var(--fs) * 1.1);
+    text-shadow: 0 0 6px var(--green-glow);
+    box-shadow:
+        inset 0 0 10px rgba(51, 255, 102, 0.15),
+        0 0 10px rgba(51, 255, 102, 0.15);
+    max-width: 100%;
+    word-break: break-word;
+    letter-spacing: 1px;
+}
+
+/* ── Text Lines ── */
+.line {
+    font-family: var(--font);
+    font-size: var(--fs);
+    line-height: var(--line-h);
+    color: var(--green);
+    text-shadow:
+        0 0 6px var(--green-glow),
+        0 0 12px var(--green-glow);
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+}
+
+.line.green {
+    color: var(--green);
+}
+
+.line.dim {
+    color: var(--green-dim);
+}
+
+.line.bright,
+.bright {
+    color: #ccffcc;
+}
+
+.line.error {
+    color: #ff4444;
+    text-shadow: 0 0 6px rgba(255, 68, 68, 0.5);
+}
+
+.line.header {
+    color: #88ffaa;
+    text-shadow: 0 0 6px rgba(136, 255, 170, 0.5);
+    border-bottom: 1px dashed var(--green-dim);
+    margin-bottom: 0.35rem;
+    padding-bottom: 0.25rem;
+}
+
+/* ── Input Row ── */
+.input-row {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    margin-top: 0.25rem;
+    position: relative;
+    cursor: text;
+}
+
+.prompt {
+    color: var(--green);
+    text-shadow: 0 0 6px var(--green-glow);
+    margin-right: 0.6rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Mirror: visible text + cursor */
+.input-mirror {
+    display: inline-flex;
+    align-items: center;
+    white-space: pre;
+    color: var(--green);
+    font-family: var(--font);
+    font-size: var(--fs);
+    text-shadow: 0 0 6px var(--green-glow);
+    min-height: 1.4em;
+}
+
+#inputDisplay {
+    white-space: pre;
+}
+
+/* Real input: invisible but functional */
+#cmd {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    border: none;
+    outline: none;
+    font-family: var(--font);
+    font-size: var(--fs);
+    color: transparent;
+    background: transparent;
+    caret-color: transparent;
+    z-index: 10;
+}
+
+/* ── Blinking Block Cursor ── */
+@keyframes blink-cursor {
+
+    0%,
+    49% {
+        opacity: 1;
+    }
+
+    50%,
+    100% {
+        opacity: 0;
+    }
+}
+
+.cursor-block {
+    display: inline-block;
+    width: 0.65em;
+    height: 1.15em;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green-glow);
+    vertical-align: text-bottom;
+    animation: blink-cursor 1s step-end infinite;
+}
+
+/* ═══════════════════════
+   RESPONSIVE
+   ═══════════════════════ */
+@media (max-width: 700px) {
+    .monitor-bezel {
+        border-radius: 10px;
+        padding: 8px;
+    }
+
+    .screen {
+        border-radius: 6px;
+    }
+
+    .terminal {
+        padding: 1rem;
+    }
+
+}
+
+/* ── Custom Scrollbar (Webkit) ── */
+.terminal::-webkit-scrollbar {
+    width: 6px;
+}
+
+.terminal::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.terminal::-webkit-scrollbar-thumb {
+    background: var(--green-dim);
+    border-radius: 3px;
+}
