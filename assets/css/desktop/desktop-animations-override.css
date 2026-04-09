@@ -1,0 +1,7 @@
+/* ── Global Disable Animations ── */
+body.disable-animations,
+body.disable-animations * {
+  transition: none !important;
+  animation: none !important;
+}
+

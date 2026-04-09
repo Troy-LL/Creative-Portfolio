@@ -1,0 +1,110 @@
+/* ── Preview App Window (Document Viewer) ── */
+.preview-overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  pointer-events: none;
+  z-index: 28;
+}
+
+.preview-overlay.is-visible {
+  display: block;
+}
+
+.preview-window {
+  width: 800px;
+  height: 600px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -300px;
+  margin-left: -400px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: #333;
+  transform: scale(0.9);
+  opacity: 0;
+  pointer-events: auto;
+}
+
+.preview-titlebar {
+  height: 48px;
+  background: #f1f1f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #ddd;
+  position: relative;
+  user-select: none;
+}
+
+.preview-dots {
+  position: absolute;
+  left: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.preview-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.preview-dot.mac-close {
+  background: #ff5f56;
+  border: 1px solid #e0443e;
+}
+.preview-dot.mac-min {
+  background: #ffbd2e;
+  border: 1px solid #dea123;
+}
+.preview-dot.mac-max {
+  background: #27c93f;
+  border: 1px solid #1aab29;
+}
+
+.preview-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.preview-body {
+  flex: 1;
+  background: #ebebeb;
+  position: relative;
+}
+
+.preview-iframe-shim {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+}
+
+/* If the window is focused, we want to interact with the iframe, not the shim */
+.preview-window.is-focused .preview-iframe-shim {
+  pointer-events: none;
+}
+
+/* Performance fix: ignore iframes while dragging so they don't steal mouse events */
+body.is-dragging iframe {
+  pointer-events: none !important;
+}
+
+body.dark-theme .preview-window {
+  background: #1e1e1e;
+  color: #eee;
+}
+body.dark-theme .preview-titlebar {
+  background: #2c2c2c;
+  border-bottom: 1px solid #444;
+}
+body.dark-theme .preview-body {
+  background: #111;
+}
+

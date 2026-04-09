@@ -18,13 +18,13 @@ The portfolio is not just a website; it's a **simulation**. Every addition shoul
 *   **State Awareness**: Ensure the system handles transitions between the Terminal (SQL_TERM) and the Desktop correctly.
     *   **Minimize**: Keeps state (input progress).
     *   **Close**: Resets state.
-*   **Responsive Iframes**: When embedding projects (Wordle, FlavorMapping), ensure they are scaled correctly within the `preview-window`. Use the `is-wordle` class pattern in `desktop.js` if necessary to apply custom scaling.
+*   **Responsive Iframes**: When embedding projects (Wordle, FlavorMapping), ensure they are scaled correctly within the `preview-window`. Use the `is-wordle` class pattern in `assets/js/desktop/viewers.js` if necessary to apply custom scaling.
 *   **SEO & Titles**: The title should remain `TLPortfolio` as established in latest iterations.
 
 ### Aesthetic Standards
 *   **macOS Emulation**: Follow macOS Ventura UI patterns for window controls (Red/Yellow/Green dots), sidebars (vibrant blur), and icons.
 *   **CRT Immersion**: Keep the scanlines, flicker, and bezel layers intact. Anything "inside" the screen should feel like it's behind glass.
-*   **Dark Theme by Default**: Maintain the `dark-theme` class on `<body>` but support the Control Center's toggle.
+*   **Light Theme by Default**: Ship without `dark-theme` on `<body>`; the Control Center toggle adds it for dark mode.
 
 ## ❌ What NOT to Do
 
@@ -33,13 +33,13 @@ The portfolio is not just a website; it's a **simulation**. Every addition shoul
 *   **Don't Break Smooth Scrolling**: Never use standard browser scrollbars in windows. Use `data-lenis-prevent` on scrollable containers and rely on the global Lenis instance.
 *   **Don't Add Heavy Assets**: Keep image assets optimized. Use `.webp` or compressed `.png`/`.jpg` where possible.
 *   **Don't Bypass the "Monitor"**: Avoid putting elements outside the `monitor-bezel` unless they are part of the "real world" background.
-*   **Don't Hardcode Data**: Content for the terminal should reside in `assets/js/data.js`. Do not hardcode long text strings directly into `terminal.js`.
+*   **Don't Hardcode Data**: Content for the terminal should reside in `assets/js/data/portfolio-data.js`. Do not hardcode long text strings directly into `assets/js/terminal/commands.js`.
 
 ## Specialized Workflows
 
 ### Adding a New Project
-1.  **Update Data**: Add the project entry to `DATA.projects` in `assets/js/data.js`.
-2.  **Finder Icon**: Add the icon logic to `initFinderApp()` in `assets/js/desktop.js`.
+1.  **Update Data**: Add the project entry to `DATA.projects` in `assets/js/data/portfolio-data.js`.
+2.  **Finder Icon**: Add the icon logic to `initFinderApp()` in `assets/js/desktop/finder.js`.
 3.  **Documentation**: Update `Documentation/Project_Overview.md` to reflect the new addition.
 4.  **Scaling**: If it's a web app, test it in the `openPdfViewer` iframe and adjust scaling if the UI gets cutoff.
 

@@ -1,0 +1,131 @@
+/* ── Menu Bar (light mode default, dark when body.dark-theme) ── */
+.desktop-menubar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(32px) saturate(2);
+  -webkit-backdrop-filter: blur(32px) saturate(2);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.88);
+  z-index: 100;
+  user-select: none;
+}
+
+.menubar-left,
+.menubar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.apple-logo {
+  font-size: 15px;
+  margin-right: 4px;
+}
+
+.menubar-app-name {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.menubar-item {
+  color: rgba(0, 0, 0, 0.68);
+  font-size: 13px;
+  cursor: default;
+}
+
+.menubar-item:hover:not(.ui-chrome--inactive) {
+  color: #000;
+}
+
+.menubar-item.ui-chrome--inactive {
+  color: rgba(0, 0, 0, 0.38);
+  cursor: default;
+}
+
+/* Control Center — larger icon + pill hit area (CTA) */
+.menubar-item.cc-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 26px;
+  padding: 2px 10px;
+  margin: 0 -2px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    color 0.15s ease;
+}
+
+.menubar-item.cc-toggle:hover {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+.menubar-item.cc-toggle:focus-visible {
+  outline: 2px solid var(--sys-color, #007aff);
+  outline-offset: 2px;
+}
+
+.cc-toggle-svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.78);
+}
+
+.menubar-item.cc-toggle:hover .cc-toggle-svg {
+  color: #000;
+}
+
+.menubar-status,
+.menubar-clock {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.72);
+  font-variant-numeric: tabular-nums;
+}
+
+body.dark-theme .desktop-menubar {
+  background: rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+body.dark-theme .menubar-item {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+body.dark-theme .menubar-item:hover:not(.ui-chrome--inactive) {
+  color: white;
+}
+
+body.dark-theme .menubar-item.ui-chrome--inactive {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+body.dark-theme .menubar-item.cc-toggle:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-theme .cc-toggle-svg {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+body.dark-theme .menubar-item.cc-toggle:hover .cc-toggle-svg {
+  color: #fff;
+}
+
+body.dark-theme .menubar-status,
+body.dark-theme .menubar-clock {
+  color: rgba(255, 255, 255, 0.85);
+}

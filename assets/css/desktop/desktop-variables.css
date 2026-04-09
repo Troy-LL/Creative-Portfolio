@@ -1,0 +1,162 @@
+/* ═══════════════════════
+   DESKTOP SCENE
+   ═══════════════════════ */
+:root {
+  --sys-color: #007aff;
+  --font-ui-desktop:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  --cc-bg: rgba(255, 255, 255, 0.25);
+  --cc-border: rgba(255, 255, 255, 0.4);
+  --cc-btn-bg: rgba(255, 255, 255, 0.6);
+  --cc-btn-active: rgba(255, 255, 255, 0.9);
+  --cc-text: #000;
+  --cc-text-sub: rgba(0, 0, 0, 0.5);
+  --cc-hover: rgba(255, 255, 255, 0.3);
+  /* Desktop wallpaper: light mode default */
+  --desktop-wallpaper: linear-gradient(
+    165deg,
+    #c5d8f0 0%,
+    #dde8f6 35%,
+    #eef4fb 70%,
+    #f8fafc 100%
+  );
+  /* Dock chrome (divider sits on frosted dock) */
+  --dock-divider: rgba(0, 0, 0, 0.18);
+}
+
+body.dark-theme {
+  --cc-bg: rgba(30, 30, 30, 0.35);
+  --cc-border: rgba(255, 255, 255, 0.1);
+  --cc-btn-bg: rgba(255, 255, 255, 0.1);
+  --cc-btn-active: rgba(255, 255, 255, 0.2);
+  --cc-text: #fff;
+  --cc-text-sub: rgba(255, 255, 255, 0.5);
+  --cc-hover: rgba(255, 255, 255, 0.15);
+  --desktop-wallpaper: #0a0a0c;
+  --dock-divider: rgba(255, 255, 255, 0.24);
+}
+
+/* Wallpaper presets (light) */
+body[data-wallpaper="ocean"]:not(.dark-theme) {
+  --desktop-wallpaper: linear-gradient(
+    160deg,
+    #7ec8e3 0%,
+    #a8d8ea 40%,
+    #d4eef5 100%
+  );
+}
+
+body[data-wallpaper="sunset"]:not(.dark-theme) {
+  --desktop-wallpaper: linear-gradient(
+    165deg,
+    #ffd6a0 0%,
+    #ffb4a2 45%,
+    #e8b4ff 100%
+  );
+}
+
+body[data-wallpaper="forest"]:not(.dark-theme) {
+  --desktop-wallpaper: linear-gradient(
+    155deg,
+    #b8e0c8 0%,
+    #9dd4b0 50%,
+    #d8f0e0 100%
+  );
+}
+
+body[data-wallpaper="aurora"]:not(.dark-theme) {
+  --desktop-wallpaper: linear-gradient(
+    145deg,
+    #c4b5fd 0%,
+    #a5b4fc 40%,
+    #fbcfe8 100%
+  );
+}
+
+/* Wallpaper presets (dark) */
+body[data-wallpaper="ocean"].dark-theme {
+  --desktop-wallpaper: radial-gradient(
+    ellipse 120% 80% at 30% 20%,
+    #0c2840 0%,
+    #061018 100%
+  );
+}
+
+body[data-wallpaper="sunset"].dark-theme {
+  --desktop-wallpaper: radial-gradient(
+    ellipse 120% 90% at 50% 0%,
+    #3d1f18 0%,
+    #120a08 100%
+  );
+}
+
+body[data-wallpaper="forest"].dark-theme {
+  --desktop-wallpaper: radial-gradient(
+    ellipse 100% 100% at 50% 100%,
+    #0d2818 0%,
+    #050a08 100%
+  );
+}
+
+body[data-wallpaper="aurora"].dark-theme {
+  --desktop-wallpaper: radial-gradient(
+    ellipse 110% 100% at 70% 30%,
+    #1e1b4b 0%,
+    #0a0a12 100%
+  );
+}
+
+body[data-wallpaper="midnight"]:not(.dark-theme) {
+  --desktop-wallpaper: linear-gradient(
+    165deg,
+    #94a3b8 0%,
+    #cbd5e1 50%,
+    #e2e8f0 100%
+  );
+}
+
+body[data-wallpaper="midnight"].dark-theme {
+  --desktop-wallpaper: radial-gradient(
+    ellipse 100% 80% at 50% 0%,
+    #1a1033 0%,
+    #050508 100%
+  );
+}
+
+/* Desktop UI font (finder, settings, dock labels, etc.) */
+body[data-ui-font="inter"] .desktop {
+  font-family: "Inter", var(--font-ui-desktop);
+}
+
+body[data-ui-font="dm-sans"] .desktop {
+  font-family: "DM Sans", var(--font-ui-desktop);
+}
+
+body[data-ui-font="mono"] .desktop {
+  font-family: "VT323", "Courier New", monospace;
+}
+
+.desktop {
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 50;
+  font-family: var(--font-ui-desktop);
+  color: var(--cc-text);
+}
+
+.desktop.desktop--visible {
+  pointer-events: auto;
+  /* opacity is driven by GSAP, not CSS transition */
+}
+
+/* Wallpaper */
+.desktop-wallpaper {
+  position: absolute;
+  inset: 0;
+  background: var(--desktop-wallpaper);
+  transition: background 0.4s ease;
+}
+

@@ -45,7 +45,7 @@ body {
 #terminal,
 #desktop,
 .contacts-window,
-.about-window,
+.settings-window,
 .finder-window {
   cursor:
     url("../img/cursors/normal-select.svg") 0 0,
@@ -61,12 +61,14 @@ button,
 .dock-icon,
 .desktop-file-icon,
 .finder-dot,
-.about-dot,
+.settings-dot,
 .contacts-dot,
+.mail-dot,
 .control,
 .nav-btn,
 .sidebar-icon,
 .finder-icon,
+.finder-sidebar-item,
 .finder-sidebar li,
 .contacts-list-item,
 .quick-action,
@@ -77,6 +79,16 @@ li[data-target] {
   cursor:
     url("../img/cursors/link-select.svg") 11 0,
     pointer !important;
+}
+
+/* Non-functional menu / chrome — no pointer, not a control */
+.menubar-item.ui-chrome--inactive,
+.finder-toolbar-right .ui-chrome--inactive,
+.quick-action.ui-chrome--inactive,
+.mail-chrome-toolbar .ui-chrome--inactive,
+.mail-compose-toolbar .ui-chrome--inactive {
+  cursor: default !important;
+  pointer-events: none;
 }
 
 input,

@@ -1,0 +1,10 @@
+/* ── Maximized States ── */
+.finder-window.is-maximized,
+.settings-window.is-maximized {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+  box-shadow: none;
+  transform: scale(1) !important;
+}
+

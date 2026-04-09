@@ -1,0 +1,254 @@
+/* ── Mobile Layout ── */
+@media (max-width: 768px) {
+  /* Hide non-essential menubar items to save space */
+  .menubar-item:not(.cc-toggle) {
+    display: none;
+  }
+
+  /* Move Dock to Left Hand Side (vertical) */
+  .desktop-dock {
+    bottom: auto;
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%);
+    flex-direction: column;
+    width: 58px;
+    padding: 16px 0;
+    gap: 16px;
+    border-radius: 18px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    z-index: 1000;
+  }
+
+  body.dark-theme .desktop-dock {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Adjust Dock Icons for vertical layout */
+  .dock-icon {
+    width: 100%;
+    transform-origin: center left;
+  }
+
+  .dock-icon:hover {
+    transform: scale(1.22) translateX(6px);
+  }
+
+  /* Tooltips on the right for mobile */
+  .dock-icon[title]:hover::after {
+    bottom: 50%;
+    left: calc(100% + 14px);
+    transform: translateY(50%);
+    top: auto;
+  }
+
+  /* Make icons slightly smaller for mobile */
+  .dock-icon__img {
+    width: 38px;
+    height: 38px;
+    font-size: 34px;
+  }
+
+  .dock-divider {
+    width: 28px;
+    height: 1px;
+    margin: 4px 0;
+    background: var(--dock-divider);
+  }
+
+  /* Hide dock dot on mobile to keep it minimal */
+  .dock-dot {
+    display: none;
+  }
+
+  /* Disable sibling scaling on mobile for performance and clarity */
+  .dock-icon:hover + .dock-icon,
+  .dock-icon:has(+ .dock-icon:hover) {
+    transform: none !important;
+  }
+
+  /* Adjust desktop icons for smaller screens */
+  .desktop-icons-area {
+    top: 40px;
+    right: 12px;
+    grid-template-columns: 70px;
+    grid-auto-rows: 96px;
+  }
+  .file-icon__img img {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Responsive Windows */
+  .finder-window, 
+  .contacts-window, 
+  .settings-window,
+  .preview-window {
+    width: 95vw !important;
+    height: 80vh !important;
+    left: 2.5vw !important; /* Center horizontally (100 - 95) / 2 */
+    top: 50px !important; /* Below menubar */
+    margin: 0 !important;
+    transform: none !important; /* GSAP will still handle opacity but we override scale/y for static fit */
+  }
+
+  /* Sidebar adjustments for mobile */
+  .finder-sidebar,
+  .contacts-sidebar {
+    width: 140px;
+  }
+
+  .contacts-detail-header {
+    padding: 15px 20px;
+    gap: 12px;
+  }
+
+  .contacts-profile-pic {
+    width: 60px;
+    height: 60px;
+  }
+
+  .contacts-quick-actions {
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .contacts-detail-list {
+    padding: 0 20px;
+  }
+
+  .finder-content {
+    padding: 20px 15px;
+    gap: 15px;
+    justify-content: center;
+  }
+
+  .finder-content.finder-content--empty {
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+  }
+
+  .finder-icon {
+    width: 80px; /* Increased from 65px */
+  }
+
+  .finder-icon img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .finder-icon-visual {
+    width: 44px;
+    height: 44px;
+  }
+
+  .finder-sidebar-title {
+    font-size: 10px;
+    padding: 2px 12px;
+  }
+
+  .finder-sidebar-item {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+
+  .finder-nav-btns {
+    gap: 8px;
+    font-size: 14px;
+  }
+
+  .finder-nav-btns > .nav-btn,
+  .finder-toolbar-right > .toolbar-icon,
+  .finder-toolbar-right > .search-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .finder-icon-svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 1.9;
+  }
+
+  .finder-title {
+    font-size: 11px;
+  }
+
+  /* Settings window adjustments */
+  .settings-shell {
+    flex-direction: column;
+  }
+
+  .settings-sidebar {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-right: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  body.dark-theme .settings-sidebar {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .settings-search {
+    display: none;
+  }
+
+  .settings-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .settings-nav-item {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    font-size: 12px;
+    padding: 8px 6px;
+  }
+
+  .settings-main-inner {
+    padding: 12px 14px 16px;
+  }
+
+  .settings-about-body {
+    flex-direction: column;
+    padding: 12px 0;
+    text-align: center;
+  }
+
+  .about-avatar {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 10px;
+  }
+
+  .about-avatar-svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .about-name {
+    font-size: 16px;
+  }
+
+  .about-grid {
+    display: block;
+    text-align: left;
+    margin-top: 10px;
+  }
+
+  .about-row {
+    margin-bottom: 4px;
+  }
+}

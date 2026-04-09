@@ -1,0 +1,74 @@
+/* Boot splash — TL mark + thin progress bar (covers UI until ready) */
+.boot-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(
+      ellipse 120% 80% at 50% 20%,
+      #1a1d24 0%,
+      #0b0c0f 45%,
+      #050506 100%
+    );
+  cursor: default;
+}
+
+.boot-splash__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.75rem;
+  width: min(320px, 78vw);
+}
+
+.boot-splash__logo {
+  color: #f5f5f7;
+  text-shadow:
+    0 0 40px rgba(0, 122, 255, 0.25),
+    0 1px 0 rgba(0, 0, 0, 0.4);
+  user-select: none;
+}
+
+.boot-splash__tl {
+  display: block;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.75rem, 10vw, 3.75rem);
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.boot-splash__track {
+  width: 100%;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.boot-splash__fill {
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    var(--sys-color, #007aff) 0%,
+    #5ac8fa 100%
+  );
+  transform-origin: left center;
+  transform: scaleX(0);
+  will-change: transform;
+}
+
+body.boot-splash--active {
+  cursor: default;
+}
