@@ -7,7 +7,7 @@ export function initMailApp() {
   const minDot = overlay.querySelector(".mail-titlebar .mac-min");
   const form = document.getElementById("mailComposeForm");
 
-  function close() {
+  function close(removeDockIndicator = true) {
     gsap.to(windowEl, {
       opacity: 0,
       scale: 0.9,
@@ -16,9 +16,11 @@ export function initMailApp() {
       ease: "power2.in",
       onComplete: () => {
         overlay.classList.remove("is-visible");
-        document
-          .querySelector('.dock-icon[data-app="mail"]')
-          ?.classList.remove("is-open");
+        if (removeDockIndicator) {
+          document
+            .querySelector('.dock-icon[data-app="mail"]')
+            ?.classList.remove("is-open");
+        }
       },
     });
   }
@@ -30,7 +32,7 @@ export function initMailApp() {
 
   minDot?.addEventListener("click", (e) => {
     e.stopPropagation();
-    close();
+    close(false);
   });
 
   form?.addEventListener("submit", (e) => {

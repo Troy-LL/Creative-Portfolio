@@ -87,6 +87,7 @@
   .finder-window, 
   .contacts-window, 
   .settings-window,
+  .safari-window,
   .preview-window {
     width: 95vw !important;
     height: 80vh !important;
@@ -226,6 +227,12 @@
     flex-direction: row;
     flex-wrap: wrap;
     width: 100%;
+  }
+
+  .settings-nav-divider,
+  .settings-nav-title,
+  .settings-nav-item.ui-chrome--inactive {
+    display: none;
   }
 
   .settings-nav-item {

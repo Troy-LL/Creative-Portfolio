@@ -46,12 +46,13 @@
   position: absolute;
   left: 16px;
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .preview-dot {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
+  box-sizing: border-box;
   border-radius: 50%;
   cursor: pointer;
 }

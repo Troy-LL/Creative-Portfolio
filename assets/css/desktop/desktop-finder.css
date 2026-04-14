@@ -50,13 +50,14 @@
 
 .finder-window-controls {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   padding: 16px 16px;
 }
 
 .finder-dot {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
+  box-sizing: border-box;
   border-radius: 50%;
   cursor: pointer;
 }
@@ -81,12 +82,14 @@
 .mac-window:not(.is-focused) .finder-dot,
 .mac-window:not(.is-focused) .contacts-dot,
 .mac-window:not(.is-focused) .mail-dot,
+.mac-window:not(.is-focused) .safari-dot,
 .mac-window:not(.is-focused) .preview-dot,
 .settings-dot.disabled,
 .finder-dot.disabled,
 .preview-dot.disabled,
 .contacts-dot.disabled,
-.mail-dot.disabled {
+.mail-dot.disabled,
+.safari-dot.disabled {
   background: #464646 !important;
   border-color: #333 !important;
   cursor: default !important;

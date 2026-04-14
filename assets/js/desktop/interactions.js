@@ -16,7 +16,32 @@ export function initDesktopInteractions() {
       const folder =
         icon.dataset.folder !== undefined ? icon.dataset.folder : null;
 
+      function handleDockWindow(overlayId, windowSelector, minSelector) {
+        const overlay = document.getElementById(overlayId);
+        const win = document.querySelector(windowSelector);
+        if (!overlay || !win) return false;
+        if (!overlay.classList.contains("is-visible")) return false;
+
+        if (win.classList.contains("is-focused")) {
+          const minBtn = win.querySelector(minSelector);
+          minBtn?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+          return true;
+        }
+
+        if (typeof window.focusWindow === "function") window.focusWindow(win);
+        return true;
+      }
+
       if (app === "settings") {
+        if (
+          handleDockWindow(
+            "settingsOverlay",
+            ".settings-window",
+            ".settings-titlebar .mac-min",
+          )
+        ) {
+          return;
+        }
         if (!settingsOverlay) return;
         settingsOverlay.classList.add("is-visible");
         icon.classList.add("is-open");
@@ -32,6 +57,15 @@ export function initDesktopInteractions() {
       }
 
       if (app === "contacts") {
+        if (
+          handleDockWindow(
+            "contactsOverlay",
+            ".contacts-window",
+            ".contacts-sidebar-top .mac-min",
+          )
+        ) {
+          return;
+        }
         const contactsOverlay = document.getElementById("contactsOverlay");
         if (!contactsOverlay) return;
         contactsOverlay.classList.add("is-visible");
@@ -47,6 +81,11 @@ export function initDesktopInteractions() {
       }
 
       if (app === "mail") {
+        if (
+          handleDockWindow("mailOverlay", ".mail-window", ".mail-titlebar .mac-min")
+        ) {
+          return;
+        }
         const mailOverlay = document.getElementById("mailOverlay");
         if (!mailOverlay) return;
         mailOverlay.classList.add("is-visible");
@@ -62,6 +101,15 @@ export function initDesktopInteractions() {
       }
 
       if (app === "finder") {
+        if (
+          handleDockWindow(
+            "finderOverlay",
+            ".finder-window",
+            ".finder-window-controls .mac-min",
+          )
+        ) {
+          return;
+        }
         openFinder("recents");
         return;
       }

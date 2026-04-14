@@ -187,7 +187,7 @@ export function initFinderApp() {
   const closeDot = overlay.querySelector(".mac-close");
   const minDot = overlay.querySelector(".mac-min");
 
-  function close() {
+  function close(removeDockIndicator = true) {
     gsap.to(windowEl, {
       opacity: 0,
       scale: 0.9,
@@ -196,7 +196,7 @@ export function initFinderApp() {
       onComplete: () => {
         overlay.classList.remove("is-visible");
         windowEl.classList.remove("is-maximized");
-        setFinderDockOpen(false);
+        if (removeDockIndicator) setFinderDockOpen(false);
       },
     });
   }
@@ -208,7 +208,7 @@ export function initFinderApp() {
 
   minDot?.addEventListener("click", (e) => {
     e.stopPropagation();
-    close();
+    close(false);
   });
 
   overlay

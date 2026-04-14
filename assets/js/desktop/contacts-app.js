@@ -26,7 +26,7 @@ export function initContactsApp() {
     if (typeof window.focusWindow === "function") window.focusWindow(".mail-window");
   }
 
-  function close() {
+  function close(removeDockIndicator = true) {
     gsap.to(windowEl, {
       opacity: 0,
       scale: 0.9,
@@ -35,9 +35,11 @@ export function initContactsApp() {
       ease: "power2.in",
       onComplete: () => {
         overlay.classList.remove("is-visible");
-        document
-          .querySelector('.dock-icon[data-app="contacts"]')
-          ?.classList.remove("is-open");
+        if (removeDockIndicator) {
+          document
+            .querySelector('.dock-icon[data-app="contacts"]')
+            ?.classList.remove("is-open");
+        }
       },
     });
   }
@@ -49,7 +51,7 @@ export function initContactsApp() {
 
   minDot?.addEventListener("click", (e) => {
     e.stopPropagation();
-    close();
+    close(false);
   });
 
   quickMail?.addEventListener("click", (e) => {

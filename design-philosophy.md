@@ -60,3 +60,14 @@ This document records how UI decisions are made for this portfolio OS project.
 - Theme parity checked in both dark and light mode.
 - Mobile behavior remains readable and touch-friendly.
 - Link CTAs are explicit and open safely (`rel="noopener noreferrer"` for external links).
+
+## Common Pitfalls and Reminders
+
+- New apps must be wired in all three layers: `index.html` (overlay markup), `interactions/init` (open lifecycle), and dedicated app module (close/min behavior).
+- New app CSS must be imported in `assets/css/desktop.css`; otherwise the app can render unstyled or appear broken.
+- New windows must be registered in `window-focus.js` so drag, focus z-index, and menubar app name work correctly.
+- Traffic-light controls must use `.mac-close`, `.mac-min`, `.mac-max` and app-specific dot classes (e.g. `.safari-dot`) with focus/unfocus support.
+- If an element in reference is a temporary popup/context menu, do not embed it as permanent layout content.
+- Validate window bounds/position early (center or bounded placement) to avoid clipping outside the desktop scene.
+- Avoid duplicate open handlers for one app; choose one source of truth to prevent silent conflicts.
+- After adding or refactoring UI blocks, remove dead CSS/markup immediately to keep styles maintainable.

@@ -50,12 +50,23 @@
 .settings-dot {
   width: 10px;
   height: 10px;
+  box-sizing: border-box;
   border-radius: 50%;
   background: #9c9c9c;
 }
 
 .settings-dot--close {
   background: #ff5f57;
+}
+
+.settings-dot.mac-min {
+  background: #ffbd2e;
+  border: 1px solid #dea123;
+}
+
+.settings-dot.mac-max {
+  background: #27c93f;
+  border: 1px solid #1aab29;
 }
 
 .settings-title {
@@ -74,14 +85,14 @@
 }
 
 .settings-sidebar {
-  width: 196px;
+  width: 220px;
   flex-shrink: 0;
-  background: rgba(28, 28, 28, 0.92);
+  background: linear-gradient(180deg, #2f2f32 0%, #232326 100%);
   border-right: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   flex-direction: column;
-  padding: 10px 8px 12px;
-  gap: 10px;
+  padding: 10px 10px 12px;
+  gap: 8px;
 }
 
 .settings-search {
@@ -111,12 +122,12 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 8px 10px;
+  padding: 8px 9px;
   border: none;
   border-radius: 8px;
   background: transparent;
   color: rgba(255, 255, 255, 0.82);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   text-align: left;
   font-family: inherit;
@@ -127,22 +138,48 @@
 }
 
 .settings-nav-item.is-active {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .settings-nav-icon {
-  width: 18px;
-  height: 18px;
-  border-radius: 5px;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
   flex-shrink: 0;
+  color: rgba(240, 240, 245, 0.9);
 }
 
-.settings-nav-icon--appearance {
-  background: linear-gradient(135deg, #6366f1, #a855f7);
+.settings-nav-icon-svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.settings-nav-icon--general {
-  background: linear-gradient(135deg, #64748b, #94a3b8);
+.settings-nav-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.09);
+  margin: 6px 4px 4px;
+}
+
+.settings-nav-title {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 600;
+  margin: 0 6px 2px;
+}
+
+.settings-nav-item.ui-chrome--inactive {
+  color: rgba(255, 255, 255, 0.45);
+  cursor: default !important;
+  pointer-events: none;
+}
+
+.settings-nav-item.ui-chrome--inactive .settings-nav-icon {
+  color: rgba(255, 255, 255, 0.38);
 }
 
 .settings-main {
@@ -192,11 +229,12 @@
 }
 
 .settings-main-heading {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.95);
   letter-spacing: -0.02em;
 }
+
 
 .settings-section {
   margin-bottom: 22px;
@@ -526,7 +564,7 @@ body:not(.dark-theme) .settings-title {
 }
 
 body:not(.dark-theme) .settings-sidebar {
-  background: rgba(245, 245, 245, 0.95);
+  background: linear-gradient(180deg, #efe1cf 0%, #eadbcc 100%);
   border-right: 1px solid rgba(0, 0, 0, 0.08);
 }
 
@@ -544,12 +582,33 @@ body:not(.dark-theme) .settings-nav-item:hover {
 }
 
 body:not(.dark-theme) .settings-nav-item.is-active {
-  background: rgba(0, 0, 0, 0.07);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+body:not(.dark-theme) .settings-nav-divider {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+body:not(.dark-theme) .settings-nav-title {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+body:not(.dark-theme) .settings-nav-icon {
+  color: rgba(35, 35, 35, 0.72);
+}
+
+body:not(.dark-theme) .settings-nav-item.ui-chrome--inactive {
+  color: rgba(0, 0, 0, 0.42);
+}
+
+body:not(.dark-theme) .settings-nav-item.ui-chrome--inactive .settings-nav-icon {
+  color: rgba(0, 0, 0, 0.35);
 }
 
 body:not(.dark-theme) .settings-main {
   background: #fff;
 }
+
 
 body:not(.dark-theme) .settings-main-nav-arrows {
   color: rgba(0, 0, 0, 0.2);

@@ -56,12 +56,13 @@ body.dark-theme .mail-titlebar {
 
 .mail-dots {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .mail-dot {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
+  box-sizing: border-box;
   border-radius: 50%;
   background: #ccc;
 }

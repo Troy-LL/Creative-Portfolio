@@ -4,6 +4,7 @@ import { initDesktopInteractions } from "./interactions.js";
 import { initSettingsApp } from "./settings-app.js";
 import { initContactsApp } from "./contacts-app.js";
 import { initMailApp } from "./mail-app.js";
+import { initSafariApp } from "./safari-app.js";
 import { initMenubarClock } from "./menubar-clock.js";
 import { initFinderApp } from "./finder.js";
 import { initPreviewViewers } from "./viewers.js";
@@ -22,4 +23,5 @@ export function initDesktopUi() {
   initDraggableWindows();
   initContactsApp();
   initMailApp();
+  initSafariApp();
 }

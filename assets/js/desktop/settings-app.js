@@ -35,8 +35,11 @@ export function initSettingsApp() {
   overlay.querySelectorAll(".settings-nav-item").forEach((btn) => {
     btn.addEventListener("click", () => {
       const id = btn.dataset.settingsPanel;
+      if (!id || btn.classList.contains("ui-chrome--inactive")) return;
       overlay.querySelectorAll(".settings-nav-item").forEach((b) => {
-        b.classList.toggle("is-active", b === btn);
+        if (b.dataset.settingsPanel) {
+          b.classList.toggle("is-active", b === btn);
+        }
       });
       overlay.querySelectorAll(".settings-panel").forEach((panel) => {
         panel.classList.toggle(
@@ -74,7 +77,7 @@ export function initSettingsApp() {
     });
   });
 
-  function close() {
+  function close(removeDockIndicator = true) {
     gsap.to(windowEl, {
       opacity: 0,
       scale: 0.9,
@@ -84,9 +87,11 @@ export function initSettingsApp() {
       onComplete: () => {
         overlay.classList.remove("is-visible");
         windowEl.classList.remove("is-maximized");
-        document
-          .querySelector('.dock-icon[data-app="settings"]')
-          ?.classList.remove("is-open");
+        if (removeDockIndicator) {
+          document
+            .querySelector('.dock-icon[data-app="settings"]')
+            ?.classList.remove("is-open");
+        }
       },
     });
   }
@@ -98,7 +103,7 @@ export function initSettingsApp() {
 
   minDot?.addEventListener("click", (e) => {
     e.stopPropagation();
-    close();
+    close(false);
   });
 }
 

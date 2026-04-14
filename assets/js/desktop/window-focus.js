@@ -13,12 +13,16 @@ function syncMenubarAppName(focusedWindow) {
     label.textContent = "Contacts";
   } else if (focusedWindow.classList.contains("mail-window")) {
     label.textContent = "Mail";
+  } else if (focusedWindow.classList.contains("safari-window")) {
+    label.textContent = "Safari";
   } else if (focusedWindow.classList.contains("preview-window")) {
     label.textContent = "Preview";
   } else {
     label.textContent = "Finder";
   }
 }
+
+let windowZCounter = 30;
 
 window.focusWindow = function (targetEl) {
   document
@@ -33,16 +37,12 @@ window.focusWindow = function (targetEl) {
         : targetEl;
     if (el) {
       el.classList.add("is-focused");
-
-      document.querySelectorAll(".window-overlay").forEach((over) => {
-        over.style.zIndex = "20";
-      });
-
       if (
         el.parentElement &&
         el.parentElement.classList.contains("window-overlay")
       ) {
-        el.parentElement.style.zIndex = "30";
+        windowZCounter += 1;
+        el.parentElement.style.zIndex = String(windowZCounter);
       }
     }
   }
@@ -58,6 +58,7 @@ export function initDraggableWindows() {
     ".settings-window",
     ".contacts-window",
     ".mail-window",
+    ".safari-window",
   ];
   windows.forEach((sel) => {
     let handle = "";
@@ -69,6 +70,8 @@ export function initDraggableWindows() {
       handle = ".contacts-sidebar-top, .contacts-detail-header";
     } else if (sel === ".mail-window") {
       handle = ".mail-titlebar";
+    } else if (sel === ".safari-window") {
+      handle = ".safari-titlebar";
     }
 
     Draggable.create(sel, {
@@ -93,8 +96,7 @@ export function initDraggableWindows() {
       window.focusWindow(win);
     } else if (
       e.target.closest(".desktop-wallpaper") ||
-      e.target.closest(".desktop-icons-area") ||
-      e.target.closest(".desktop-dock")
+      e.target.closest(".desktop-icons-area")
     ) {
       window.focusWindow(null);
     }
