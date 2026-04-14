@@ -107,14 +107,33 @@
     gap: 12px;
   }
 
+  .contacts-toolbar {
+    padding: 0 8px;
+  }
+
+  .contacts-toolbar-group {
+    gap: 4px;
+  }
+
+  .contacts-toolbar-btn {
+    min-width: 24px;
+    height: 22px;
+    padding: 0 6px;
+  }
+
   .contacts-profile-pic {
     width: 60px;
     height: 60px;
   }
 
   .contacts-quick-actions {
-    gap: 15px;
-    margin-bottom: 15px;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding: 4px 20px 0;
+  }
+
+  .contacts-highlight-card {
+    margin: 0 20px 12px;
   }
 
   .contacts-detail-list {
@@ -250,5 +269,14 @@
 
   .about-row {
     margin-bottom: 4px;
+  }
+
+  .about-story {
+    text-align: left;
+  }
+
+  .about-cta {
+    width: 100%;
+    margin-top: 12px;
   }
 }

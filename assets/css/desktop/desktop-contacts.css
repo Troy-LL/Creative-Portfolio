@@ -113,18 +113,19 @@ body.dark-theme .contacts-search-box {
 .contacts-sidebar-list {
   flex: 1;
   overflow-y: auto;
+  padding: 4px 8px 10px;
 }
 
 .contacts-group-letter {
-  padding: 4px 14px;
+  padding: 8px 8px 4px;
   font-size: 11px;
   font-weight: 700;
   color: #888;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .contacts-list-item {
-  padding: 8px 14px;
+  padding: 8px 10px;
   font-size: 13px;
   cursor: default;
 }
@@ -136,6 +137,76 @@ body.dark-theme .contacts-search-box {
 .contacts-list-item.active {
   background: var(--sys-color);
   color: #fff;
+}
+
+.contacts-sidebar-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #9a8f82;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  margin: 10px 8px 4px;
+}
+
+.contacts-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  margin: 2px 0;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #4f4a43;
+  position: relative;
+}
+
+.contacts-sidebar-item-icon {
+  width: 14px;
+  height: 14px;
+  color: #8f8375;
+  flex-shrink: 0;
+}
+
+.contacts-sidebar-item-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.contacts-sidebar-item.active {
+  background: rgba(0, 0, 0, 0.07);
+  color: #232222;
+}
+
+.contacts-sidebar-item.active .contacts-sidebar-item-icon {
+  color: #6d655d;
+}
+
+.contacts-sidebar-item.ui-chrome--inactive {
+  color: #9f9488;
+  cursor: default !important;
+  pointer-events: none;
+}
+
+.contacts-sidebar-item.ui-chrome--inactive .contacts-sidebar-item-icon {
+  color: #b7aa9b;
+}
+
+.contacts-sidebar-count {
+  margin-left: auto;
+  min-width: 18px;
+  height: 16px;
+  border-radius: 999px;
+  padding: 0 6px;
+  font-size: 11px;
+  line-height: 16px;
+  text-align: center;
+  color: #6f6559;
+  background: rgba(0, 0, 0, 0.07);
 }
 
 /* Main Content Area */
@@ -151,15 +222,15 @@ body.dark-theme .contacts-main {
 }
 
 .contacts-detail-header {
-  padding: 30px 40px 20px;
+  padding: 16px 24px 8px;
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 14px;
 }
 
 .contacts-profile-pic {
-  width: 80px;
-  height: 80px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   overflow: hidden;
   background: #ccc;
@@ -173,13 +244,13 @@ body.dark-theme .contacts-main {
 }
 
 .contacts-primary-info h1 {
-  font-size: 24px;
+  font-size: 28px;
   margin: 0;
   font-weight: 500;
 }
 
 .contacts-subtitle {
-  font-size: 14px;
+  font-size: 12px;
   color: #888;
   margin: 2px 0 0;
 }
@@ -187,9 +258,10 @@ body.dark-theme .contacts-main {
 /* Quick Actions */
 .contacts-quick-actions {
   display: flex;
-  justify-content: center;
-  gap: 30px;
-  margin: 10px 0 30px;
+  justify-content: flex-start;
+  gap: 10px;
+  margin: 0 0 8px;
+  padding: 2px 24px 0;
 }
 
 .quick-action {
@@ -205,8 +277,8 @@ body.dark-theme .contacts-main {
 }
 
 .action-icon {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: #fff;
   border: 1px solid #e0e0e0;
@@ -259,15 +331,17 @@ body.dark-theme .quick-action.ui-chrome--inactive span {
 /* Data List */
 .contacts-detail-list {
   flex: 1;
-  overflow-y: auto;
-  padding: 0 40px;
+  overflow-y: hidden;
+  padding: 0 24px;
 }
 
 .detail-row {
   display: flex;
-  padding: 12px 0;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
   border-top: 1px solid #f0f0f0;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 body.dark-theme .detail-row {
@@ -275,10 +349,10 @@ body.dark-theme .detail-row {
 }
 
 .detail-label {
-  width: 100px;
+  width: 86px;
   color: #888;
-  text-align: right;
-  margin-right: 20px;
+  text-align: left;
+  margin-right: 6px;
   white-space: nowrap;
 }
 
@@ -308,7 +382,7 @@ body.dark-theme .detail-value {
 
 /* Footer */
 .contacts-footer {
-  padding: 12px 20px;
+  padding: 8px 14px;
   border-top: 1px solid #f0f0f0;
   display: flex;
   justify-content: space-between;
@@ -322,7 +396,9 @@ body.dark-theme .contacts-footer {
   background: #f1f1f1;
   border: 1px solid #dcdcdc;
   border-radius: 6px;
-  padding: 4px 12px;
+  min-width: 26px;
+  height: 22px;
+  padding: 0 8px;
   font-size: 12px;
   color: #444;
   cursor: pointer;
@@ -346,5 +422,338 @@ body.dark-theme .contacts-footer-btn {
 
 .footer--right {
   display: flex;
+}
+
+/* Contacts redesign v2 */
+.contacts-window {
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.32);
+}
+
+body.dark-theme .contacts-window {
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+}
+
+.contacts-sidebar {
+  background: linear-gradient(180deg, #eee4d2 0%, #e8dbc9 100%);
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.dark-theme .contacts-sidebar {
+  background: #222224;
+  border-right-color: #3a3a3d;
+}
+
+.contacts-group-letter {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 10px;
+}
+
+.contacts-list-item {
+  border-radius: 8px;
+  margin: 2px 8px;
+  padding: 8px 10px;
+}
+
+.contacts-list-item.active {
+  background: rgba(0, 122, 255, 0.82);
+}
+
+.contacts-main {
+  background: #f8f8fa;
+}
+
+body.dark-theme .contacts-main {
+  background: #2b2b2f;
+}
+
+.contacts-toolbar {
+  height: 40px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background: #f1f1f3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  flex-shrink: 0;
+}
+
+body.dark-theme .contacts-toolbar {
+  background: #2f2f33;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.contacts-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.contacts-toolbar-btn {
+  min-width: 28px;
+  height: 24px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #4b4b52;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  font-family: inherit;
+  outline: none;
+  box-shadow: none;
+}
+
+.contacts-toolbar-btn:not(.ui-chrome--inactive):hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.contacts-toolbar-btn:focus-visible {
+  outline: none;
+}
+
+.contacts-toolbar-svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+body.dark-theme .contacts-toolbar-btn {
+  background: transparent;
+  color: #d8d8dd;
+}
+
+.contacts-toolbar-btn.ui-chrome--inactive {
+  color: #a4a4ac;
+  background: transparent;
+  cursor: default !important;
+  pointer-events: none;
+}
+
+body.dark-theme .contacts-toolbar-btn.ui-chrome--inactive {
+  color: #717179;
+  background: transparent;
+}
+
+body.dark-theme .contacts-sidebar-section-title {
+  color: #7d7d84;
+}
+
+body.dark-theme .contacts-sidebar-item {
+  color: #d2d2d8;
+}
+
+body.dark-theme .contacts-sidebar-item-icon {
+  color: #8a8a92;
+}
+
+body.dark-theme .contacts-sidebar-item.active {
+  background: rgba(255, 255, 255, 0.09);
+  color: #ffffff;
+}
+
+body.dark-theme .contacts-sidebar-item.active .contacts-sidebar-item-icon {
+  color: #c7c7cf;
+}
+
+body.dark-theme .contacts-sidebar-count {
+  color: #b2b2ba;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-theme .contacts-sidebar-item.ui-chrome--inactive {
+  color: #76767d;
+}
+
+body.dark-theme .contacts-sidebar-item.ui-chrome--inactive .contacts-sidebar-item-icon {
+  color: #6b6b73;
+}
+
+.contacts-detail-header {
+  padding: 12px 22px 6px;
+  gap: 12px;
+}
+
+.contacts-profile-pic {
+  width: 62px;
+  height: 62px;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+body.dark-theme .contacts-profile-pic {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.contacts-primary-info h1 {
+  font-size: 27px;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.contacts-subtitle {
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+.contacts-quick-actions {
+  justify-content: flex-start;
+  padding: 2px 22px 0;
+  margin: 0 0 8px;
+  gap: 10px;
+}
+
+.quick-action .action-icon {
+  width: 34px;
+  height: 34px;
+  border: none;
+  box-shadow: none;
+  background: var(--sys-color);
+  color: #fff;
+}
+
+body.dark-theme .quick-action .action-icon {
+  background: var(--sys-color);
+}
+
+.quick-action .action-icon-svg {
+  color: #fff;
+}
+
+.quick-action span {
+  font-size: 11px;
+  text-transform: lowercase;
+}
+
+.contacts-highlight-card {
+  margin: 0 22px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.03);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+}
+
+body.dark-theme .contacts-highlight-card {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.contacts-highlight-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: #f7f7fa;
+  border: 1px solid #e2e2e8;
+  color: #9b9ba3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.contacts-highlight-icon svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+body.dark-theme .contacts-highlight-icon {
+  background: #37373a;
+  border-color: #4b4b50;
+  color: #7f7f88;
+}
+
+.contacts-highlight-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6f6f76;
+}
+
+.contacts-highlight-sub {
+  font-size: 11px;
+  color: #8b8b93;
+  margin-top: 1px;
+}
+
+.contacts-detail-list {
+  overflow-y: hidden;
+  padding: 0 22px;
+}
+
+.detail-row {
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 0;
+  font-size: 12px;
+}
+
+.detail-icon {
+  width: 16px;
+  height: 16px;
+  color: #b2b2b8;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.detail-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+body.dark-theme .detail-icon {
+  color: #75757b;
+}
+
+.detail-label {
+  width: 84px;
+  margin-right: 8px;
+  text-align: left;
+  color: #84848d;
+}
+
+.detail-value {
+  color: #35353b;
+  line-height: 1.25;
+}
+
+body.dark-theme .detail-value {
+  color: #d4d4d8;
+}
+
+.contacts-footer {
+  padding: 8px 14px;
+  background: #f4f4f6;
+}
+
+body.dark-theme .contacts-footer {
+  background: #303035;
+}
+
+.contacts-footer-btn {
+  min-width: 26px;
+  height: 22px;
+  border-radius: 6px;
+  padding: 0 8px;
 }
 

@@ -1,7 +1,7 @@
 const STORAGE_KEY = "portfolio-appearance";
 
 const DEFAULTS = {
-  themeMode: "auto",
+  themeMode: "dark",
   wallpaper: "default",
   uiFont: "system",
   accent: "#007aff",
