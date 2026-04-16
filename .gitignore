@@ -1,4 +1,29 @@
+# Dependencies
 node_modules/
+**/node_modules/
+
+# OS / editor
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Logs & local env
+*.log
+.env
+.env.*.local
+
+# Vite (dev cache under founders-cafe)
+founders-cafe/.vite/
+founders-cafe/dist/
+
+# ── Not used by the deployed static site (only index.html + assets/ are served) ──
+
+# Cursor / local reference material
+skills/
+
+# Design notes (not loaded by the browser)
+design-philosophy.md
+
+# Founders Cafe Vite source — the built iframe lives in assets/founders-cafe/ (commit that).
+# Rebuild locally before deploy: cd founders-cafe && npm install && npm run build
+founders-cafe/

@@ -98,7 +98,8 @@ body.dark-theme .file-icon__label {
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.85);
-  z-index: 100;
+  /* Above app overlays (105–140), below menubar (150), so dock stays clickable with a window open. */
+  z-index: 145;
 }
 
 body.dark-theme .desktop-dock {

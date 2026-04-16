@@ -22,7 +22,16 @@ function syncMenubarAppName(focusedWindow) {
   }
 }
 
-let windowZCounter = 30;
+/*
+ * Stacking: app overlays 105–140, dock 145, menubar 150 (see CSS).
+ * Only bump z-index when focus *changes* — otherwise Draggable onPress / repeated
+ * mousedown would increment forever and overlays would cover the menu bar and dock.
+ */
+const Z_APP_MIN = 105;
+const Z_APP_MAX = 140;
+
+let windowZCounter = Z_APP_MIN - 1;
+let lastFocusedMacWindow = null;
 
 window.focusWindow = function (targetEl) {
   document
@@ -41,10 +50,20 @@ window.focusWindow = function (targetEl) {
         el.parentElement &&
         el.parentElement.classList.contains("window-overlay")
       ) {
-        windowZCounter += 1;
-        el.parentElement.style.zIndex = String(windowZCounter);
+        if (el !== lastFocusedMacWindow) {
+          windowZCounter += 1;
+          if (windowZCounter > Z_APP_MAX) {
+            windowZCounter = Z_APP_MIN;
+          }
+          lastFocusedMacWindow = el;
+        }
+        el.parentElement.style.zIndex = String(
+          Math.min(windowZCounter, Z_APP_MAX),
+        );
       }
     }
+  } else {
+    lastFocusedMacWindow = null;
   }
 
   syncMenubarAppName(el);

@@ -1,0 +1,9 @@
+{
+  "name": "creative-portfolio",
+  "private": true,
+  "description": "Portfolio shell; Founders Cafe replica builds into assets/founders-cafe for Safari.",
+  "scripts": {
+    "build": "npm run build:founders-cafe",
+    "build:founders-cafe": "npm run build --prefix founders-cafe"
+  }
+}

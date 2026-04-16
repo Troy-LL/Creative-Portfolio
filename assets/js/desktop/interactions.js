@@ -1,6 +1,7 @@
 import { restoreFromDesktop } from "./monitor-transition.js";
 import { openFinder } from "./finder.js";
 import { syncSettingsOverlay } from "./settings-app.js";
+import { openSafariFromDock } from "./safari-app.js";
 
 export function initDesktopInteractions() {
   const monitor = document.querySelector(".monitor-bezel");
@@ -111,6 +112,20 @@ export function initDesktopInteractions() {
           return;
         }
         openFinder("recents");
+        return;
+      }
+
+      if (app === "safari") {
+        if (
+          handleDockWindow(
+            "safariOverlay",
+            ".safari-window",
+            ".safari-titlebar .mac-min",
+          )
+        ) {
+          return;
+        }
+        openSafariFromDock();
         return;
       }
 

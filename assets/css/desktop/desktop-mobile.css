@@ -20,7 +20,8 @@
     justify-content: center;
     border: 1px solid rgba(0, 0, 0, 0.1);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-    z-index: 1000;
+    /* Same stacking as desktop dock (145) — above app overlays, below menubar. */
+    z-index: 145;
   }
 
   body.dark-theme .desktop-dock {

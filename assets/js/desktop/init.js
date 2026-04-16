@@ -23,5 +23,6 @@ export function initDesktopUi() {
   initDraggableWindows();
   initContactsApp();
   initMailApp();
+  /* Safari after interactions so openSafariFromDock is wired before first dock click. */
   initSafariApp();
 }
