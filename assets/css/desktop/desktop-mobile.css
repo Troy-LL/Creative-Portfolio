@@ -1,12 +1,12 @@
-/* ── Mobile Layout ── */
-@media (max-width: 768px) {
+/* ── Narrow desktop layout (not iOS shell) — only when data-view=desktop ── */
+@media (max-width: 767px) {
   /* Hide non-essential menubar items to save space */
-  .menubar-item:not(.cc-toggle) {
+  html[data-view="desktop"] .menubar-item:not(.cc-toggle) {
     display: none;
   }
 
   /* Move Dock to Left Hand Side (vertical) */
-  .desktop-dock {
+  html[data-view="desktop"] .desktop-dock {
     bottom: auto;
     top: 50%;
     left: 8px;
@@ -24,23 +24,23 @@
     z-index: 145;
   }
 
-  body.dark-theme .desktop-dock {
+  html[data-view="desktop"] body.dark-theme .desktop-dock {
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   }
 
   /* Adjust Dock Icons for vertical layout */
-  .dock-icon {
+  html[data-view="desktop"] .dock-icon {
     width: 100%;
     transform-origin: center left;
   }
 
-  .dock-icon:hover {
+  html[data-view="desktop"] .dock-icon:hover {
     transform: scale(1.22) translateX(6px);
   }
 
   /* Tooltips on the right for mobile */
-  .dock-icon[title]:hover::after {
+  html[data-view="desktop"] .dock-icon[title]:hover::after {
     bottom: 50%;
     left: calc(100% + 14px);
     transform: translateY(50%);
@@ -48,13 +48,13 @@
   }
 
   /* Make icons slightly smaller for mobile */
-  .dock-icon__img {
+  html[data-view="desktop"] .dock-icon__img {
     width: 38px;
     height: 38px;
     font-size: 34px;
   }
 
-  .dock-divider {
+  html[data-view="desktop"] .dock-divider {
     width: 28px;
     height: 1px;
     margin: 4px 0;
@@ -62,34 +62,34 @@
   }
 
   /* Hide dock dot on mobile to keep it minimal */
-  .dock-dot {
+  html[data-view="desktop"] .dock-dot {
     display: none;
   }
 
   /* Disable sibling scaling on mobile for performance and clarity */
-  .dock-icon:hover + .dock-icon,
-  .dock-icon:has(+ .dock-icon:hover) {
+  html[data-view="desktop"] .dock-icon:hover + .dock-icon,
+  html[data-view="desktop"] .dock-icon:has(+ .dock-icon:hover) {
     transform: none !important;
   }
 
   /* Adjust desktop icons for smaller screens */
-  .desktop-icons-area {
+  html[data-view="desktop"] .desktop-icons-area {
     top: 40px;
     right: 12px;
     grid-template-columns: 70px;
     grid-auto-rows: 96px;
   }
-  .file-icon__img img {
+  html[data-view="desktop"] .file-icon__img img {
     width: 40px;
     height: 40px;
   }
 
   /* Responsive Windows */
-  .finder-window, 
-  .contacts-window, 
-  .settings-window,
-  .safari-window,
-  .preview-window {
+  html[data-view="desktop"] .finder-window,
+  html[data-view="desktop"] .contacts-window,
+  html[data-view="desktop"] .settings-window,
+  html[data-view="desktop"] .safari-window,
+  html[data-view="desktop"] .preview-window {
     width: 95vw !important;
     height: 80vh !important;
     left: 2.5vw !important; /* Center horizontally (100 - 95) / 2 */
@@ -99,113 +99,113 @@
   }
 
   /* Sidebar adjustments for mobile */
-  .finder-sidebar,
-  .contacts-sidebar {
+  html[data-view="desktop"] .finder-sidebar,
+  html[data-view="desktop"] .contacts-sidebar {
     width: 140px;
   }
 
-  .contacts-detail-header {
+  html[data-view="desktop"] .contacts-detail-header {
     padding: 15px 20px;
     gap: 12px;
   }
 
-  .contacts-toolbar {
+  html[data-view="desktop"] .contacts-toolbar {
     padding: 0 8px;
   }
 
-  .contacts-toolbar-group {
+  html[data-view="desktop"] .contacts-toolbar-group {
     gap: 4px;
   }
 
-  .contacts-toolbar-btn {
+  html[data-view="desktop"] .contacts-toolbar-btn {
     min-width: 24px;
     height: 22px;
     padding: 0 6px;
   }
 
-  .contacts-profile-pic {
+  html[data-view="desktop"] .contacts-profile-pic {
     width: 60px;
     height: 60px;
   }
 
-  .contacts-quick-actions {
+  html[data-view="desktop"] .contacts-quick-actions {
     gap: 10px;
     margin-bottom: 12px;
     padding: 4px 20px 0;
   }
 
-  .contacts-highlight-card {
+  html[data-view="desktop"] .contacts-highlight-card {
     margin: 0 20px 12px;
   }
 
-  .contacts-detail-list {
+  html[data-view="desktop"] .contacts-detail-list {
     padding: 0 20px;
   }
 
-  .finder-content {
+  html[data-view="desktop"] .finder-content {
     padding: 20px 15px;
     gap: 15px;
     justify-content: center;
   }
 
-  .finder-content.finder-content--empty {
+  html[data-view="desktop"] .finder-content.finder-content--empty {
     justify-content: center;
     align-content: center;
     align-items: center;
   }
 
-  .finder-icon {
+  html[data-view="desktop"] .finder-icon {
     width: 80px; /* Increased from 65px */
   }
 
-  .finder-icon img {
+  html[data-view="desktop"] .finder-icon img {
     width: 100%;
     height: 100%;
   }
 
-  .finder-icon-visual {
+  html[data-view="desktop"] .finder-icon-visual {
     width: 44px;
     height: 44px;
   }
 
-  .finder-sidebar-title {
+  html[data-view="desktop"] .finder-sidebar-title {
     font-size: 10px;
     padding: 2px 12px;
   }
 
-  .finder-sidebar-item {
+  html[data-view="desktop"] .finder-sidebar-item {
     font-size: 11px;
     padding: 4px 10px;
   }
 
-  .finder-nav-btns {
+  html[data-view="desktop"] .finder-nav-btns {
     gap: 8px;
     font-size: 14px;
   }
 
-  .finder-nav-btns > .nav-btn,
-  .finder-toolbar-right > .toolbar-icon,
-  .finder-toolbar-right > .search-icon {
+  html[data-view="desktop"] .finder-nav-btns > .nav-btn,
+  html[data-view="desktop"] .finder-toolbar-right > .toolbar-icon,
+  html[data-view="desktop"] .finder-toolbar-right > .search-icon {
     width: 16px;
     height: 16px;
   }
 
-  .finder-icon-svg {
+  html[data-view="desktop"] .finder-icon-svg {
     width: 16px;
     height: 16px;
     stroke-width: 1.9;
   }
 
-  .finder-title {
+  html[data-view="desktop"] .finder-title {
     font-size: 11px;
   }
 
   /* Settings window adjustments */
-  .settings-shell {
+  html[data-view="desktop"] .settings-shell {
     flex-direction: column;
   }
 
-  .settings-sidebar {
+  html[data-view="desktop"] .settings-sidebar {
     width: 100%;
     flex-direction: row;
     flex-wrap: wrap;
@@ -216,27 +216,27 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   }
 
-  body.dark-theme .settings-sidebar {
+  html[data-view="desktop"] body.dark-theme .settings-sidebar {
     border-bottom-color: rgba(255, 255, 255, 0.08);
   }
 
-  .settings-search {
+  html[data-view="desktop"] .settings-search {
     display: none;
   }
 
-  .settings-nav {
+  html[data-view="desktop"] .settings-nav {
     flex-direction: row;
     flex-wrap: wrap;
     width: 100%;
   }
 
-  .settings-nav-divider,
-  .settings-nav-title,
-  .settings-nav-item.ui-chrome--inactive {
+  html[data-view="desktop"] .settings-nav-divider,
+  html[data-view="desktop"] .settings-nav-title,
+  html[data-view="desktop"] .settings-nav-item.ui-chrome--inactive {
     display: none;
   }
 
-  .settings-nav-item {
+  html[data-view="desktop"] .settings-nav-item {
     flex: 1;
     min-width: 0;
     justify-content: center;
@@ -244,46 +244,46 @@
     padding: 8px 6px;
   }
 
-  .settings-main-inner {
+  html[data-view="desktop"] .settings-main-inner {
     padding: 12px 14px 16px;
   }
 
-  .settings-about-body {
+  html[data-view="desktop"] .settings-about-body {
     flex-direction: column;
     padding: 12px 0;
     text-align: center;
   }
 
-  .about-avatar {
+  html[data-view="desktop"] .about-avatar {
     width: 60px;
     height: 60px;
     margin: 0 auto 10px;
   }
 
-  .about-avatar-svg {
+  html[data-view="desktop"] .about-avatar-svg {
     width: 36px;
     height: 36px;
   }
 
-  .about-name {
+  html[data-view="desktop"] .about-name {
     font-size: 16px;
   }
 
-  .about-grid {
+  html[data-view="desktop"] .about-grid {
     display: block;
     text-align: left;
     margin-top: 10px;
   }
 
-  .about-row {
+  html[data-view="desktop"] .about-row {
     margin-bottom: 4px;
   }
 
-  .about-story {
+  html[data-view="desktop"] .about-story {
     text-align: left;
   }
 
-  .about-cta {
+  html[data-view="desktop"] .about-cta {
     width: 100%;
     margin-top: 12px;
   }

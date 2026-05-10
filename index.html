@@ -8,6 +8,16 @@
       name="description"
       content="Interactive SQL-styled terminal portfolio. Query my resume, projects, and contact info."
     />
+    <script>
+      (function () {
+        document.documentElement.setAttribute(
+          "data-view",
+          window.innerWidth < 768 || "ontouchstart" in window
+            ? "mobile"
+            : "desktop",
+        );
+      })();
+    </script>
 
     <!-- VT323 Pixel Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -23,6 +33,7 @@
     <link rel="stylesheet" href="assets/css/terminal.css" />
     <link rel="stylesheet" href="assets/css/mail.css" />
     <link rel="stylesheet" href="assets/css/splash.css" />
+    <link rel="stylesheet" href="assets/css/mobile.css" />
 
     <!-- GSAP -->
     <script
@@ -61,6 +72,11 @@
         >
           <div class="boot-splash__fill"></div>
         </div>
+      </div>
+      <div class="boot-splash__lock" aria-hidden="true">
+        <div class="boot-splash__lock-time" id="iosLockTime"></div>
+        <div class="boot-splash__lock-date" id="iosLockDate"></div>
+        <div class="boot-splash__lock-hint">Swipe up to open</div>
       </div>
     </div>
 
@@ -593,7 +609,7 @@
                       </div>
                       <a
                         class="about-cta"
-                        href="https://tlportfolio.vercel.app/"
+                        href="https://troylazaro.dev/"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
