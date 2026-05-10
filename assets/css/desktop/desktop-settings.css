@@ -462,18 +462,19 @@ body.dark-theme .settings-wallpaper-swatch--midnight {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #7dd3fc;
+  overflow: hidden;
   box-shadow:
     0 10px 26px rgba(0, 0, 0, 0.8),
     0 0 0 2px rgba(0, 0, 0, 0.4);
   flex-shrink: 0;
 }
 
-.about-avatar-svg {
-  width: 48px;
-  height: 48px;
+.about-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
   display: block;
-  flex-shrink: 0;
 }
 
 .about-main {

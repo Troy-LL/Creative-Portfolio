@@ -856,13 +856,16 @@
   height: 112px;
   border-radius: 50%;
   margin: 0 auto 12px;
-  background: linear-gradient(145deg, #6366f1, #a855f7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5rem;
-  font-weight: 600;
-  color: #fff;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+[data-view="mobile"] .ios-contacts-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
 }
 
 [data-view="mobile"] .ios-contacts-name {

@@ -242,6 +242,7 @@ body.dark-theme .contacts-main {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center top;
 }
 
 .contacts-primary-info h1 {

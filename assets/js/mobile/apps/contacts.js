@@ -11,7 +11,9 @@ export function mountMobileContacts(host) {
 
   host.innerHTML = `
     <div class="ios-contacts-hero">
-      <div class="ios-contacts-avatar" aria-hidden="true">TL</div>
+      <div class="ios-contacts-avatar">
+        <img src="assets/img/Troy.jfif" alt="Troy Lauren T. Lazaro" width="112" height="112" decoding="async" />
+      </div>
       <div class="ios-contacts-name">Troy Lauren T. Lazaro</div>
       <div style="opacity:0.7;margin-top:4px;font-size:15px">IT Student · Caloocan, NCR</div>
       <div class="ios-contacts-actions">
