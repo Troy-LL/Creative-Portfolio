@@ -1,3 +1,5 @@
+import { openExternal } from "../../core/open-external.js";
+
 const MAIN_PORTFOLIO = "https://troylazaro.dev/";
 const FOUNDERS_REL = "assets/founders-cafe/index.html";
 
@@ -75,10 +77,8 @@ export function mountMobileSafari(host) {
     <p class="ios-safari-footnote">“Open” loads the main portfolio URL above. Founders Cafe opens the built demo from this site so you can explore the full UI.</p>
   `;
 
-  const openMain = () =>
-    window.open(MAIN_PORTFOLIO, "_blank", "noopener,noreferrer");
-  const openFounders = () =>
-    window.open(foundersUrl, "_blank", "noopener,noreferrer");
+  const openMain = () => openExternal(MAIN_PORTFOLIO);
+  const openFounders = () => openExternal(foundersUrl);
 
   host.querySelector("[data-open-main]")?.addEventListener("click", openMain);
   host.querySelector("[data-open-main-tab]")?.addEventListener("click", openMain);

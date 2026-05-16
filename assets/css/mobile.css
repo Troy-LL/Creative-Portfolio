@@ -889,17 +889,36 @@
 [data-view="mobile"] .ios-contacts-name {
   font-size: 22px;
   font-weight: 600;
+  margin: 0;
+}
+
+[data-view="mobile"] .ios-contacts-subtitle {
+  margin: 4px 0 0;
+  font-size: 15px;
+  opacity: 0.7;
+}
+
+[data-view="mobile"] .ios-contacts-copy-hint {
+  min-height: 1.25em;
+  margin: 10px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #34c759;
+  text-align: center;
+}
+
+[data-view="mobile"] .ios-contacts-copy-hint:empty {
+  margin: 0;
 }
 
 [data-view="mobile"] .ios-contacts-actions {
   display: flex;
   justify-content: center;
   gap: 20px;
-  margin-top: 20px;
+  margin-top: 16px;
 }
 
-[data-view="mobile"] .ios-contacts-actions a,
-[data-view="mobile"] .ios-contacts-actions button {
+[data-view="mobile"] .ios-contact-action {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -911,7 +930,27 @@
   color: var(--sys-color, #007aff);
   cursor: pointer;
   font-size: 12px;
+  text-decoration: none;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+[data-view="mobile"] .ios-contact-action:active {
+  opacity: 0.7;
+}
+
+[data-view="mobile"] .ios-contact-action--copied {
+  color: #34c759;
+}
+
+[data-view="mobile"] .ios-contact-action--copied .ios-ca-circle {
+  background: rgba(52, 199, 89, 0.22);
+  color: #34c759;
+  transform: scale(1.05);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 [data-view="mobile"] .ios-contacts-actions .ios-ca-circle {
@@ -923,6 +962,10 @@
   align-items: center;
   justify-content: center;
   color: var(--sys-color, #007aff);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 [data-view="mobile"] .ios-contacts-actions .ios-ca-circle svg {

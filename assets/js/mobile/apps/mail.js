@@ -1,3 +1,5 @@
+import { openMailto } from "../../core/open-external.js";
+
 export function mountMobileMail(host) {
   host.innerHTML = `
     <p style="opacity:0.75;font-size:14px;margin-bottom:16px">Compose a message — opens your mail app (same as desktop Mail).</p>
@@ -26,7 +28,6 @@ export function mountMobileMail(host) {
     const subject = String(fd.get("subject") ?? "");
     const body = String(fd.get("body") ?? "");
     if (!to) return;
-    const url = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = url;
+    openMailto(to, subject, body);
   });
 }
