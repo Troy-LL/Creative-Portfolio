@@ -2,7 +2,7 @@ import { stopLockClock } from "../bootstrap/boot-splash.js";
 import { initPreviewViewers } from "../desktop/viewers.js";
 import { isMobileViewport, setDataViewAttr } from "./viewport.js";
 import { openAppSheet, setSheetLayer, closeActiveSheet } from "./sheets.js";
-import { restoreMonitorPlacement } from "./terminal-mount.js";
+import { restoreTerminalPlacement } from "./terminal-mount.js";
 import { mountMobileTerminal } from "./apps/terminal.js";
 import { mountMobileFinder } from "./apps/finder.js";
 import { mountMobileSettings } from "./apps/settings.js";
@@ -227,7 +227,7 @@ export function onMobileDesktopViewChange(isMobile) {
   setDataViewAttr();
   if (!isMobile) {
     closeActiveSheet();
-    restoreMonitorPlacement();
+    restoreTerminalPlacement();
     document.getElementById("iosShell")?.classList.remove("ios-shell--visible");
   } else {
     initMobileUi();

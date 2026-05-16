@@ -1,29 +1,33 @@
 const state = {
   parent: null,
   before: null,
-  hadMinimized: true,
 };
 
-export function mountMonitorInto(host) {
-  const bezel = document.querySelector(".monitor-bezel");
-  if (!bezel || !host) return;
+/** Move #terminal into the mobile sheet (output only — no monitor chrome). */
+export function mountTerminalInto(host) {
+  const terminal = document.getElementById("terminal");
+  if (!terminal || !host) return;
 
   if (!state.parent) {
-    state.parent = bezel.parentNode;
-    state.before = bezel.nextSibling;
-    state.hadMinimized = bezel.classList.contains("is-minimized");
+    state.parent = terminal.parentNode;
+    state.before = terminal.nextSibling;
   }
 
-  bezel.classList.remove("is-minimized");
-  host.appendChild(bezel);
+  terminal.classList.add("ios-terminal-panel");
+  host.appendChild(terminal);
 }
 
-export function restoreMonitorPlacement() {
-  const bezel = document.querySelector(".monitor-bezel");
-  if (!bezel || !state.parent) return;
+export function restoreTerminalPlacement() {
+  const terminal = document.getElementById("terminal");
+  if (!terminal || !state.parent) return;
 
-  state.parent.insertBefore(bezel, state.before);
-  if (state.hadMinimized) bezel.classList.add("is-minimized");
+  terminal.classList.remove("ios-terminal-panel");
+  state.parent.insertBefore(terminal, state.before);
   state.parent = null;
   state.before = null;
+}
+
+/** @deprecated Use restoreTerminalPlacement */
+export function restoreMonitorPlacement() {
+  restoreTerminalPlacement();
 }

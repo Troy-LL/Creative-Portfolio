@@ -510,12 +510,24 @@
   font-size: 16px;
 }
 
+/* Terminal: full-height sheet (no peek-through home), safe areas */
+[data-view="mobile"] .ios-sheet:has(.ios-sheet__body--terminal) {
+  top: 0;
+  max-height: 100dvh;
+  border-radius: 0;
+}
+
+[data-view="mobile"] .ios-sheet:has(.ios-sheet__body--terminal) .ios-sheet__nav {
+  padding-top: max(4px, env(safe-area-inset-top, 0px));
+}
+
 /* Terminal sheet: flex column — scroll happens inside #terminal, not the sheet body */
 [data-view="mobile"] .ios-sheet__body--terminal {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   touch-action: auto;
+  padding: 8px 12px max(12px, env(safe-area-inset-bottom, 0px));
 }
 
 [data-view="mobile"] .ios-terminal-wrap {
@@ -533,58 +545,64 @@
   gap: 8px;
 }
 
-[data-view="mobile"] .ios-terminal-bezel-host {
-  flex: 1 1 0;
-  min-height: 0;
+/* Output panel only — no desktop monitor / traffic-light chrome */
+[data-view="mobile"] .ios-terminal-output-host {
+  flex: 1 1 auto;
+  min-height: 12rem;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid rgba(51, 255, 102, 0.35);
+  background: var(--bg-screen, #0a0f0a);
+  box-shadow: inset 0 0 24px rgba(51, 255, 102, 0.06);
 }
 
-[data-view="mobile"] .ios-sheet__body--terminal .monitor-bezel {
+[data-view="mobile"] body.dark-theme .ios-terminal-output-host {
+  border-color: rgba(51, 255, 102, 0.28);
+}
+
+[data-view="mobile"] .ios-sheet__body--terminal .ios-terminal-panel {
   flex: 1 1 auto;
   min-height: 0;
-  width: 100% !important;
-  height: auto !important;
-  max-height: none !important;
-  margin: 0 auto;
-  opacity: 1 !important;
-  transform: none !important;
-  pointer-events: auto !important;
-}
-
-[data-view="mobile"] .ios-sheet__body--terminal .monitor-bezel.is-minimized {
-  opacity: 1 !important;
-  transform: none !important;
-  pointer-events: auto !important;
-}
-
-[data-view="mobile"] .ios-sheet__body--terminal .monitor-bezel .screen {
-  flex: 1 1 auto;
-  min-height: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0.75rem 1rem;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-}
-
-[data-view="mobile"] .ios-sheet__body--terminal .terminal {
-  flex: 1 1 auto;
-  min-height: 0;
-  height: auto !important;
-  max-height: none !important;
-  overflow-y: auto !important;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
   overscroll-behavior: contain;
 }
 
+[data-view="mobile"] .ios-sheet__body--terminal .input-row {
+  display: none !important;
+}
+
+[data-view="mobile"] .ios-sheet__body--terminal .terminal-banner {
+  display: none;
+}
+
 [data-view="mobile"] .ios-sheet__body--terminal #output {
+  flex: 0 1 auto;
   min-height: 0;
+}
+
+[data-view="mobile"] .ios-sheet__body--terminal .line.dim {
+  color: var(--green);
+  opacity: 0.82;
+}
+
+/* Skip desktop line-reveal animation in the mobile sheet */
+[data-view="mobile"] .ios-sheet__body--terminal .animated-item {
+  opacity: 1 !important;
+  transform: none !important;
 }
 
 [data-view="mobile"] .ios-terminal-wrap .ios-terminal-input-row {
   flex-shrink: 0;
-  margin-top: 0;
+  margin-top: auto;
 }
 
 [data-view="mobile"] .ios-terminal-chip {

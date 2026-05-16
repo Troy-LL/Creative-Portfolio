@@ -20,6 +20,7 @@ export function openAppSheet(opts) {
   closeActiveSheet();
 
   layer.classList.add("ios-sheet-layer--active");
+  layer.setAttribute("aria-hidden", "false");
   layer.innerHTML = "";
 
   const backdrop = document.createElement("div");
@@ -27,6 +28,8 @@ export function openAppSheet(opts) {
 
   const sheet = document.createElement("div");
   sheet.className = "ios-sheet";
+  sheet.setAttribute("role", "dialog");
+  sheet.setAttribute("aria-modal", "true");
   sheet.innerHTML = `
     <div class="ios-sheet__handle-wrap"><div class="ios-sheet__handle" aria-hidden="true"></div></div>
     <header class="ios-sheet__nav">
@@ -37,7 +40,10 @@ export function openAppSheet(opts) {
     <div class="ios-sheet__body"></div>
   `;
 
-  sheet.querySelector(".ios-sheet__title").textContent = opts.title;
+  const titleEl = sheet.querySelector(".ios-sheet__title");
+  titleEl.textContent = opts.title;
+  titleEl.id = "iosSheetTitle";
+  sheet.setAttribute("aria-labelledby", "iosSheetTitle");
 
   layer.appendChild(backdrop);
   layer.appendChild(sheet);
@@ -70,6 +76,7 @@ export function openAppSheet(opts) {
       opts.onUnmount?.();
       layer.innerHTML = "";
       layer.classList.remove("ios-sheet-layer--active");
+      layer.setAttribute("aria-hidden", "true");
     }, 360);
   };
 

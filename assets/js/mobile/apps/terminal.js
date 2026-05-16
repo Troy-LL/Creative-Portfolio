@@ -1,6 +1,6 @@
 import { handleCommand } from "../../terminal/commands.js";
 import { cmdInput, inputDisplay } from "../../core/state.js";
-import { mountMonitorInto, restoreMonitorPlacement } from "../terminal-mount.js";
+import { mountTerminalInto, restoreTerminalPlacement } from "../terminal-mount.js";
 
 const CHIPS = [
   "SELECT * FROM resume",
@@ -62,17 +62,19 @@ export function mountMobileTerminal(host) {
   inputRow.appendChild(run);
 
   const termHost = document.createElement("div");
-  termHost.className = "ios-terminal-bezel-host";
-  mountMonitorInto(termHost);
+  termHost.className = "ios-terminal-output-host";
+  termHost.setAttribute("aria-live", "polite");
+  termHost.setAttribute("aria-label", "Command output");
 
   wrap.appendChild(chips);
   wrap.appendChild(termHost);
   wrap.appendChild(inputRow);
   host.appendChild(wrap);
+  mountTerminalInto(termHost);
 
   return () => {
     host.classList.remove("ios-sheet__body--terminal");
-    restoreMonitorPlacement();
+    restoreTerminalPlacement();
     wrap.remove();
   };
 }
