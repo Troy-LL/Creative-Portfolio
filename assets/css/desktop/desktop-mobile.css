@@ -1,290 +1,285 @@
-/* ── Mobile Layout ── */
+/* ── iOS Mobile Layout Overhaul ── */
 @media (max-width: 768px) {
-  /* Hide non-essential menubar items to save space */
-  .menubar-item:not(.cc-toggle) {
-    display: none;
+  /* Hide the macOS apple logo and menus */
+  .menubar-item:not(.cc-toggle), .apple-logo, .menubar-app-name {
+    display: none !important;
   }
 
-  /* Move Dock to Left Hand Side (vertical) */
-  .desktop-dock {
-    bottom: auto;
-    top: 50%;
-    left: 8px;
-    transform: translateY(-50%);
-    flex-direction: column;
-    width: 58px;
-    padding: 16px 0;
-    gap: 16px;
-    border-radius: 18px;
+  /* Make Menubar look like iOS Status Bar */
+  .desktop-menubar {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding: 0 24px;
+    height: 48px; /* iOS standard height */
+    color: #fff;
+    font-weight: 600;
+    justify-content: flex-end; /* Push #ccToggle right */
+  }
+
+  .menubar-right {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .menubar-clock {
+    margin-right: auto;
+    font-size: 14px;
+    letter-spacing: -0.5px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+
+  /* Mock CC Toggle as iOS right-side status (wifi/battery area) */
+  #ccToggle {
+    display: flex;
     align-items: center;
-    justify-content: center;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-    /* Same stacking as desktop dock (145) — above app overlays, below menubar. */
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+
+  /* Home Screen (App Grid) */
+  .desktop-icons-area {
+    top: 60px;
+    left: 20px;
+    right: 20px;
+    bottom: 120px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: min-content;
+    gap: 28px 16px;
+    justify-items: center;
+    align-content: start;
+  }
+
+  .file-icon {
+    flex-direction: column;
+    width: 100%;
+    padding: 0;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .file-icon__img img {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px; /* iOS app icon rounding */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  }
+
+  .file-icon__name {
+    background: transparent !important;
+    color: #fff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 0;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  /* iOS Dock at Bottom */
+  .desktop-dock {
+    bottom: 24px;
+    top: auto;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    height: auto;
+    flex-direction: row;
+    transform: none;
+    padding: 16px;
+    border-radius: 36px;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    justify-content: space-around;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     z-index: 145;
   }
 
   body.dark-theme .desktop-dock {
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  /* Adjust Dock Icons for vertical layout */
   .dock-icon {
-    width: 100%;
-    transform-origin: center left;
+    width: auto;
+    transform-origin: bottom;
   }
 
-  .dock-icon:hover {
-    transform: scale(1.22) translateX(6px);
-  }
+  .dock-icon:hover { transform: none !important; }
 
-  /* Tooltips on the right for mobile */
-  .dock-icon[title]:hover::after {
-    bottom: 50%;
-    left: calc(100% + 14px);
-    transform: translateY(50%);
-    top: auto;
-  }
-
-  /* Make icons slightly smaller for mobile */
   .dock-icon__img {
-    width: 38px;
-    height: 38px;
-    font-size: 34px;
+    width: 52px;
+    height: 52px;
+    font-size: 40px; 
   }
 
-  .dock-divider {
-    width: 28px;
-    height: 1px;
-    margin: 4px 0;
-    background: var(--dock-divider);
-  }
-
-  /* Hide dock dot on mobile to keep it minimal */
-  .dock-dot {
-    display: none;
-  }
-
-  /* Disable sibling scaling on mobile for performance and clarity */
+  .dock-divider, .dock-dot { display: none !important; }
+  .dock-icon[title]:hover::after { display: none !important; }
   .dock-icon:hover + .dock-icon,
   .dock-icon:has(+ .dock-icon:hover) {
     transform: none !important;
   }
 
-  /* Adjust desktop icons for smaller screens */
-  .desktop-icons-area {
-    top: 40px;
-    right: 12px;
-    grid-template-columns: 70px;
-    grid-auto-rows: 96px;
-  }
-  .file-icon__img img {
-    width: 40px;
-    height: 40px;
-  }
-
-  /* Responsive Windows */
+  /* Full Screen App Windows (iOS Native Feel) */
   .finder-window, 
   .contacts-window, 
   .settings-window,
   .safari-window,
-  .preview-window {
-    width: 95vw !important;
-    height: 80vh !important;
-    left: 2.5vw !important; /* Center horizontally (100 - 95) / 2 */
-    top: 50px !important; /* Below menubar */
+  .preview-window,
+  .mail-window {
+    width: 100vw !important;
+    height: 100vh !important;
+    left: 0 !important;
+    top: 0 !important;
     margin: 0 !important;
-    transform: none !important; /* GSAP will still handle opacity but we override scale/y for static fit */
-  }
-
-  /* Sidebar adjustments for mobile */
-  .finder-sidebar,
-  .contacts-sidebar {
-    width: 140px;
-  }
-
-  .contacts-detail-header {
-    padding: 15px 20px;
-    gap: 12px;
-  }
-
-  .contacts-toolbar {
-    padding: 0 8px;
-  }
-
-  .contacts-toolbar-group {
-    gap: 4px;
-  }
-
-  .contacts-toolbar-btn {
-    min-width: 24px;
-    height: 22px;
-    padding: 0 6px;
-  }
-
-  .contacts-profile-pic {
-    width: 60px;
-    height: 60px;
-  }
-
-  .contacts-quick-actions {
-    gap: 10px;
-    margin-bottom: 12px;
-    padding: 4px 20px 0;
-  }
-
-  .contacts-highlight-card {
-    margin: 0 20px 12px;
-  }
-
-  .contacts-detail-list {
-    padding: 0 20px;
-  }
-
-  .finder-content {
-    padding: 20px 15px;
-    gap: 15px;
-    justify-content: center;
-  }
-
-  .finder-content.finder-content--empty {
-    justify-content: center;
-    align-content: center;
-    align-items: center;
-  }
-
-  .finder-icon {
-    width: 80px; /* Increased from 65px */
-  }
-
-  .finder-icon img {
-    width: 100%;
-    height: 100%;
-  }
-
-  .finder-icon-visual {
-    width: 44px;
-    height: 44px;
-  }
-
-  .finder-sidebar-title {
-    font-size: 10px;
-    padding: 2px 12px;
-  }
-
-  .finder-sidebar-item {
-    font-size: 11px;
-    padding: 4px 10px;
-  }
-
-  .finder-nav-btns {
-    gap: 8px;
-    font-size: 14px;
-  }
-
-  .finder-nav-btns > .nav-btn,
-  .finder-toolbar-right > .toolbar-icon,
-  .finder-toolbar-right > .search-icon {
-    width: 16px;
-    height: 16px;
-  }
-
-  .finder-icon-svg {
-    width: 16px;
-    height: 16px;
-    stroke-width: 1.9;
-  }
-
-  .finder-title {
-    font-size: 11px;
-  }
-
-  /* Settings window adjustments */
-  .settings-shell {
+    border-radius: 0 !important;
+    transform: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    display: flex;
     flex-direction: column;
+  }
+
+  /* Replace Window Headers with iOS Navigation Bars */
+  .finder-header,
+  .contacts-sidebar-top,
+  .settings-sidebar,
+  .safari-header,
+  .mail-sidebar-header {
+    height: 56px;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center title contextually if possible */
+    background: var(--surface) !important;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    padding: 0 16px;
+    -webkit-app-region: no-drag;
+    z-index: 10;
+  }
+
+  /* Convert Traffic Lights to iOS 'Home / Back' button */
+  .mac-controls {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: auto;
+    display: flex;
+    gap: 0;
+  }
+
+  .mac-min, .mac-max { display: none !important; }
+
+  .mac-close {
+    width: auto !important;
+    height: auto !important;
+    background: transparent !important;
+    border: none !important;
+    color: var(--sys-color);
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px;
+    margin: 0;
+  }
+
+  .mac-close::before {
+    content: "‹ Home"; /* iOS style chevron */
+    display: block;
+    opacity: 1;
+    letter-spacing: -0.3px;
+  }
+  .mac-close:hover::before { opacity: 0.7; }
+  .mac-close::after { display: none !important; }
+
+  /* App Body Adjustments */
+  .finder-window .window-body,
+  .contacts-window .window-body,
+  .settings-shell,
+  .mail-window .window-body {
+    flex-direction: column;
+    height: calc(100vh - 56px);
+    overflow: hidden;
+  }
+
+  /* Hide/Transform Sidebars to horizontal scroll for mobile */
+  .finder-sidebar,
+  .contacts-sidebar,
+  .mail-sidebar {
+    width: 100% !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: row;
+    height: auto;
+    overflow-x: auto;
+    padding: 10px;
+    gap: 8px;
+    scrollbar-width: none; /* Hide scrollbar for clean look */
+  }
+  .finder-sidebar::-webkit-scrollbar,
+  .contacts-sidebar::-webkit-scrollbar,
+  .mail-sidebar::-webkit-scrollbar {
+    display: none;
   }
 
   .settings-sidebar {
-    width: 100%;
-    flex-direction: row;
+    height: auto;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 10px;
-    border-right: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 8px;
   }
 
-  body.dark-theme .settings-sidebar {
-    border-bottom-color: rgba(255, 255, 255, 0.08);
-  }
+  /* Contacts specific */
+  .contacts-list-item { flex-direction: column; width: 75px; text-align: center; padding: 8px; gap: 4px; }
+  .contacts-list-item .avatar { margin: 0 auto; width: 44px; height: 44px; }
+  .contacts-list-item-info { width: 100%; text-align: center; }
+  .contacts-list-item-title { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+  .contacts-list-item-sub { display: none; }
+  .contacts-detail { flex: 1; height: auto; overflow-y: auto; }
+  .contacts-profile-pic { width: 88px; height: 88px; }
+  .contacts-detail-header { flex-direction: column; text-align: center; gap: 12px; padding: 24px 20px; }
+  .contacts-quick-actions { justify-content: center; }
 
-  .settings-search {
-    display: none;
-  }
+  /* Finder specific */
+  .finder-sidebar-section { display: flex; flex-direction: row; gap: 8px; align-items: center; }
+  .finder-sidebar-title { display: none; }
+  .finder-sidebar-item { font-size: 13px; padding: 8px 14px; background: var(--surface-sunken); border-radius: 20px; white-space: nowrap; }
+  .finder-content { flex: 1; padding: 24px; gap: 24px; justify-content: center; align-content: flex-start; overflow-y: auto; }
+  .finder-icon { width: 80px; }
+  .finder-icon-visual { width: 56px; height: 56px; }
+  .finder-title { font-size: 13px; margin-top: 6px; }
+  .finder-statusbar { display: none; } /* Hide finder status bar on mobile */
 
-  .settings-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-    width: 100%;
-  }
-
+  /* Settings specific */
+  .settings-search { display: none; }
+  .settings-nav { flex-direction: row; flex-wrap: wrap; width: 100%; gap: 6px; justify-content: center; }
   .settings-nav-divider,
   .settings-nav-title,
-  .settings-nav-item.ui-chrome--inactive {
-    display: none;
-  }
-
-  .settings-nav-item {
-    flex: 1;
-    min-width: 0;
-    justify-content: center;
-    font-size: 12px;
-    padding: 8px 6px;
-  }
-
-  .settings-main-inner {
-    padding: 12px 14px 16px;
-  }
-
-  .settings-about-body {
-    flex-direction: column;
-    padding: 12px 0;
-    text-align: center;
-  }
-
-  .about-avatar {
-    width: 60px;
-    height: 60px;
-    margin: 0 auto 10px;
-  }
-
-  .about-avatar-svg {
-    width: 36px;
-    height: 36px;
-  }
-
-  .about-name {
-    font-size: 16px;
-  }
-
-  .about-grid {
-    display: block;
-    text-align: left;
-    margin-top: 10px;
-  }
-
-  .about-row {
-    margin-bottom: 4px;
-  }
-
-  .about-story {
-    text-align: left;
-  }
-
-  .about-cta {
-    width: 100%;
-    margin-top: 12px;
-  }
+  .settings-nav-item.ui-chrome--inactive { display: none; }
+  .settings-nav-item { flex: 0 1 auto; justify-content: center; font-size: 13px; padding: 8px 12px; border-radius: 16px; background: var(--surface-sunken); }
+  .settings-main-inner { padding: 24px 20px; }
+  .about-avatar { width: 90px; height: 90px; margin: 0 auto 16px; }
+  .about-avatar-svg { width: 48px; height: 48px; }
+  .about-name { font-size: 24px; text-align: center; }
+  .about-grid { display: block; margin-top: 24px; }
+  .about-row { margin-bottom: 12px; display: flex; justify-content: flex-start; align-items: flex-start; }
+  .about-label { width: 80px; font-weight: 600; }
+  
+  /* Disable dragging cursor */
+  .window-drag-handle { cursor: default !important; }
 }
