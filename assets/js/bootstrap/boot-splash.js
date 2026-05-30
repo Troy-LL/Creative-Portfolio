@@ -1,7 +1,35 @@
 /**
  * Boot: TL logo + thin bar, then macOS desktop (terminal stays minimized).
+ * On touch tiers, the lock screen leads instead of animating home chrome in.
  */
 import { animateDesktopChromeIn } from "../desktop/monitor-transition.js";
+import { isTouchTier } from "../mobile/device-tier.js";
+import { showLockScreenAfterBoot } from "../mobile/lock-screen.js";
+
+function revealDesktopOrLock(desktop) {
+  desktop.classList.add("desktop--visible");
+
+  if (isTouchTier()) {
+    if (typeof gsap !== "undefined") {
+      gsap.set(
+        [
+          desktop,
+          ".desktop-menubar",
+          ".desktop-icons-area .desktop-file-icon",
+          ".desktop-dock",
+          "#homeScreenChrome",
+        ],
+        { opacity: 0, clearProps: "transform" },
+      );
+    }
+    showLockScreenAfterBoot();
+    return;
+  }
+
+  if (typeof gsap !== "undefined") {
+    animateDesktopChromeIn();
+  }
+}
 
 export function initBootSplash() {
   const splash = document.getElementById("bootSplash");
@@ -25,18 +53,7 @@ export function initBootSplash() {
     splash.remove();
     document.body.classList.remove("boot-splash--active");
     document.body.removeAttribute("aria-busy");
-    desktop.classList.add("desktop--visible");
-    if (typeof gsap !== "undefined") {
-      gsap.set(
-        [
-          desktop,
-          ".desktop-menubar",
-          ".desktop-icons-area .desktop-file-icon",
-          ".desktop-dock",
-        ],
-        { opacity: 1, clearProps: "transform" },
-      );
-    }
+    revealDesktopOrLock(desktop);
     return Promise.resolve();
   }
 
@@ -68,8 +85,7 @@ export function initBootSplash() {
     });
 
     tl.call(() => {
-      desktop.classList.add("desktop--visible");
-      animateDesktopChromeIn();
+      revealDesktopOrLock(desktop);
     });
 
     tl.to(
