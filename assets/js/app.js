@@ -4,13 +4,15 @@ import { lenis } from "./core/state.js";
 import { applyStoredAppearance } from "./desktop/appearance-state.js";
 import { initDesktopUi } from "./desktop/init.js";
 import { initTerminalInput } from "./terminal/input.js";
-import { initMobileUi, onMobileDesktopViewChange } from "./mobile/init.js";
-import { isMobileViewport, setDataViewAttr } from "./mobile/viewport.js";
+import { initDeviceTier } from "./mobile/device-tier.js";
+import { initLockScreen } from "./mobile/lock-screen.js";
+import { initHomeScreen } from "./mobile/home-screen.js";
+import { initTerminalApp } from "./mobile/terminal-app.js";
 
-let desktopInited = false;
-
-function ensureDesktopUi() {
-  if (desktopInited || isMobileViewport()) return;
+window.addEventListener("DOMContentLoaded", async () => {
+  applyStoredAppearance();
+  initDeviceTier();
+  await initBootSplash();
   initLenisSmoothScroll();
   if (document.querySelector(".monitor-bezel")?.classList.contains("is-minimized")) {
     lenis?.stop?.();
@@ -18,40 +20,8 @@ function ensureDesktopUi() {
     lenis?.start?.();
   }
   initDesktopUi();
-  desktopInited = true;
-}
-
-window.addEventListener("DOMContentLoaded", async () => {
-  applyStoredAppearance();
-  setDataViewAttr();
-
-  await initBootSplash();
-
-  if (!isMobileViewport()) {
-    ensureDesktopUi();
-  } else {
-    initMobileUi();
-  }
-
+  initLockScreen();
+  initHomeScreen();
+  initTerminalApp();
   initTerminalInput();
-
-  const onResize = () => {
-    const wasMobile = document.documentElement.getAttribute("data-view") === "mobile";
-    setDataViewAttr();
-    const nowMobile = isMobileViewport();
-
-    if (wasMobile !== nowMobile) {
-      onMobileDesktopViewChange(nowMobile);
-    }
-
-    if (nowMobile) {
-      lenis?.stop?.();
-    } else {
-      ensureDesktopUi();
-      lenis?.start?.();
-    }
-  };
-
-  window.addEventListener("resize", onResize);
-  window.matchMedia("(orientation: landscape)").addEventListener("change", onResize);
 });

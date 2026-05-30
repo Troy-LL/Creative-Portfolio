@@ -1,5 +1,6 @@
-import { cmdInput, inputDisplay, terminalEl } from "../core/state.js";
+import { cmdInput, inputDisplay } from "../core/state.js";
 import { handleCommand } from "./commands.js";
+import { isTouchTier } from "../mobile/device-tier.js";
 
 const KNOWN_COMMANDS = [
   "SELECT * FROM about",
@@ -14,6 +15,8 @@ const KNOWN_COMMANDS = [
 ];
 
 export function initTerminalInput() {
+  if (!cmdInput || !inputDisplay) return;
+
   cmdInput.addEventListener("input", () => {
     inputDisplay.textContent = cmdInput.value;
   });
@@ -53,17 +56,9 @@ export function initTerminalInput() {
 
     const monitor = document.querySelector(".monitor-bezel");
     const isMinimized = monitor?.classList.contains("is-minimized");
-    const isMobileShell =
-      document.documentElement.getAttribute("data-view") === "mobile";
 
-    if (monitor && !isMinimized) {
-      if (isMobileShell) {
-        if (terminalEl && terminalEl.contains(e.target)) {
-          cmdInput?.focus();
-        }
-      } else {
-        cmdInput?.focus();
-      }
+    if (monitor && !isMinimized && !isTouchTier()) {
+      cmdInput.focus();
     }
   });
 
@@ -71,7 +66,7 @@ export function initTerminalInput() {
   if (
     initialMonitor &&
     !initialMonitor.classList.contains("is-minimized") &&
-    document.documentElement.getAttribute("data-view") !== "mobile"
+    !isTouchTier()
   ) {
     cmdInput?.focus();
   }

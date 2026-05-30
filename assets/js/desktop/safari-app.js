@@ -1,3 +1,5 @@
+import { isMobileTier, onTierChange } from "../mobile/device-tier.js";
+
 /** Set by initSafariApp — lets interactions.js open Safari like other dock apps. */
 let openSafariFromDockImpl = () => {};
 
@@ -13,7 +15,7 @@ const PREVIEW = {
 
 /** Narrow window ⇒ phone-sized embed; matches typical mobile layout breakpoint. */
 function getPreviewModeFromWindow() {
-  return window.matchMedia("(max-width: 768px)").matches ? "phone" : "desktop";
+  return isMobileTier() ? "phone" : "desktop";
 }
 
 export function initSafariApp() {
@@ -231,15 +233,9 @@ export function initSafariApp() {
     { passive: true },
   );
 
-  const mobileMq = window.matchMedia("(max-width: 768px)");
-  function onViewportModeChange() {
+  onTierChange(() => {
     if (webShell && !webShell.hasAttribute("hidden")) {
       requestAnimationFrame(updatePreviewScale);
     }
-  }
-  if (mobileMq.addEventListener) {
-    mobileMq.addEventListener("change", onViewportModeChange);
-  } else {
-    mobileMq.addListener(onViewportModeChange);
-  }
+  });
 }

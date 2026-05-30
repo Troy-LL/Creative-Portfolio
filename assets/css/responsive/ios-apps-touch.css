@@ -1,0 +1,272 @@
+/* ============================================================
+   TOUCH-TIER APP REFINEMENTS  (Finder, Settings, Safari, Mail, Contacts)
+   iOS phone: full-screen native patterns
+   iPadOS tablet: large sheet with split layouts where applicable
+   ============================================================ */
+
+@media (max-width: 1023px) {
+  /* ---- Safari: compact toolbar + bottom-safe body ---- */
+  .safari-titlebar {
+    flex-wrap: wrap;
+    min-height: auto;
+    padding-bottom: 6px;
+  }
+
+  .safari-toolbar {
+    flex: 1;
+    min-width: 0;
+    gap: 6px;
+  }
+
+  .safari-address {
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: var(--ios-fill);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .safari-body {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  body[data-device="mobile"] .safari-favorites__grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  body[data-device="tablet"] .safari-window .safari-body {
+    border-radius: 0 0 var(--ios-sheet-radius) var(--ios-sheet-radius);
+  }
+
+  /* ---- Mail: stack panes vertically on phone ---- */
+  body[data-device="mobile"] .mail-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  body[data-device="mobile"] .mail-chrome-toolbar {
+    display: none;
+  }
+
+  body[data-device="mobile"] .mail-shell {
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  body[data-device="mobile"] .mail-sidebar {
+    max-height: none;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  body[data-device="mobile"] .mail-list-pane {
+    width: 100% !important;
+    max-height: 140px;
+    flex-shrink: 0;
+    border-right: none;
+    border-bottom: 0.5px solid var(--ios-separator);
+  }
+
+  body[data-device="mobile"] .mail-compose-pane {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  body[data-device="tablet"] .mail-shell {
+    flex: 1;
+    min-height: 0;
+  }
+
+  body[data-device="tablet"] .mail-sidebar {
+    width: 180px !important;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* ---- Settings: phone grouped list feel ---- */
+  body[data-device="mobile"] .settings-shell {
+    flex-direction: column;
+  }
+
+  body[data-device="mobile"] .settings-sidebar {
+    width: 100% !important;
+    height: auto;
+    border-right: none;
+    border-bottom: 0.5px solid var(--ios-separator);
+    padding: 10px 12px;
+    background: var(--ios-surface);
+  }
+
+  body[data-device="mobile"] .settings-main {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  body[data-device="mobile"] .settings-section {
+    margin-bottom: 24px;
+  }
+
+  body[data-device="mobile"] .settings-card-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  body[data-device="tablet"] .settings-shell {
+    flex-direction: row;
+    flex: 1;
+    min-height: 0;
+  }
+
+  body[data-device="tablet"] .settings-sidebar {
+    width: 240px !important;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    overflow-y: auto;
+    border-right: 0.5px solid var(--ios-separator);
+  }
+
+  body[data-device="tablet"] .settings-nav {
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+
+  body[data-device="tablet"] .settings-nav-item {
+    width: 100%;
+    justify-content: flex-start;
+    border-radius: 10px;
+    background: transparent;
+  }
+
+  body[data-device="tablet"] .settings-nav-item.is-active {
+    background: var(--ios-fill);
+  }
+
+  /* ---- Contacts: list → detail on phone ---- */
+  body[data-device="mobile"] .contacts-window {
+    flex-direction: column;
+  }
+
+  body[data-device="mobile"] .contacts-sidebar {
+    width: 100% !important;
+    max-height: 180px;
+    flex-shrink: 0;
+    border-right: none;
+    border-bottom: 0.5px solid var(--ios-separator);
+  }
+
+  body[data-device="mobile"] .contacts-sidebar-top {
+    min-height: var(--ios-nav-h);
+    padding-top: calc(8px + var(--safe-top));
+  }
+
+  body[data-device="mobile"] .contacts-main {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  body[data-device="mobile"] .contacts-toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 12px;
+    border-bottom: 0.5px solid var(--ios-separator);
+  }
+
+  body[data-device="tablet"] .contacts-window {
+    flex-direction: row;
+    flex: 1;
+    min-height: 0;
+  }
+
+  body[data-device="tablet"] .contacts-sidebar {
+    width: 280px !important;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-right: 0.5px solid var(--ios-separator);
+  }
+
+  body[data-device="tablet"] .contacts-sidebar-top {
+    padding-top: 8px;
+  }
+
+  /* ---- Finder: topbar chips + scrollable content ---- */
+  body[data-device="mobile"] .finder-window {
+    flex-direction: column;
+  }
+
+  body[data-device="mobile"] .finder-main {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body[data-device="mobile"] .finder-topbar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 12px;
+    min-height: auto;
+    border-bottom: 0.5px solid var(--ios-separator);
+  }
+
+  body[data-device="mobile"] .finder-segment {
+    display: none;
+  }
+
+  body[data-device="mobile"] .finder-toolbar-right .ui-chrome--inactive {
+    display: none;
+  }
+
+  body[data-device="tablet"] .finder-window {
+    flex-direction: row;
+    flex: 1;
+    min-height: 0;
+  }
+
+  body[data-device="tablet"] .finder-sidebar {
+    width: 220px !important;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-right: 0.5px solid var(--ios-separator);
+  }
+
+  body[data-device="tablet"] .finder-sidebar-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  body[data-device="tablet"] .finder-sidebar-title {
+    display: block;
+  }
+
+  body[data-device="tablet"] .finder-sidebar-item {
+    border-radius: 8px;
+    background: transparent;
+  }
+
+  body[data-device="tablet"] .finder-main {
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* Preview windows follow same sheet rules as other apps on tablet */
+  body[data-device="tablet"] .preview-window {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+  }
+}

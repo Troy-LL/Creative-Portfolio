@@ -10,4 +10,12 @@
 @import url("desktop/desktop-animations-override.css");
 @import url("desktop/desktop-contacts.css");
 @import url("desktop/desktop-safari.css");
-@import url("desktop/desktop-mobile.css");
+
+/* Responsive tiers — must come last so touch overrides win. */
+@import url("responsive/responsive-shared.css");
+@import url("responsive/ipados-tablet.css");
+@import url("responsive/ios-phone.css");
+@import url("responsive/ios-lock-screen.css");
+@import url("responsive/ios-home.css");
+@import url("responsive/ios-terminal-app.css");
+@import url("responsive/ios-apps-touch.css");

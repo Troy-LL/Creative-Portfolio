@@ -1,0 +1,156 @@
+/* ============================================================
+   iPadOS TABLET  (768px – 1023px)
+   Home grid + widgets, centered floating dock, apps as large
+   centered sheets (split layouts preserved inside the sheet).
+   ============================================================ */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* ---- Home screen app grid (roomier than phone) ---- */
+  .desktop-icons-area {
+    top: calc(60px + var(--safe-top));
+    left: calc(48px + var(--safe-left));
+    right: calc(48px + var(--safe-right));
+    bottom: calc(130px + var(--safe-bottom));
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: min-content;
+    gap: 34px 22px;
+    justify-items: center;
+    align-content: start;
+  }
+
+  .desktop-file-icon {
+    flex-direction: column;
+    width: 100%;
+    padding: 0;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .desktop-file-icon:hover,
+  body.dark-theme .desktop-file-icon:hover {
+    background: transparent;
+  }
+
+  .desktop-file-icon:active {
+    background: transparent;
+    box-shadow: none;
+    transform: scale(0.92);
+    transition: transform 0.12s ease;
+  }
+
+  .file-icon__img {
+    filter: drop-shadow(0 5px 14px rgba(0, 0, 0, 0.24));
+  }
+
+  .file-icon__img img {
+    width: 76px;
+    height: 76px;
+    border-radius: 18px;
+  }
+
+  .file-icon__label {
+    width: 100%;
+    margin: 0;
+    background: transparent !important;
+    color: #fff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 0;
+  }
+
+  /* ---- iPad dock: centered frosted pill ---- */
+  .desktop-dock {
+    bottom: calc(22px + var(--safe-bottom));
+    top: auto;
+    left: 50% !important;
+    right: auto;
+    width: auto;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 18px;
+    transform: translateX(-50%) !important;
+    border-radius: var(--ios-dock-radius);
+    background: rgba(255, 255, 255, 0.28);
+    backdrop-filter: blur(var(--ios-blur)) saturate(1.7);
+    -webkit-backdrop-filter: blur(var(--ios-blur)) saturate(1.7);
+    border: 0.5px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 145;
+  }
+
+  body.dark-theme .desktop-dock {
+    background: rgba(40, 40, 44, 0.46);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .dock-icon {
+    transform-origin: bottom center;
+  }
+
+  .dock-icon:hover,
+  .dock-icon:hover + .dock-icon,
+  .dock-icon:has(+ .dock-icon:hover) {
+    transform: none !important;
+  }
+
+  .dock-icon:active {
+    transform: scale(0.9) !important;
+    transition: transform 0.12s ease;
+  }
+
+  .dock-icon__img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .dock-icon__img img {
+    border-radius: 16px;
+  }
+
+  .dock-divider {
+    height: 50px;
+    margin: 0 4px;
+  }
+
+  .dock-dot {
+    display: none !important;
+  }
+
+  .dock-icon[title]:hover::after {
+    display: none !important;
+  }
+
+  /* ---- Apps as large centered sheets ---- */
+  .finder-window,
+  .contacts-window,
+  .settings-window,
+  .safari-window,
+  .preview-window,
+  .mail-window {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: min(920px, 92vw) !important;
+    height: min(88vh, 880px) !important;
+    max-width: 92vw !important;
+    margin: 0 !important;
+    border-radius: var(--ios-sheet-radius) !important;
+    overflow: hidden !important;
+    border: none !important;
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  /* Nav bar safe-area padding for sheets is unnecessary (not full screen) */
+  .finder-topbar,
+  .contacts-sidebar-top,
+  .settings-titlebar,
+  .safari-titlebar,
+  .mail-titlebar {
+    padding-top: 8px;
+  }
+}

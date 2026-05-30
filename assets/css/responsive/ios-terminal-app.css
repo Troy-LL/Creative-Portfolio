@@ -1,0 +1,224 @@
+/* ============================================================
+   NATIVE SQL TERMINAL APP  (iOS / iPadOS touch tiers)
+   ============================================================ */
+
+body[data-device="desktop"] .terminal-app-overlay {
+  display: none !important;
+}
+
+@media (max-width: 1023px) {
+  .terminal-app-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 160;
+    display: flex;
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-family: var(--font-ui-desktop);
+  }
+
+  .terminal-app-overlay[hidden] {
+    display: none !important;
+  }
+
+  .terminal-app-window {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background: #0d1a12;
+    color: #d4ffe0;
+    overflow: hidden;
+  }
+
+  /* Phone: edge-to-edge */
+  body[data-device="mobile"] .terminal-app-window {
+    border-radius: 0;
+    margin: 0;
+    min-height: 100dvh;
+  }
+
+  /* Tablet: centered sheet */
+  body[data-device="tablet"] .terminal-app-overlay {
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  body[data-device="tablet"] .terminal-app-window {
+    width: min(720px, 94vw);
+    height: min(88vh, 820px);
+    border-radius: var(--ios-sheet-radius);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+  }
+
+  .terminal-app-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(var(--ios-nav-h) + var(--safe-top));
+    padding: calc(8px + var(--safe-top)) 16px 8px;
+    background: rgba(13, 26, 18, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 0.5px solid rgba(51, 255, 102, 0.15);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .terminal-app-done {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-top: calc(var(--safe-top) / 2);
+    background: transparent !important;
+    border: none !important;
+    color: #5ee87a !important;
+    font-size: 17px;
+    font-weight: 500;
+    padding: 8px 10px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .terminal-app-done::before,
+  .terminal-app-done::after {
+    display: none !important;
+  }
+
+  .terminal-app-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #e8fff0;
+    margin: 0;
+  }
+
+  .terminal-app-chips {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    background: rgba(10, 20, 14, 0.95);
+    border-bottom: 0.5px solid rgba(51, 255, 102, 0.1);
+    flex-shrink: 0;
+  }
+
+  .terminal-app-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .terminal-app-chip {
+    flex: 0 0 auto;
+    padding: 8px 14px;
+    border-radius: 18px;
+    border: 1px solid rgba(51, 255, 102, 0.35);
+    background: rgba(51, 255, 102, 0.08);
+    color: #7dff9a;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: "SF Mono", "Menlo", "Consolas", monospace;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.12s ease;
+  }
+
+  .terminal-app-chip:active {
+    transform: scale(0.96);
+    background: rgba(51, 255, 102, 0.18);
+  }
+
+  .terminal-app-chip--muted {
+    border-color: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .terminal-app-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 18px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .terminal-app-output {
+    font-family: "SF Mono", "Menlo", "Consolas", "Courier New", monospace;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .terminal-app-banner {
+    display: inline-block;
+    padding: 8px 14px;
+    margin-bottom: 14px;
+    border: 1px solid rgba(51, 255, 102, 0.45);
+    border-radius: 10px;
+    color: #5ee87a;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    background: rgba(51, 255, 102, 0.06);
+  }
+
+  .terminal-app-line {
+    margin: 0 0 4px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: #b8ffc8;
+  }
+
+  .terminal-app-line--dim {
+    color: rgba(184, 255, 200, 0.55);
+  }
+
+  .terminal-app-line--error {
+    color: #ff6b6b;
+  }
+
+  .terminal-app-line--header {
+    color: #8affaa;
+    border-bottom: 1px dashed rgba(51, 255, 102, 0.25);
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+  }
+
+  .terminal-app-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px calc(12px + var(--safe-bottom));
+    background: rgba(8, 16, 11, 0.98);
+    border-top: 0.5px solid rgba(51, 255, 102, 0.12);
+    flex-shrink: 0;
+  }
+
+  .terminal-app-prompt {
+    color: #5ee87a;
+    font-size: 18px;
+    font-weight: 600;
+    font-family: "SF Mono", "Menlo", monospace;
+  }
+
+  .terminal-app-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: rgba(51, 255, 102, 0.06);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: #e8fff0;
+    font-size: 16px;
+    font-family: "SF Mono", "Menlo", "Consolas", monospace;
+  }
+
+  .terminal-app-input::placeholder {
+    color: rgba(184, 255, 200, 0.35);
+  }
+
+  /* Hide CRT monitor on touch tiers — native app replaces it */
+  .monitor-bezel {
+    display: none !important;
+  }
+}

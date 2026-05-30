@@ -1,14 +1,23 @@
-import { getPreviewMountEl } from "../core/preview-mount.js";
+import { isTouchTier } from "../mobile/device-tier.js";
 
 export function initPreviewViewers() {
   window.openPdfViewer = openPdfViewer;
   window.openImageViewer = openImageViewer;
 }
 
-function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
-  const mount = getPreviewMountEl();
-  if (!mount) return;
+function encodeAssetUrl(src) {
+  try {
+    return encodeURI(src);
+  } catch {
+    return src;
+  }
+}
 
+function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
+  const desktop = document.getElementById("desktop");
+  if (!desktop) return;
+
+  const pdfUrl = encodeAssetUrl(pdfSrc);
   const existingOverlay = document.querySelector(".preview-overlay");
   if (existingOverlay) {
     const win = existingOverlay.querySelector(".preview-window");
@@ -16,9 +25,9 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
     const iframe = existingOverlay.querySelector("iframe");
 
     if (titleEl) titleEl.textContent = title || "Preview";
-    if (iframe) iframe.src = pdfSrc;
+    if (iframe) iframe.src = pdfUrl;
 
-    if (win && document.documentElement.getAttribute("data-view") !== "mobile") {
+    if (win && !isTouchTier()) {
       win.style.width = width;
       win.style.height = height;
     }
@@ -51,19 +60,18 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
       </div>
       <div class="preview-body" data-lenis-prevent>
         <div class="preview-iframe-shim"></div>
-        <iframe src="${pdfSrc}" style="width: 100%; height: 100%; border: none"></iframe>
+        <iframe src="${pdfUrl}" style="width: 100%; height: 100%; border: none"></iframe>
       </div>
     </div>
   `;
 
-  mount.appendChild(overlay);
+  desktop.appendChild(overlay);
 
   const win = overlay.querySelector(".preview-window");
   const closeBtn = overlay.querySelector(".mac-close");
   const minBtn = overlay.querySelector(".mac-min");
 
-  const isMobile = document.documentElement.getAttribute("data-view") === "mobile";
-  const animConfig = isMobile
+  const animConfig = isTouchTier()
     ? { opacity: 1, duration: 0.35 }
     : { opacity: 1, scale: 1, y: 0, duration: 0.35, ease: "back.out(1.4)" };
 
@@ -102,7 +110,7 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
     closeWindow();
   });
 
-  if (typeof Draggable !== "undefined" && !isMobile) {
+  if (typeof Draggable !== "undefined" && !isTouchTier()) {
     Draggable.create(win, {
       type: "x,y",
       handle: ".preview-titlebar",
@@ -121,8 +129,8 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
 }
 
 function openImageViewer(imgSrc, title) {
-  const mount = getPreviewMountEl();
-  if (!mount) return;
+  const desktop = document.getElementById("desktop");
+  if (!desktop) return;
 
   const overlay = document.createElement("div");
   overlay.className = "window-overlay image-overlay is-visible";
@@ -142,7 +150,7 @@ function openImageViewer(imgSrc, title) {
     </div>
   `;
 
-  mount.appendChild(overlay);
+  desktop.appendChild(overlay);
 
   const win = overlay.querySelector(".preview-window");
   const closeBtn = overlay.querySelector(".mac-close");
@@ -173,10 +181,7 @@ function openImageViewer(imgSrc, title) {
     closeWindow();
   });
 
-  if (
-    typeof Draggable !== "undefined" &&
-    document.documentElement.getAttribute("data-view") !== "mobile"
-  ) {
+  if (typeof Draggable !== "undefined" && !isTouchTier()) {
     Draggable.create(win, {
       handle: ".preview-titlebar",
       bounds: "#desktop-workarea",

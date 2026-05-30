@@ -2,6 +2,8 @@ import { restoreFromDesktop } from "./monitor-transition.js";
 import { openFinder } from "./finder.js";
 import { syncSettingsOverlay } from "./settings-app.js";
 import { openSafariFromDock } from "./safari-app.js";
+import { isTouchTier } from "../mobile/device-tier.js";
+import { openTerminalForTier } from "../mobile/terminal-app.js";
 
 export function initDesktopInteractions() {
   const monitor = document.querySelector(".monitor-bezel");
@@ -135,6 +137,7 @@ export function initDesktopInteractions() {
       }
 
       if (command !== null) {
+        if (openTerminalForTier(command || null)) return;
         restoreFromDesktop(monitor, desktop, command);
       }
     });
@@ -163,6 +166,7 @@ export function initDesktopInteractions() {
           icon.querySelector(".finder-icon-label");
         window.openImageViewer(img, label?.innerText);
       } else if (command !== null) {
+        if (openTerminalForTier(command || null)) return;
         restoreFromDesktop(monitor, desktop, command);
       }
     };
@@ -173,8 +177,7 @@ export function initDesktopInteractions() {
         .forEach((i) => i.classList.remove("selected"));
       icon.classList.add("selected");
 
-      const isMobile = window.matchMedia("(max-width: 768px)").matches;
-      if (isMobile) {
+      if (isTouchTier()) {
         openHandler();
       }
     });

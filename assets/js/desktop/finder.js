@@ -1,3 +1,5 @@
+import { isTouchTier } from "../mobile/device-tier.js";
+
 function setFinderDockOpen(isOpen) {
   document.querySelectorAll('.dock-icon[data-app="finder"]').forEach((el) => {
     el.classList.toggle("is-open", isOpen);
@@ -64,7 +66,7 @@ function bindFinderIcons(contentEl) {
 
     icon.addEventListener("dblclick", openHandler);
     icon.addEventListener("click", () => {
-      if (window.matchMedia("(max-width: 768px)").matches) {
+      if (isTouchTier()) {
         openHandler();
       }
     });
