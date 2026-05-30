@@ -2,6 +2,7 @@ import { restoreFromDesktop } from "./monitor-transition.js";
 import { openFinder } from "./finder.js";
 import { syncSettingsOverlay } from "./settings-app.js";
 import { openSafariFromDock } from "./safari-app.js";
+import { isTouchTier } from "../mobile/device-tier.js";
 
 export function initDesktopInteractions() {
   const monitor = document.querySelector(".monitor-bezel");

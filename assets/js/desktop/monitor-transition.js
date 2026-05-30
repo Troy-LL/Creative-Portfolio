@@ -1,5 +1,6 @@
 import { cmdInput, lenis } from "../core/state.js";
 import { handleCommand } from "../terminal/commands.js";
+import { isTouchTier } from "../mobile/device-tier.js";
 
 /** Menubar, desktop icons, dock — shared by boot sequence and minimize-from-terminal. */
 export function animateDesktopChromeIn() {

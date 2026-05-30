@@ -1,3 +1,5 @@
+import { onTierChange } from "../mobile/device-tier.js";
+
 function syncMenubarAppName(focusedWindow) {
   const label = document.querySelector(".menubar-app-name");
   if (!label) return;

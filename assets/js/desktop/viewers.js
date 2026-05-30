@@ -1,3 +1,5 @@
+import { isTouchTier } from "../mobile/device-tier.js";
+
 export function initPreviewViewers() {
   window.openPdfViewer = openPdfViewer;
   window.openImageViewer = openImageViewer;

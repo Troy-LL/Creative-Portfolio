@@ -1,5 +1,6 @@
 import { cmdInput, inputDisplay, terminalEl } from "../core/state.js";
 import { handleCommand } from "./commands.js";
+import { isTouchTier } from "../mobile/device-tier.js";
 
 const KNOWN_COMMANDS = [
   "SELECT * FROM about",

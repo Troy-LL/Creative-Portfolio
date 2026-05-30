@@ -1,3 +1,5 @@
+import { isTouchTier } from "../mobile/device-tier.js";
+
 function setFinderDockOpen(isOpen) {
   document.querySelectorAll('.dock-icon[data-app="finder"]').forEach((el) => {
     el.classList.toggle("is-open", isOpen);
