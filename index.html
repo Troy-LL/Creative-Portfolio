@@ -66,10 +66,66 @@
       </div>
     </div>
 
+
+    <div id="lockScreen" class="lock-screen" hidden aria-hidden="true" aria-label="Lock screen">
+      <div class="lock-screen__wallpaper" aria-hidden="true"></div>
+      <div class="lock-screen__status">
+        <span class="lock-screen__status-time" id="lockStatusTime"></span>
+      </div>
+      <div class="lock-screen__center">
+        <div class="lock-screen__clock" id="lockClock" aria-live="polite">9:41</div>
+        <div class="lock-screen__date" id="lockDate">Monday, June 6</div>
+        <div class="lock-screen__widget-row" aria-hidden="true">
+          <div class="lock-widget lock-widget--calendar">
+            <span class="lock-widget__day" id="lockWidgetDay">MON</span>
+            <span class="lock-widget__num" id="lockWidgetDate">6</span>
+          </div>
+          <div class="lock-widget lock-widget--portfolio">
+            <span class="lock-widget__label">Portfolio</span>
+            <span class="lock-widget__value">Open to work</span>
+            <span class="lock-widget__sub">SQL queries ready</span>
+          </div>
+        </div>
+      </div>
+      <div class="lock-screen__notifications">
+        <button type="button" class="lock-notification" id="lockNotificationTerminal" aria-label="Open portfolio terminal">
+          <span class="lock-notification__icon"><img src="assets/img/app-icons/terminal/256.png" alt="" width="28" height="28" /></span>
+          <span class="lock-notification__body">
+            <span class="lock-notification__title">SQL Terminal</span>
+            <span class="lock-notification__text">Query my portfolio — try SELECT * FROM about</span>
+          </span>
+        </button>
+      </div>
+      <div class="lock-screen__bottom">
+        <span class="lock-screen__shortcut ui-chrome--inactive" aria-disabled="true" aria-label="Flashlight">◉</span>
+        <button type="button" class="lock-screen__unlock" id="lockUnlockBtn" aria-label="Swipe up to unlock">
+          <span class="lock-screen__handle" aria-hidden="true"></span>
+          <span class="lock-screen__unlock-label">Swipe up to open</span>
+        </button>
+        <span class="lock-screen__shortcut ui-chrome--inactive" aria-disabled="true" aria-label="Camera">◉</span>
+      </div>
+    </div>
+
     <!-- macOS-style desktop shown when the app is minimized -->
     <div class="desktop" id="desktop">
       <!-- Wallpaper layer -->
       <div class="desktop-wallpaper"></div>
+
+      <div class="home-screen-chrome" id="homeScreenChrome" hidden aria-hidden="true">
+        <div class="home-widgets" id="homeWidgets">
+          <div class="home-widget home-widget--clock" aria-hidden="true">
+            <span class="home-widget__time" id="homeWidgetTime">9:41</span>
+            <span class="home-widget__date" id="homeWidgetDate">Monday, June 6</span>
+          </div>
+          <div class="home-widget home-widget--portfolio">
+            <span class="home-widget__city">Portfolio</span>
+            <span class="home-widget__temp">Ready</span>
+            <span class="home-widget__condition">Query with SQL</span>
+            <span class="home-widget__range">7 tables available</span>
+          </div>
+        </div>
+        <div class="home-page-dots" aria-hidden="true"><span class="home-page-dot is-active"></span></div>
+      </div>
 
       <!-- Bounds for draggable windows (so they don't overlap the menubar) -->
       <div
@@ -2021,6 +2077,35 @@
             <div class="finder-statusbar">
               <span id="finderStatusText">guest &gt; Recents</span>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="terminal-app-overlay window-overlay" id="terminalAppOverlay" hidden aria-hidden="true">
+        <div class="terminal-app-window mac-window">
+          <header class="terminal-app-nav">
+            <button type="button" class="terminal-app-done mac-close" aria-label="Done">Done</button>
+            <h1 class="terminal-app-title">SQL Terminal</h1>
+          </header>
+          <div class="terminal-app-chips" role="toolbar" aria-label="Quick queries">
+            <button type="button" class="terminal-app-chip" data-query="SELECT * FROM about">about</button>
+            <button type="button" class="terminal-app-chip" data-query="SELECT * FROM experience">experience</button>
+            <button type="button" class="terminal-app-chip" data-query="SELECT * FROM projects">projects</button>
+            <button type="button" class="terminal-app-chip" data-query="SELECT * FROM skills">skills</button>
+            <button type="button" class="terminal-app-chip" data-query="SELECT * FROM contact">contact</button>
+            <button type="button" class="terminal-app-chip" data-query="SELECT * FROM resume">resume</button>
+            <button type="button" class="terminal-app-chip" data-query="HELP">help</button>
+            <button type="button" class="terminal-app-chip terminal-app-chip--muted" data-query="CLEAR">clear</button>
+          </div>
+          <div class="terminal-app-body" data-lenis-prevent>
+            <div class="terminal-app-output" id="terminalAppOutput">
+              <div class="terminal-app-banner">SQL_TERM v2.0 — Portfolio Database</div>
+              <p class="terminal-app-line terminal-app-line--dim">Tap a query above or type below. Try <strong>SELECT * FROM about</strong>.</p>
+            </div>
+          </div>
+          <div class="terminal-app-input-row">
+            <span class="terminal-app-prompt" aria-hidden="true">›</span>
+            <input type="text" id="terminalAppCmd" class="terminal-app-input" autocomplete="off" spellcheck="false" aria-label="SQL command" placeholder="SELECT * FROM about" />
           </div>
         </div>
       </div>
