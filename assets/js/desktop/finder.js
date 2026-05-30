@@ -66,7 +66,7 @@ function bindFinderIcons(contentEl) {
 
     icon.addEventListener("dblclick", openHandler);
     icon.addEventListener("click", () => {
-      if (window.matchMedia("(max-width: 768px)").matches) {
+      if (isTouchTier()) {
         openHandler();
       }
     });

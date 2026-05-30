@@ -124,13 +124,8 @@ export function initDraggableWindows() {
   });
 }
 
-let lastIsMobile = window.matchMedia("(max-width: 768px)").matches;
-window.addEventListener("resize", () => {
-  const currentIsMobile = window.matchMedia("(max-width: 768px)").matches;
-  if (currentIsMobile !== lastIsMobile) {
-    gsap.set(".desktop-dock", {
-      clearProps: "transform,x,y,xPercent,yPercent",
-    });
-    lastIsMobile = currentIsMobile;
-  }
+onTierChange(() => {
+  gsap.set(".desktop-dock", {
+    clearProps: "transform,x,y,xPercent,yPercent",
+  });
 });

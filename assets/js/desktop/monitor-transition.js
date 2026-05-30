@@ -2,7 +2,7 @@ import { cmdInput, lenis } from "../core/state.js";
 import { handleCommand } from "../terminal/commands.js";
 import { isTouchTier } from "../mobile/device-tier.js";
 
-/** Menubar, desktop icons, dock — shared by boot sequence and minimize-from-terminal. */
+/** Menubar, home widgets, desktop icons, dock — boot + unlock animation. */
 export function animateDesktopChromeIn() {
   const desktop = document.getElementById("desktop");
   if (!desktop) return;
@@ -20,6 +20,12 @@ export function animateDesktopChromeIn() {
   );
 
   gsap.fromTo(
+    "#homeScreenChrome",
+    { opacity: 0, y: 10 },
+    { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", delay: 0.28 },
+  );
+
+  gsap.fromTo(
     ".desktop-icons-area .desktop-file-icon",
     { opacity: 0, y: 12 },
     {
@@ -32,13 +38,13 @@ export function animateDesktopChromeIn() {
     },
   );
 
-  const isMobile = window.matchMedia("(max-width: 768px)").matches;
-  const dockStart = isMobile
-    ? { x: -20, y: 0, xPercent: 0, yPercent: -50 }
+  const touch = isTouchTier();
+  const dockStart = touch
+    ? { x: 0, y: 20, xPercent: 0, yPercent: 0 }
     : { x: 0, y: 20, xPercent: -50, yPercent: 0 };
 
-  const dockEnd = isMobile
-    ? { x: 0, y: 0, xPercent: 0, yPercent: -50 }
+  const dockEnd = touch
+    ? { x: 0, y: 0, xPercent: 0, yPercent: 0 }
     : { x: 0, y: 0, xPercent: -50, yPercent: 0 };
 
   gsap.fromTo(
@@ -66,9 +72,9 @@ export function minimizeToDesktop(monitor, desktop) {
 }
 
 export function restoreFromDesktop(monitor, desktop, command = null) {
-  const isMobile = window.matchMedia("(max-width: 768px)").matches;
-  const dockOut = isMobile
-    ? { x: -25, y: 0, xPercent: 0, yPercent: -50 }
+  const touch = isTouchTier();
+  const dockOut = touch
+    ? { x: 0, y: 20, xPercent: 0, yPercent: 0 }
     : { x: 0, y: 20, xPercent: -50, yPercent: 0 };
 
   gsap.to(".desktop-dock", {
@@ -81,6 +87,12 @@ export function restoreFromDesktop(monitor, desktop, command = null) {
     opacity: 0,
     y: -8,
     duration: 0.22,
+    ease: "power2.in",
+  });
+  gsap.to("#homeScreenChrome", {
+    opacity: 0,
+    y: 6,
+    duration: 0.2,
     ease: "power2.in",
   });
   gsap.to(".desktop-icons-area .desktop-file-icon", {
@@ -117,8 +129,7 @@ export function restoreFromDesktop(monitor, desktop, command = null) {
         if (lenis) lenis.start();
         if (command) handleCommand(command);
 
-        const mobile = window.matchMedia("(max-width: 768px)").matches;
-        if (!mobile) {
+        if (!isTouchTier()) {
           cmdInput.focus();
         }
       },

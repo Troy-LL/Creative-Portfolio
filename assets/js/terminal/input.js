@@ -15,6 +15,8 @@ const KNOWN_COMMANDS = [
 ];
 
 export function initTerminalInput() {
+  if (!cmdInput || !inputDisplay) return;
+
   cmdInput.addEventListener("input", () => {
     inputDisplay.textContent = cmdInput.value;
   });
@@ -55,15 +57,8 @@ export function initTerminalInput() {
     const monitor = document.querySelector(".monitor-bezel");
     const isMinimized = monitor?.classList.contains("is-minimized");
 
-    if (monitor && !isMinimized) {
-      const isMobile = window.matchMedia("(max-width: 768px)").matches;
-      if (isMobile) {
-        if (terminalEl && terminalEl.contains(e.target)) {
-          cmdInput.focus();
-        }
-      } else {
-        cmdInput.focus();
-      }
+    if (monitor && !isMinimized && !isTouchTier()) {
+      cmdInput.focus();
     }
   });
 
@@ -71,7 +66,7 @@ export function initTerminalInput() {
   if (
     initialMonitor &&
     !initialMonitor.classList.contains("is-minimized") &&
-    !window.matchMedia("(max-width: 768px)").matches
+    !isTouchTier()
   ) {
     cmdInput.focus();
   }

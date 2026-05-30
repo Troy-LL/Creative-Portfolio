@@ -18,7 +18,7 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
     if (titleEl) titleEl.textContent = title || "Preview";
     if (iframe) iframe.src = pdfSrc;
 
-    if (win && !window.matchMedia("(max-width: 768px)").matches) {
+    if (win && !isTouchTier()) {
       win.style.width = width;
       win.style.height = height;
     }
@@ -62,8 +62,7 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
   const closeBtn = overlay.querySelector(".mac-close");
   const minBtn = overlay.querySelector(".mac-min");
 
-  const isMobile = window.matchMedia("(max-width: 768px)").matches;
-  const animConfig = isMobile
+  const animConfig = isTouchTier()
     ? { opacity: 1, duration: 0.35 }
     : { opacity: 1, scale: 1, y: 0, duration: 0.35, ease: "back.out(1.4)" };
 
