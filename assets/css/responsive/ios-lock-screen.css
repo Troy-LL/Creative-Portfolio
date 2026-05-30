@@ -1,0 +1,286 @@
+/* ============================================================
+   iOS 16 / iPadOS LOCK SCREEN  (touch tiers only)
+   ============================================================ */
+
+body[data-device="desktop"] .lock-screen {
+  display: none !important;
+}
+
+@media (max-width: 1023px) {
+  .lock-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    color: #fff;
+    font-family: var(--font-ui-desktop);
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .lock-screen[hidden] {
+    display: none !important;
+  }
+
+  .lock-screen.is-unlocking {
+    pointer-events: none;
+  }
+
+  .lock-screen__wallpaper {
+    position: absolute;
+    inset: 0;
+    background: var(--desktop-wallpaper);
+    z-index: 0;
+  }
+
+  .lock-screen__wallpaper::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.15) 0%,
+      rgba(0, 0, 0, 0.05) 35%,
+      rgba(0, 0, 0, 0.35) 100%
+    );
+  }
+
+  .lock-screen__status,
+  .lock-screen__center,
+  .lock-screen__notifications,
+  .lock-screen__bottom {
+    position: relative;
+    z-index: 1;
+  }
+
+  .lock-screen__status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: calc(12px + var(--safe-top)) calc(24px + var(--safe-right)) 0
+      calc(24px + var(--safe-left));
+    font-size: 15px;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  }
+
+  .lock-screen__status-icons {
+    display: flex;
+    align-items: center;
+    opacity: 0.95;
+  }
+
+  .lock-screen__center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 8vh 24px 0;
+    text-align: center;
+  }
+
+  .lock-screen__clock {
+    font-size: clamp(72px, 18vw, 96px);
+    font-weight: 200;
+    letter-spacing: -2px;
+    line-height: 1;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
+  }
+
+  .lock-screen__date {
+    margin-top: 6px;
+    font-size: clamp(18px, 4.5vw, 22px);
+    font-weight: 500;
+    opacity: 0.92;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .lock-screen__widget-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .lock-widget {
+    min-width: 120px;
+    padding: 12px 16px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    border: 0.5px solid rgba(255, 255, 255, 0.28);
+    text-align: left;
+  }
+
+  .lock-widget--calendar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 72px;
+    text-align: center;
+  }
+
+  .lock-widget__day {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    opacity: 0.85;
+    letter-spacing: 0.04em;
+  }
+
+  .lock-widget__num {
+    font-size: 28px;
+    font-weight: 300;
+    line-height: 1.1;
+  }
+
+  .lock-widget__label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.9;
+  }
+
+  .lock-widget__value {
+    display: block;
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  .lock-widget__sub {
+    display: block;
+    font-size: 12px;
+    opacity: 0.75;
+    margin-top: 2px;
+  }
+
+  .lock-screen__notifications {
+    padding: 0 16px 12px;
+    flex-shrink: 0;
+  }
+
+  .lock-notification {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 16px;
+    border: none;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(28px) saturate(1.5);
+    -webkit-backdrop-filter: blur(28px) saturate(1.5);
+    border: 0.5px solid rgba(255, 255, 255, 0.25);
+    color: #fff;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+
+  .lock-notification:active {
+    transform: scale(0.98);
+    background: rgba(255, 255, 255, 0.28);
+  }
+
+  .lock-notification__icon img {
+    border-radius: 8px;
+    display: block;
+  }
+
+  .lock-notification__body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .lock-notification__title {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .lock-notification__text {
+    font-size: 14px;
+    opacity: 0.88;
+    line-height: 1.35;
+  }
+
+  .lock-screen__bottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 8px calc(28px + var(--safe-right)) calc(28px + var(--safe-bottom))
+      calc(28px + var(--safe-left));
+    gap: 16px;
+  }
+
+  .lock-screen__shortcut {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: rgba(255, 255, 255, 0.55);
+    flex-shrink: 0;
+  }
+
+  .lock-screen__unlock {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.85);
+    font-family: inherit;
+    cursor: pointer;
+    padding: 8px;
+  }
+
+  .lock-screen__handle {
+    width: 36px;
+    height: 5px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.55);
+  }
+
+  .lock-screen__unlock-label {
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0.75;
+    letter-spacing: 0.02em;
+  }
+
+  /* Tablet: slightly larger widgets, more breathing room */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .lock-screen__center {
+      padding-top: 10vh;
+    }
+
+    .lock-screen__clock {
+      font-size: clamp(88px, 12vw, 110px);
+    }
+
+    .lock-widget {
+      min-width: 140px;
+      padding: 14px 18px;
+    }
+
+    .lock-notification {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+  }
+}
