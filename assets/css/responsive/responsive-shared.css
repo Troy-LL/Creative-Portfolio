@@ -1,0 +1,201 @@
+/* ============================================================
+   RESPONSIVE — SHARED (touch tiers: iOS phone + iPadOS tablet)
+   ------------------------------------------------------------
+   Applies at <= 1023px. Written as pure CSS media queries so the
+   layout is correct even before device-tier.js mirrors the tier
+   onto body[data-device]. JS still sets that attribute for
+   behavior hooks (lock screen, home screen, terminal app).
+
+   NOTE: the previous desktop-mobile.css referenced --surface,
+   --border and --surface-sunken which were never defined, so the
+   iOS chrome rendered with empty backgrounds. We define a proper
+   iOS token set (light + dark) here.
+   ============================================================ */
+
+/* ---- iOS / iPadOS design tokens (touch tiers only) ---- */
+:root {
+  --ios-app-radius: 15px; /* squircle app-icon rounding */
+  --ios-sheet-radius: 22px; /* iPad app-sheet corner */
+  --ios-dock-radius: 34px;
+  --ios-blur: 30px;
+  --ios-nav-h: 52px;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  /* iOS system surfaces — light */
+  --ios-bg: #f2f2f7;
+  --ios-surface: #ffffff;
+  --ios-surface-2: #f2f2f7;
+  --ios-nav-bg: rgba(249, 249, 251, 0.82);
+  --ios-separator: rgba(60, 60, 67, 0.16);
+  --ios-label: #1c1c1e;
+  --ios-label-2: rgba(60, 60, 67, 0.6);
+  --ios-fill: rgba(118, 118, 128, 0.12);
+
+  /* Aliases so any legacy --surface/--border references resolve */
+  --surface: var(--ios-surface);
+  --surface-sunken: var(--ios-surface-2);
+  --border: var(--ios-separator);
+}
+
+body.dark-theme {
+  --ios-bg: #000000;
+  --ios-surface: #1c1c1e;
+  --ios-surface-2: #2c2c2e;
+  --ios-nav-bg: rgba(28, 28, 30, 0.78);
+  --ios-separator: rgba(84, 84, 88, 0.55);
+  --ios-label: #ffffff;
+  --ios-label-2: rgba(235, 235, 245, 0.6);
+  --ios-fill: rgba(118, 118, 128, 0.24);
+}
+
+@media (max-width: 1023px) {
+  /* ---- Menubar → iOS status bar; hide macOS menus ---- */
+  .menubar-item:not(.cc-toggle),
+  .apple-logo,
+  .menubar-app-name {
+    display: none !important;
+  }
+
+  .desktop-menubar {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    height: calc(44px + var(--safe-top));
+    padding: var(--safe-top) 22px 0;
+    color: #fff;
+    font-weight: 600;
+    justify-content: flex-end;
+    z-index: 150;
+  }
+
+  .menubar-right {
+    width: 100%;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .menubar-clock {
+    margin-right: auto;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  }
+
+  #ccToggle {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  }
+
+  /* ---- App windows become native surfaces (flex column) ---- */
+  .finder-window,
+  .contacts-window,
+  .settings-window,
+  .safari-window,
+  .preview-window,
+  .mail-window {
+    transform: none !important;
+    display: flex;
+    flex-direction: column;
+    background: var(--ios-bg) !important;
+  }
+
+  /* ---- iOS navigation bar (CORRECTED selectors) ----
+     prev CSS used .safari-header / .finder-header / .contacts-detail
+     which do not exist in the markup. */
+  .finder-topbar,
+  .contacts-sidebar-top,
+  .settings-titlebar,
+  .safari-titlebar,
+  .mail-titlebar {
+    min-height: var(--ios-nav-h);
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ios-nav-bg) !important;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 0.5px solid var(--ios-separator) !important;
+    position: relative;
+    padding: 8px 14px;
+    -webkit-app-region: no-drag;
+    z-index: 10;
+    color: var(--ios-label);
+  }
+
+  /* App title centered in nav bar */
+  .settings-title,
+  .mail-title,
+  .finder-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ios-label);
+  }
+
+  /* ---- Traffic lights → iOS back/Home control ---- */
+  .mac-controls {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: auto;
+    display: flex;
+    gap: 0;
+    z-index: 5;
+  }
+
+  .mac-min,
+  .mac-max {
+    display: none !important;
+  }
+
+  .mac-close {
+    width: auto !important;
+    height: auto !important;
+    background: transparent !important;
+    border: none !important;
+    color: var(--sys-color);
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 6px;
+    margin: 0;
+  }
+
+  .mac-close::before {
+    content: "‹ Home";
+    display: block;
+    opacity: 1;
+    letter-spacing: -0.2px;
+  }
+
+  .mac-close:active::before {
+    opacity: 0.55;
+  }
+
+  .mac-close::after {
+    display: none !important;
+  }
+
+  /* Dragging is meaningless on touch */
+  .window-drag-handle,
+  .settings-titlebar,
+  .mail-titlebar,
+  .safari-titlebar,
+  .finder-topbar,
+  .contacts-sidebar-top {
+    cursor: default !important;
+  }
+}

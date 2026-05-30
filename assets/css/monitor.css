@@ -225,8 +225,8 @@
   overflow: visible;
 }
 
-/* ── Mobile Polish ── */
-@media (max-width: 768px) {
+/* ── Touch-tier polish (iOS phone + iPadOS tablet) ── */
+@media (max-width: 1023px) {
   .monitor-bezel {
     padding: 6px 10px 10px;
     border-radius: 12px;
