@@ -29,7 +29,7 @@ export function initSafariApp() {
   const iframe = document.getElementById("safariFrame");
   const backBtn = document.getElementById("safariBackBtn");
   const addressEl = document.getElementById("safariAddress");
-  const favFounders = document.getElementById("safariFavFounders");
+  const favoritesGrid = overlay.querySelector(".safari-favorites__grid");
   const previewStage = document.getElementById("safariPreviewStage");
   const previewScaler = document.getElementById("safariPreviewScaler");
 
@@ -127,11 +127,24 @@ export function initSafariApp() {
     });
   }
 
-  function activateFoundersFavorite() {
-    if (!favFounders) return;
-    const href = favFounders.dataset.safariHref;
-    const addr = favFounders.dataset.safariAddress || "Founders Cafe";
-    if (href) showSite(href, addr);
+  function activateFavorite(tile) {
+    if (!(tile instanceof HTMLElement)) return;
+    const href = tile.dataset.safariHref;
+    const addr = tile.dataset.safariAddress || tile.textContent?.trim() || "";
+    if (!href) return;
+    if (tile.dataset.safariOpen === "tab") {
+      window.open(resolveHref(href), "_blank", "noopener,noreferrer");
+      return;
+    }
+    showSite(href, addr);
+  }
+
+  function onFavoriteActivate(e) {
+    const tile = e.target.closest(".safari-fav-tile[data-safari-href]");
+    if (!tile) return;
+    e.preventDefault();
+    e.stopPropagation();
+    activateFavorite(tile);
   }
 
   function open() {
@@ -201,20 +214,14 @@ export function initSafariApp() {
     showStartPage();
   });
 
-  favFounders?.addEventListener(
-    "click",
-    (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      activateFoundersFavorite();
-    },
-    true,
-  );
+  favoritesGrid?.addEventListener("click", onFavoriteActivate, true);
 
-  favFounders?.addEventListener("keydown", (e) => {
+  favoritesGrid?.addEventListener("keydown", (e) => {
     if (e.key !== "Enter" && e.key !== " ") return;
+    const tile = e.target.closest(".safari-fav-tile[data-safari-href]");
+    if (!tile) return;
     e.preventDefault();
-    activateFoundersFavorite();
+    activateFavorite(tile);
   });
 
   iframe?.addEventListener("load", () => {
