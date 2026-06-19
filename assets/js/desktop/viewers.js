@@ -1,11 +1,13 @@
+import { getPreviewMountEl } from "../core/preview-mount.js";
+
 export function initPreviewViewers() {
   window.openPdfViewer = openPdfViewer;
   window.openImageViewer = openImageViewer;
 }
 
 function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
-  const desktop = document.getElementById("desktop");
-  if (!desktop) return;
+  const mount = getPreviewMountEl();
+  if (!mount) return;
 
   const existingOverlay = document.querySelector(".preview-overlay");
   if (existingOverlay) {
@@ -16,7 +18,7 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
     if (titleEl) titleEl.textContent = title || "Preview";
     if (iframe) iframe.src = pdfSrc;
 
-    if (win && !window.matchMedia("(max-width: 768px)").matches) {
+    if (win && document.documentElement.getAttribute("data-view") !== "mobile") {
       win.style.width = width;
       win.style.height = height;
     }
@@ -54,13 +56,13 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
     </div>
   `;
 
-  desktop.appendChild(overlay);
+  mount.appendChild(overlay);
 
   const win = overlay.querySelector(".preview-window");
   const closeBtn = overlay.querySelector(".mac-close");
   const minBtn = overlay.querySelector(".mac-min");
 
-  const isMobile = window.matchMedia("(max-width: 768px)").matches;
+  const isMobile = document.documentElement.getAttribute("data-view") === "mobile";
   const animConfig = isMobile
     ? { opacity: 1, duration: 0.35 }
     : { opacity: 1, scale: 1, y: 0, duration: 0.35, ease: "back.out(1.4)" };
@@ -100,7 +102,7 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
     closeWindow();
   });
 
-  if (typeof Draggable !== "undefined") {
+  if (typeof Draggable !== "undefined" && !isMobile) {
     Draggable.create(win, {
       type: "x,y",
       handle: ".preview-titlebar",
@@ -119,8 +121,8 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
 }
 
 function openImageViewer(imgSrc, title) {
-  const desktop = document.getElementById("desktop");
-  if (!desktop) return;
+  const mount = getPreviewMountEl();
+  if (!mount) return;
 
   const overlay = document.createElement("div");
   overlay.className = "window-overlay image-overlay is-visible";
@@ -140,7 +142,7 @@ function openImageViewer(imgSrc, title) {
     </div>
   `;
 
-  desktop.appendChild(overlay);
+  mount.appendChild(overlay);
 
   const win = overlay.querySelector(".preview-window");
   const closeBtn = overlay.querySelector(".mac-close");
@@ -171,7 +173,10 @@ function openImageViewer(imgSrc, title) {
     closeWindow();
   });
 
-  if (typeof Draggable !== "undefined") {
+  if (
+    typeof Draggable !== "undefined" &&
+    document.documentElement.getAttribute("data-view") !== "mobile"
+  ) {
     Draggable.create(win, {
       handle: ".preview-titlebar",
       bounds: "#desktop-workarea",

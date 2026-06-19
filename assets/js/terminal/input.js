@@ -53,15 +53,16 @@ export function initTerminalInput() {
 
     const monitor = document.querySelector(".monitor-bezel");
     const isMinimized = monitor?.classList.contains("is-minimized");
+    const isMobileShell =
+      document.documentElement.getAttribute("data-view") === "mobile";
 
     if (monitor && !isMinimized) {
-      const isMobile = window.matchMedia("(max-width: 768px)").matches;
-      if (isMobile) {
+      if (isMobileShell) {
         if (terminalEl && terminalEl.contains(e.target)) {
-          cmdInput.focus();
+          cmdInput?.focus();
         }
       } else {
-        cmdInput.focus();
+        cmdInput?.focus();
       }
     }
   });
@@ -70,8 +71,8 @@ export function initTerminalInput() {
   if (
     initialMonitor &&
     !initialMonitor.classList.contains("is-minimized") &&
-    !window.matchMedia("(max-width: 768px)").matches
+    document.documentElement.getAttribute("data-view") !== "mobile"
   ) {
-    cmdInput.focus();
+    cmdInput?.focus();
   }
 }
