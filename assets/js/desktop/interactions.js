@@ -38,7 +38,7 @@ export function initDesktopInteractions() {
           handleDockWindow(
             "settingsOverlay",
             ".settings-window",
-            ".settings-titlebar .mac-min",
+            ".settings-dots .mac-min",
           )
         ) {
           return;
@@ -83,7 +83,7 @@ export function initDesktopInteractions() {
 
       if (app === "mail") {
         if (
-          handleDockWindow("mailOverlay", ".mail-window", ".mail-titlebar .mac-min")
+          handleDockWindow("mailOverlay", ".mail-window", ".mail-chrome-toolbar .mac-min")
         ) {
           return;
         }
@@ -126,6 +126,37 @@ export function initDesktopInteractions() {
           return;
         }
         openSafariFromDock();
+        return;
+      }
+
+      if (app === "spotify") {
+        const spotifyUrl =
+          "https://open.spotify.com/playlist/0PrKcrMeMESrnHDAnLiCCx?si=a598ff4de99d4f1a";
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+        if (isMobile) {
+          window.open(spotifyUrl, "_blank", "noopener,noreferrer");
+          return;
+        }
+        if (
+          handleDockWindow(
+            "spotifyOverlay",
+            ".spotify-window",
+            ".spotify-topnav .mac-min",
+          )
+        ) {
+          return;
+        }
+        const spotifyOverlay = document.getElementById("spotifyOverlay");
+        if (!spotifyOverlay) return;
+        spotifyOverlay.classList.add("is-visible");
+        icon.classList.add("is-open");
+        gsap.fromTo(
+          ".spotify-window",
+          { opacity: 0, scale: 0.9, y: 20 },
+          { opacity: 1, scale: 1, y: 0, duration: 0.35, ease: "power2.out" },
+        );
+        if (typeof window.focusWindow === "function")
+          window.focusWindow(".spotify-window");
         return;
       }
 

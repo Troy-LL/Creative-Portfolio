@@ -46,7 +46,8 @@ body {
 #desktop,
 .contacts-window,
 .settings-window,
-.finder-window {
+.finder-window,
+.spotify-window {
   cursor:
     url("../img/cursors/normal-select.svg") 0 0,
     auto !important;
@@ -65,6 +66,9 @@ button,
 .contacts-dot,
 .mail-dot,
 .safari-dot,
+.spotify-dot,
+.spotify-sidebar__item:not(.ui-chrome--inactive),
+.spotify-playlist-title a,
 .control,
 .nav-btn,
 .sidebar-icon,
@@ -87,8 +91,15 @@ li[data-target] {
 .finder-toolbar-right .ui-chrome--inactive,
 .quick-action.ui-chrome--inactive,
 .mail-chrome-toolbar .ui-chrome--inactive,
-.mail-compose-toolbar .ui-chrome--inactive {
-  cursor: default !important;
+.mail-compose-toolbar .ui-chrome--inactive,
+.spotify-topnav .ui-chrome--inactive,
+.spotify-sidebar .ui-chrome--inactive,
+.spotify-sidebar__item.ui-chrome--inactive,
+.spotify-action-bar .ui-chrome--inactive,
+.spotify-player .ui-chrome--inactive {
+  cursor:
+    url("../img/cursors/normal-select.svg") 0 0,
+    default !important;
   pointer-events: none;
 }
 

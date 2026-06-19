@@ -3,8 +3,8 @@ export function initMailApp() {
   if (!overlay) return;
 
   const windowEl = overlay.querySelector(".mail-window");
-  const closeDot = overlay.querySelector(".mail-titlebar .mac-close");
-  const minDot = overlay.querySelector(".mail-titlebar .mac-min");
+  const closeDot = overlay.querySelector(".mail-chrome-toolbar .mac-close");
+  const minDot = overlay.querySelector(".mail-chrome-toolbar .mac-min");
   const form = document.getElementById("mailComposeForm");
 
   function close(removeDockIndicator = true) {

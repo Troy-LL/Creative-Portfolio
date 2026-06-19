@@ -15,6 +15,8 @@ function syncMenubarAppName(focusedWindow) {
     label.textContent = "Mail";
   } else if (focusedWindow.classList.contains("safari-window")) {
     label.textContent = "Safari";
+  } else if (focusedWindow.classList.contains("spotify-window")) {
+    label.textContent = "Spotify";
   } else if (focusedWindow.classList.contains("preview-window")) {
     label.textContent = "Preview";
   } else {
@@ -78,19 +80,22 @@ export function initDraggableWindows() {
     ".contacts-window",
     ".mail-window",
     ".safari-window",
+    ".spotify-window",
   ];
   windows.forEach((sel) => {
     let handle = "";
     if (sel === ".finder-window") {
       handle = ".finder-topbar, .finder-window-controls";
     } else if (sel === ".settings-window") {
-      handle = ".settings-titlebar";
+      handle = ".settings-dots";
     } else if (sel === ".contacts-window") {
       handle = ".contacts-sidebar-top, .contacts-detail-header";
     } else if (sel === ".mail-window") {
-      handle = ".mail-titlebar";
+      handle = ".mail-chrome-toolbar";
     } else if (sel === ".safari-window") {
       handle = ".safari-titlebar";
+    } else if (sel === ".spotify-window") {
+      handle = ".spotify-topnav";
     }
 
     Draggable.create(sel, {

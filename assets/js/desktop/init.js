@@ -4,6 +4,7 @@ import { initDesktopInteractions } from "./interactions.js";
 import { initSettingsApp } from "./settings-app.js";
 import { initContactsApp } from "./contacts-app.js";
 import { initMailApp } from "./mail-app.js";
+import { initSpotifyApp } from "./spotify-app.js";
 import { initSafariApp } from "./safari-app.js";
 import { initMenubarClock } from "./menubar-clock.js";
 import { initFinderApp } from "./finder.js";
@@ -23,6 +24,7 @@ export function initDesktopUi() {
   initDraggableWindows();
   initContactsApp();
   initMailApp();
+  initSpotifyApp();
   /* Safari after interactions so openSafariFromDock is wired before first dock click. */
   initSafariApp();
 }

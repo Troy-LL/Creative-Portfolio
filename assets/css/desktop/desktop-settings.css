@@ -32,19 +32,11 @@
   flex-direction: column;
 }
 
-.settings-titlebar {
-  height: 32px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  background: linear-gradient(to bottom, #262626, #151515);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
 .settings-dots {
   display: flex;
   gap: 6px;
+  padding: 6px 2px 10px;
+  flex-shrink: 0;
 }
 
 .settings-dot {
@@ -67,15 +59,6 @@
 .settings-dot.mac-max {
   background: #27c93f;
   border: 1px solid #1aab29;
-}
-
-.settings-title {
-  flex: 1;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.88);
-  margin-right: 22px;
 }
 
 .settings-shell {
@@ -552,15 +535,6 @@ body:not(.dark-theme) .settings-window {
   box-shadow:
     0 18px 50px rgba(0, 0, 0, 0.16),
     0 0 0 1px rgba(0, 0, 0, 0.08);
-}
-
-body:not(.dark-theme) .settings-titlebar {
-  background: linear-gradient(to bottom, #f0f0f0, #e4e4e4);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-body:not(.dark-theme) .settings-title {
-  color: rgba(0, 0, 0, 0.78);
 }
 
 body:not(.dark-theme) .settings-sidebar {

@@ -83,13 +83,15 @@
 .mac-window:not(.is-focused) .contacts-dot,
 .mac-window:not(.is-focused) .mail-dot,
 .mac-window:not(.is-focused) .safari-dot,
+.mac-window:not(.is-focused) .spotify-dot,
 .mac-window:not(.is-focused) .preview-dot,
 .settings-dot.disabled,
 .finder-dot.disabled,
 .preview-dot.disabled,
 .contacts-dot.disabled,
 .mail-dot.disabled,
-.safari-dot.disabled {
+.safari-dot.disabled,
+.spotify-dot.disabled {
   background: #464646 !important;
   border-color: #333 !important;
   cursor: default !important;
