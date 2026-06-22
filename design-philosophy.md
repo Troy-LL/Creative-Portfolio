@@ -58,7 +58,7 @@ This document records how UI decisions are made for this portfolio OS project.
 - Unimplemented controls are visibly grayed out.
 - Grayed-out controls never look clickable or interactive.
 - Theme parity checked in both dark and light mode.
-- Mobile behavior remains readable and touch-friendly.
+- Mobile viewports show a desktop-only gate instead of a touch-adapted shell (see `assets/js/mobile/desktop-gate.js`).
 - Link CTAs are explicit and open safely (`rel="noopener noreferrer"` for external links).
 
 ## Common Pitfalls and Reminders

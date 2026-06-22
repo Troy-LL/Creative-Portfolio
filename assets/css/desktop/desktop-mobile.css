@@ -124,14 +124,14 @@
   }
 
   html[data-view="desktop"] .contacts-profile-pic {
-    width: 60px;
-    height: 60px;
+    width: 88px;
+    height: 88px;
   }
 
   html[data-view="desktop"] .contacts-quick-actions {
     gap: 10px;
-    margin-bottom: 12px;
-    padding: 4px 20px 0;
+    margin-bottom: 0;
+    padding: 0;
   }
 
   html[data-view="desktop"] .contacts-highlight-card {
@@ -248,38 +248,27 @@
     padding: 12px 14px 16px;
   }
 
-  html[data-view="desktop"] .settings-about-body {
+  html[data-view="desktop"] .about-hero {
     flex-direction: column;
-    padding: 12px 0;
+    align-items: center;
     text-align: center;
   }
 
   html[data-view="desktop"] .about-avatar {
-    width: 60px;
-    height: 60px;
-    margin: 0 auto 10px;
+    width: 120px;
+    height: 120px;
   }
 
   html[data-view="desktop"] .about-name {
-    font-size: 16px;
-  }
-
-  html[data-view="desktop"] .about-grid {
-    display: block;
-    text-align: left;
-    margin-top: 10px;
-  }
-
-  html[data-view="desktop"] .about-row {
-    margin-bottom: 4px;
+    font-size: 22px;
   }
 
   html[data-view="desktop"] .about-story {
     text-align: left;
   }
 
-  html[data-view="desktop"] .about-cta {
+  html[data-view="desktop"] .about-footer .about-cta {
     width: 100%;
-    margin-top: 12px;
+    max-width: 280px;
   }
 }

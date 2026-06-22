@@ -11,17 +11,23 @@ import { initFinderApp } from "./finder.js";
 import { initPreviewViewers } from "./viewers.js";
 import { initControlCenter } from "./control-center.js";
 import { initDraggableWindows } from "./window-focus.js";
+import { initResizableWindows } from "./window-resize.js";
+import { initDraggableDesktopIcons } from "./desktop-icons.js";
+import { initWindowChrome } from "./window-chrome.js";
 
 export function initDesktopUi() {
   applyStoredAppearance();
   initPreviewViewers();
+  initWindowChrome();
   initWindowControls();
   initDesktopInteractions();
+  initDraggableDesktopIcons();
   initSettingsApp();
   initFinderApp();
   initControlCenter();
   initMenubarClock();
   initDraggableWindows();
+  initResizableWindows();
   initContactsApp();
   initMailApp();
   initSpotifyApp();

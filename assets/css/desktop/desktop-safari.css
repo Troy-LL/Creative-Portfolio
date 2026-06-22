@@ -51,17 +51,7 @@ body.dark-theme .safari-titlebar {
   border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
-.safari-dots {
-  display: flex;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
 .safari-dot {
-  width: 10px;
-  height: 10px;
-  box-sizing: border-box;
-  border-radius: 50%;
   background: #b8b8be;
 }
 
@@ -219,9 +209,12 @@ body.dark-theme .safari-window--browsing .safari-body {
 }
 
 .safari-startpage__inner {
+  width: 560px;
+  min-width: 560px;
   max-width: 560px;
   margin: 0 auto;
   padding: 22px 18px 28px;
+  box-sizing: border-box;
 }
 
 .safari-favorites__heading {
@@ -234,7 +227,7 @@ body.dark-theme .safari-window--browsing .safari-body {
 
 .safari-favorites__grid {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 18px 22px;
   margin-bottom: 28px;
 }
@@ -371,6 +364,7 @@ body.dark-theme .safari-window--browsing .safari-body {
   color: rgba(255, 255, 255, 0.96);
   font-family:
     -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+  white-space: nowrap;
 }
 
 .safari-commissions-callout__sub {

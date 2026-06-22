@@ -26,21 +26,19 @@
     0 0 0 1px rgba(255, 255, 255, 0.1);
   display: flex;
   overflow: hidden;
+  min-height: 0;
   color: #333;
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
     sans-serif;
-  transform: scale(0.9);
-  opacity: 0;
   pointer-events: auto;
 }
 
 .finder-sidebar {
   width: 220px;
-  min-width: 0;
-  background: rgba(235, 235, 235, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  min-width: 220px;
+  flex-shrink: 0;
+  background: #ebebeb;
   border-right: 1px solid rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
@@ -49,30 +47,20 @@
 }
 
 .finder-window-controls {
-  display: flex;
-  gap: 6px;
-  padding: 16px 16px;
+  padding: 16px;
 }
 
-.finder-dot {
-  width: 10px;
-  height: 10px;
-  box-sizing: border-box;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.finder-dot.close {
+.finder-dot--close {
   background: #ff5f56;
   border: 1px solid #e0443e;
 }
 
-.finder-dot.min {
+.finder-dot.mac-min {
   background: #ffbd2e;
   border: 1px solid #dea123;
 }
 
-.finder-dot.max {
+.finder-dot.mac-max {
   background: #27c93f;
   border: 1px solid #1aab29;
 }
@@ -191,8 +179,11 @@
 
 .finder-main {
   flex: 1;
+  min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   background: #ffffff;
 }
 
@@ -309,12 +300,15 @@
 
 .finder-content {
   flex: 1;
+  min-height: 0;
+  min-width: 500px;
   padding: 30px;
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
   gap: 30px;
-  overflow-y: auto;
+  overflow: auto;
+  box-sizing: border-box;
 }
 
 /* Empty folder: center message in the content pane (avoid .finder-icon-label sizing hacks) */
@@ -348,6 +342,7 @@
 /* Icons inside Finder content */
 .finder-icon {
   width: 80px;
+  flex: 0 0 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -464,7 +459,7 @@ body.dark-theme .finder-window {
 }
 
 body.dark-theme .finder-sidebar {
-  background: rgba(44, 44, 46, 0.92);
+  background: #2c2c2e;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 

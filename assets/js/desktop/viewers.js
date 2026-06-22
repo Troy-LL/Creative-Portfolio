@@ -40,7 +40,7 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
   overlay.style.zIndex = "30";
 
   overlay.innerHTML = `
-    <div class="preview-window mac-window" style="width: ${width}; height: ${height}; opacity: 0; transform: scale(0.9) translateY(20px); position: absolute; top: 100px; left: 150px; margin: 0;">
+    <div class="preview-window mac-window" style="width: ${width}; height: ${height}; transform: scale(0.9) translateY(20px); position: absolute; top: 100px; left: 150px; margin: 0;">
       <div class="preview-titlebar">
         <div class="preview-dots mac-controls">
           <span class="preview-dot mac-close preview-close"></span>
@@ -59,52 +59,25 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
   mount.appendChild(overlay);
 
   const win = overlay.querySelector(".preview-window");
-  const closeBtn = overlay.querySelector(".mac-close");
-  const minBtn = overlay.querySelector(".mac-min");
 
   const isMobile = document.documentElement.getAttribute("data-view") === "mobile";
   const animConfig = isMobile
-    ? { opacity: 1, duration: 0.35 }
-    : { opacity: 1, scale: 1, y: 0, duration: 0.35, ease: "back.out(1.4)" };
+    ? { duration: 0.35 }
+    : { scale: 1, y: 0, duration: 0.35, ease: "back.out(1.4)" };
 
+  gsap.set(win, { opacity: 1 });
   gsap.to(win, animConfig);
 
   window.focusWindow(win);
-
-  const closeWindow = () => {
-    gsap.to(win, {
-      opacity: 0,
-      scale: 0.9,
-      y: 20,
-      duration: 0.25,
-      ease: "power2.in",
-      onComplete: () => {
-        overlay.remove();
-        if (document.querySelectorAll(".mac-window").length === 0) {
-          document.body.classList.remove("is-dragging");
-        }
-      },
-    });
-  };
 
   const shim = win.querySelector(".preview-iframe-shim");
   shim?.addEventListener("mousedown", () => {
     window.focusWindow(win);
   });
 
-  closeBtn?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    closeWindow();
-  });
-
-  minBtn?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    closeWindow();
-  });
-
   if (typeof Draggable !== "undefined" && !isMobile) {
     Draggable.create(win, {
-      type: "x,y",
+      type: "top,left",
       handle: ".preview-titlebar",
       bounds: "#desktop-workarea",
       onPress: function () {
@@ -127,12 +100,12 @@ function openImageViewer(imgSrc, title) {
   const overlay = document.createElement("div");
   overlay.className = "window-overlay image-overlay is-visible";
   overlay.innerHTML = `
-    <div class="mac-window preview-window" style="width: min(90vw, 600px); height: auto; opacity: 0; transform: translateY(20px) scale(0.95);">
+    <div class="mac-window preview-window" style="width: min(90vw, 600px); height: auto; transform: translateY(20px) scale(0.95);">
       <div class="preview-titlebar">
         <div class="preview-dots mac-controls">
-          <div class="preview-dot mac-close"></div>
-          <div class="preview-dot mac-min"></div>
-          <div class="preview-dot mac-max"></div>
+          <span class="preview-dot mac-close"></span>
+          <span class="preview-dot mac-min"></span>
+          <span class="preview-dot mac-max disabled"></span>
         </div>
         <div class="preview-title">${title || "Image Preview"}</div>
       </div>
@@ -145,10 +118,9 @@ function openImageViewer(imgSrc, title) {
   mount.appendChild(overlay);
 
   const win = overlay.querySelector(".preview-window");
-  const closeBtn = overlay.querySelector(".mac-close");
 
+  gsap.set(win, { opacity: 1 });
   gsap.to(win, {
-    opacity: 1,
     scale: 1,
     y: 0,
     duration: 0.35,
@@ -157,30 +129,21 @@ function openImageViewer(imgSrc, title) {
 
   window.focusWindow(win);
 
-  const closeWindow = () => {
-    gsap.to(win, {
-      opacity: 0,
-      scale: 0.9,
-      y: 20,
-      duration: 0.25,
-      ease: "power2.in",
-      onComplete: () => overlay.remove(),
-    });
-  };
-
-  closeBtn?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    closeWindow();
-  });
-
   if (
     typeof Draggable !== "undefined" &&
     document.documentElement.getAttribute("data-view") !== "mobile"
   ) {
     Draggable.create(win, {
+      type: "top,left",
       handle: ".preview-titlebar",
       bounds: "#desktop-workarea",
       onPress: () => window.focusWindow(win),
+      onDragStart() {
+        document.body.classList.add("is-dragging");
+      },
+      onDragEnd() {
+        document.body.classList.remove("is-dragging");
+      },
     });
   }
 }

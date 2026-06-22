@@ -1,12 +1,28 @@
 const STORAGE_KEY = "portfolio-appearance";
 
+export const TEXT_SCALE_STEPS = [0.875, 1, 1.125, 1.25];
+
+const TEXT_SCALE_EPS = 0.001;
+
 const DEFAULTS = {
   themeMode: "dark",
   wallpaper: "default",
   uiFont: "system",
   accent: "#007aff",
   animations: true,
+  textScale: 1,
 };
+
+export function normalizeTextScale(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return DEFAULTS.textScale;
+  const step = TEXT_SCALE_STEPS.find((s) => Math.abs(s - n) < TEXT_SCALE_EPS);
+  return step ?? DEFAULTS.textScale;
+}
+
+export function textScaleEquals(a, b) {
+  return normalizeTextScale(a) === normalizeTextScale(b);
+}
 
 let mqListener = null;
 
@@ -23,7 +39,9 @@ export function getAppearance() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return { ...DEFAULTS };
-    return { ...DEFAULTS, ...JSON.parse(raw) };
+    const merged = { ...DEFAULTS, ...JSON.parse(raw) };
+    merged.textScale = normalizeTextScale(merged.textScale);
+    return merged;
   } catch {
     return { ...DEFAULTS };
   }
@@ -53,9 +71,14 @@ function syncControlCenterUi(state) {
 }
 
 export function applyAppearance(state = getAppearance()) {
-  const { themeMode, wallpaper, uiFont, accent, animations } = state;
+  const { themeMode, wallpaper, uiFont, accent, animations, textScale } =
+    state;
 
   document.documentElement.style.setProperty("--sys-color", accent);
+
+  const scale = normalizeTextScale(textScale);
+  document.body.dataset.textScale = String(scale);
+  document.body.style.setProperty("--desktop-text-scale", String(scale));
 
   document.body.dataset.wallpaper = wallpaper;
   document.body.dataset.uiFont = uiFont;
@@ -85,6 +108,9 @@ export function applyAppearance(state = getAppearance()) {
 
 export function saveAppearance(partial) {
   const next = { ...getAppearance(), ...partial };
+  if ("textScale" in partial) {
+    next.textScale = normalizeTextScale(next.textScale);
+  }
   localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   applyAppearance(next);
 }

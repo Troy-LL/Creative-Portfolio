@@ -6,6 +6,7 @@
 @import url("desktop/desktop-preview.css");
 @import url("desktop/desktop-finder.css");
 @import url("desktop/desktop-maximized.css");
+@import url("desktop/desktop-window-resize.css");
 @import url("desktop/desktop-control-center.css");
 @import url("desktop/desktop-animations-override.css");
 @import url("desktop/desktop-contacts.css");

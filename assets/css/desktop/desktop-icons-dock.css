@@ -1,15 +1,18 @@
 /* ── Desktop File Icons ── */
 .desktop-icons-area {
   position: absolute;
-  top: 44px;
-  right: 16px;
-  display: grid;
-  grid-template-columns: 80px;
-  grid-auto-rows: 104px;
-  gap: 2px;
+  top: 28px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 2;
 }
 
 .desktop-file-icon {
+  position: absolute;
+  width: 80px;
+  min-height: 104px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -18,7 +21,9 @@
   padding: 8px 6px;
   border-radius: 6px;
   cursor: pointer;
+  pointer-events: auto;
   transition: background 0.15s;
+  box-sizing: border-box;
 }
 
 .desktop-file-icon:hover {

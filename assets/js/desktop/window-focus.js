@@ -99,7 +99,7 @@ export function initDraggableWindows() {
     }
 
     Draggable.create(sel, {
-      type: "x,y",
+      type: "top,left",
       handle: handle,
       bounds: "#desktop-workarea",
       onPress: function () {

@@ -31,17 +31,7 @@
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-.spotify-dots {
-  display: flex;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
 .spotify-dot {
-  width: 10px;
-  height: 10px;
-  box-sizing: border-box;
-  border-radius: 50%;
   background: #555;
 }
 
@@ -303,6 +293,8 @@
   flex-direction: column;
   min-width: 0;
   min-height: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
   background: linear-gradient(180deg, #4a6278 0%, #121212 240px);
 }
 
@@ -312,6 +304,8 @@
   gap: 20px;
   align-items: flex-end;
   flex-shrink: 0;
+  min-width: 520px;
+  box-sizing: border-box;
 }
 
 .spotify-playlist-cover {
@@ -346,11 +340,12 @@
 }
 
 .spotify-playlist-title {
-  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-size: 2.5rem;
   font-weight: 800;
   line-height: 1.1;
   margin: 0 0 10px;
   letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 
 .spotify-playlist-title a {
@@ -400,6 +395,8 @@
   gap: 20px;
   padding: 0 24px 12px;
   flex-shrink: 0;
+  min-width: 520px;
+  box-sizing: border-box;
 }
 
 .spotify-play-btn {
@@ -449,8 +446,10 @@
 .spotify-tracklist-wrap {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
+  min-width: 520px;
+  overflow: auto;
   padding: 0 16px 12px;
+  box-sizing: border-box;
 }
 
 .spotify-tracklist-wrap[data-lenis-prevent] {
@@ -459,7 +458,7 @@
 
 .spotify-tracklist-head {
   display: grid;
-  grid-template-columns: 32px minmax(0, 2.2fr) minmax(0, 1.2fr) 88px 48px;
+  grid-template-columns: 32px 220px 140px 88px 48px;
   gap: 12px;
   padding: 6px 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -472,6 +471,7 @@
   top: 0;
   background: #121212;
   z-index: 1;
+  min-width: 528px;
 }
 
 .spotify-tracklist-head span:last-child {
@@ -480,7 +480,7 @@
 
 .spotify-track-row {
   display: grid;
-  grid-template-columns: 32px minmax(0, 2.2fr) minmax(0, 1.2fr) 88px 48px;
+  grid-template-columns: 32px 220px 140px 88px 48px;
   gap: 12px;
   align-items: center;
   padding: 6px 12px;
@@ -488,6 +488,7 @@
   font-size: 14px;
   color: rgba(255, 255, 255, 0.88);
   transition: background 0.12s ease;
+  min-width: 528px;
 }
 
 .spotify-track-row:hover {

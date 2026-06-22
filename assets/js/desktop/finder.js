@@ -1,3 +1,5 @@
+import { animateWindowOpen } from "./window-resize.js";
+
 function setFinderDockOpen(isOpen) {
   document.querySelectorAll('.dock-icon[data-app="finder"]').forEach((el) => {
     el.classList.toggle("is-open", isOpen);
@@ -183,34 +185,6 @@ export function initFinderApp() {
   const overlay = document.getElementById("finderOverlay");
   if (!overlay) return;
 
-  const windowEl = overlay.querySelector(".finder-window");
-  const closeDot = overlay.querySelector(".mac-close");
-  const minDot = overlay.querySelector(".mac-min");
-
-  function close(removeDockIndicator = true) {
-    gsap.to(windowEl, {
-      opacity: 0,
-      scale: 0.9,
-      duration: 0.2,
-      ease: "power2.in",
-      onComplete: () => {
-        overlay.classList.remove("is-visible");
-        windowEl.classList.remove("is-maximized");
-        if (removeDockIndicator) setFinderDockOpen(false);
-      },
-    });
-  }
-
-  closeDot?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    close();
-  });
-
-  minDot?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    close(false);
-  });
-
   overlay
     .querySelectorAll(".finder-sidebar-item:not(.finder-sidebar-item--disabled)")
     .forEach((item) => {
@@ -303,11 +277,12 @@ export function openFinder(route, pushToHistory = true) {
 
   if (!overlay.classList.contains("is-visible")) {
     overlay.classList.add("is-visible");
-    gsap.fromTo(
-      overlay.querySelector(".finder-window"),
-      { opacity: 0, scale: 0.95 },
-      { opacity: 1, scale: 1, duration: 0.25, ease: "power2.out" },
-    );
+    animateWindowOpen(overlay.querySelector(".finder-window"), {
+      duration: 0.25,
+      ease: "power2.out",
+      fromScale: 0.95,
+      fromY: 0,
+    });
   }
   if (typeof window.focusWindow === "function")
     window.focusWindow(".finder-window");

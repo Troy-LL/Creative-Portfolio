@@ -3,22 +3,46 @@ import { initBootSplash } from "./bootstrap/boot-splash.js";
 import { lenis } from "./core/state.js";
 import { applyStoredAppearance } from "./desktop/appearance-state.js";
 import { initDesktopUi } from "./desktop/init.js";
+import { animateDesktopChromeIn } from "./desktop/monitor-transition.js";
 import { initTerminalInput } from "./terminal/input.js";
-import { initMobileUi, onMobileDesktopViewChange } from "./mobile/init.js";
-import { isMobileViewport, setDataViewAttr } from "./mobile/viewport.js";
+import {
+  initDesktopGate,
+  onDesktopGateViewChange,
+} from "./mobile/desktop-gate.js";
+import {
+  shouldShowMobileGate,
+  setDataViewAttr,
+  watchGateViewport,
+} from "./mobile/viewport.js";
 
 let desktopInited = false;
+let terminalInited = false;
+
+function revealDesktopChrome() {
+  const desktop = document.getElementById("desktop");
+  if (desktop && !desktop.classList.contains("desktop--visible")) {
+    desktop.classList.add("desktop--visible");
+    animateDesktopChromeIn();
+  }
+}
 
 function ensureDesktopUi() {
-  if (desktopInited || isMobileViewport()) return;
+  if (desktopInited || shouldShowMobileGate()) return;
   initLenisSmoothScroll();
   if (document.querySelector(".monitor-bezel")?.classList.contains("is-minimized")) {
     lenis?.stop?.();
   } else {
     lenis?.start?.();
   }
+  revealDesktopChrome();
   initDesktopUi();
   desktopInited = true;
+}
+
+function ensureTerminalInput() {
+  if (terminalInited) return;
+  initTerminalInput();
+  terminalInited = true;
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
@@ -27,31 +51,33 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   await initBootSplash();
 
-  if (!isMobileViewport()) {
-    ensureDesktopUi();
+  if (shouldShowMobileGate()) {
+    initDesktopGate();
   } else {
-    initMobileUi();
+    ensureDesktopUi();
+    ensureTerminalInput();
   }
 
-  initTerminalInput();
-
   const onResize = () => {
-    const wasMobile = document.documentElement.getAttribute("data-view") === "mobile";
+    const wasGated =
+      document.documentElement.getAttribute("data-gate") === "active";
     setDataViewAttr();
-    const nowMobile = isMobileViewport();
+    const nowGated = shouldShowMobileGate();
 
-    if (wasMobile !== nowMobile) {
-      onMobileDesktopViewChange(nowMobile);
+    if (wasGated !== nowGated) {
+      onDesktopGateViewChange(nowGated);
     }
 
-    if (nowMobile) {
+    if (nowGated) {
       lenis?.stop?.();
     } else {
+      revealDesktopChrome();
       ensureDesktopUi();
+      ensureTerminalInput();
       lenis?.start?.();
     }
   };
 
   window.addEventListener("resize", onResize);
-  window.matchMedia("(orientation: landscape)").addEventListener("change", onResize);
+  watchGateViewport(() => onResize());
 });

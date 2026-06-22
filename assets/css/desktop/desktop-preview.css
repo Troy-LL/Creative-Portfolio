@@ -26,8 +26,6 @@
   flex-direction: column;
   overflow: hidden;
   color: #333;
-  transform: scale(0.9);
-  opacity: 0;
   pointer-events: auto;
 }
 
@@ -45,16 +43,6 @@
 .preview-dots {
   position: absolute;
   left: 16px;
-  display: flex;
-  gap: 6px;
-}
-
-.preview-dot {
-  width: 10px;
-  height: 10px;
-  box-sizing: border-box;
-  border-radius: 50%;
-  cursor: pointer;
 }
 
 .preview-dot.mac-close {

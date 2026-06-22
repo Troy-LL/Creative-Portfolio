@@ -137,6 +137,10 @@ body[data-ui-font="mono"] .desktop {
   font-family: "VT323", "Courier New", monospace;
 }
 
+body {
+  --desktop-text-scale: 1;
+}
+
 .desktop {
   position: fixed;
   inset: 0;
@@ -145,6 +149,7 @@ body[data-ui-font="mono"] .desktop {
   z-index: 50;
   font-family: var(--font-ui-desktop);
   color: var(--cc-text);
+  zoom: var(--desktop-text-scale, 1);
 }
 
 .desktop.desktop--visible {

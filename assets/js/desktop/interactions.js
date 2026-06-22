@@ -2,6 +2,7 @@ import { restoreFromDesktop } from "./monitor-transition.js";
 import { openFinder } from "./finder.js";
 import { syncSettingsOverlay } from "./settings-app.js";
 import { openSafariFromDock } from "./safari-app.js";
+import { animateWindowOpen } from "./window-resize.js";
 
 export function initDesktopInteractions() {
   const monitor = document.querySelector(".monitor-bezel");
@@ -47,11 +48,12 @@ export function initDesktopInteractions() {
         settingsOverlay.classList.add("is-visible");
         icon.classList.add("is-open");
         syncSettingsOverlay();
-        gsap.fromTo(
-          ".settings-window",
-          { opacity: 0, scale: 0.9, y: 20 },
-          { opacity: 1, scale: 1, y: 0, duration: 0.35, ease: "back.out(1.3)" },
-        );
+        animateWindowOpen(".settings-window", {
+          duration: 0.35,
+          ease: "back.out(1.3)",
+          fromScale: 0.9,
+          fromY: 20,
+        });
         if (typeof window.focusWindow === "function")
           window.focusWindow(".settings-window");
         return;
@@ -71,11 +73,12 @@ export function initDesktopInteractions() {
         if (!contactsOverlay) return;
         contactsOverlay.classList.add("is-visible");
         icon.classList.add("is-open");
-        gsap.fromTo(
-          ".contacts-window",
-          { opacity: 0, scale: 0.9, y: 20 },
-          { opacity: 1, scale: 1, y: 0, duration: 0.35, ease: "power2.out" },
-        );
+        animateWindowOpen(".contacts-window", {
+          duration: 0.35,
+          ease: "power2.out",
+          fromScale: 0.9,
+          fromY: 20,
+        });
         if (typeof window.focusWindow === "function")
           window.focusWindow(".contacts-window");
         return;
@@ -91,11 +94,12 @@ export function initDesktopInteractions() {
         if (!mailOverlay) return;
         mailOverlay.classList.add("is-visible");
         icon.classList.add("is-open");
-        gsap.fromTo(
-          ".mail-window",
-          { opacity: 0, scale: 0.9, y: 20 },
-          { opacity: 1, scale: 1, y: 0, duration: 0.35, ease: "power2.out" },
-        );
+        animateWindowOpen(".mail-window", {
+          duration: 0.35,
+          ease: "power2.out",
+          fromScale: 0.9,
+          fromY: 20,
+        });
         if (typeof window.focusWindow === "function")
           window.focusWindow(".mail-window");
         return;
@@ -150,11 +154,12 @@ export function initDesktopInteractions() {
         if (!spotifyOverlay) return;
         spotifyOverlay.classList.add("is-visible");
         icon.classList.add("is-open");
-        gsap.fromTo(
-          ".spotify-window",
-          { opacity: 0, scale: 0.9, y: 20 },
-          { opacity: 1, scale: 1, y: 0, duration: 0.35, ease: "power2.out" },
-        );
+        animateWindowOpen(".spotify-window", {
+          duration: 0.35,
+          ease: "power2.out",
+          fromScale: 0.9,
+          fromY: 20,
+        });
         if (typeof window.focusWindow === "function")
           window.focusWindow(".spotify-window");
         return;

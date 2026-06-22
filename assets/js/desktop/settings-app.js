@@ -1,4 +1,9 @@
-import { getAppearance, saveAppearance } from "./appearance-state.js";
+import {
+  getAppearance,
+  normalizeTextScale,
+  saveAppearance,
+  textScaleEquals,
+} from "./appearance-state.js";
 
 function syncSettingsUi(root) {
   const s = getAppearance();
@@ -20,15 +25,18 @@ function syncSettingsUi(root) {
   root.querySelectorAll(".settings-font-card").forEach((el) => {
     el.classList.toggle("is-selected", el.dataset.uiFont === s.uiFont);
   });
+
+  root.querySelectorAll(".settings-text-scale-card").forEach((el) => {
+    el.classList.toggle(
+      "is-selected",
+      textScaleEquals(el.dataset.textScale, s.textScale),
+    );
+  });
 }
 
 export function initSettingsApp() {
   const overlay = document.getElementById("settingsOverlay");
   if (!overlay) return;
-
-  const windowEl = overlay.querySelector(".settings-window");
-  const closeDot = overlay.querySelector(".mac-close");
-  const minDot = overlay.querySelector(".mac-min");
 
   syncSettingsUi(overlay);
 
@@ -77,34 +85,14 @@ export function initSettingsApp() {
     });
   });
 
-  function close(removeDockIndicator = true) {
-    gsap.to(windowEl, {
-      opacity: 0,
-      scale: 0.9,
-      y: 18,
-      duration: 0.25,
-      ease: "power2.in",
-      onComplete: () => {
-        overlay.classList.remove("is-visible");
-        windowEl.classList.remove("is-maximized");
-        if (removeDockIndicator) {
-          document
-            .querySelector('.dock-icon[data-app="settings"]')
-            ?.classList.remove("is-open");
-        }
-      },
+  overlay.querySelectorAll(".settings-text-scale-card").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const scale = normalizeTextScale(btn.dataset.textScale);
+      saveAppearance({ textScale: scale });
+      syncSettingsUi(overlay);
     });
-  }
-
-  closeDot?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    close();
   });
 
-  minDot?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    close(false);
-  });
 }
 
 export function syncSettingsOverlay() {

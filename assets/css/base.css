@@ -14,6 +14,7 @@
   --font: "VT323", "Courier New", monospace;
   --line-h: 1.55;
   --fs: clamp(1rem, 2.2vw, 1.35rem);
+  --mac-dot-size: 12px;
 }
 
 /* ── Reset ── */
@@ -67,6 +68,9 @@ button,
 .mail-dot,
 .safari-dot,
 .spotify-dot,
+.preview-dot,
+.mac-close:not(.disabled),
+.mac-min:not(.disabled),
 .spotify-sidebar__item:not(.ui-chrome--inactive),
 .spotify-playlist-title a,
 .control,
@@ -113,7 +117,97 @@ pre,
     text !important;
 }
 
+/* ── Window drag / resize cursors ── */
+body.is-dragging,
+body.is-dragging * {
+  cursor:
+    url("../img/cursors/move.svg") 16 16,
+    move !important;
+}
+
+body.is-resizing-window,
+body.is-resizing-window * {
+  user-select: none;
+}
+
+body.is-resizing-window[data-resize-axis="n"],
+body.is-resizing-window[data-resize-axis="n"] *,
+body.is-resizing-window[data-resize-axis="s"],
+body.is-resizing-window[data-resize-axis="s"] * {
+  cursor:
+    url("../img/cursors/vertical-resize.svg") 16 16,
+    ns-resize !important;
+}
+
+body.is-resizing-window[data-resize-axis="e"],
+body.is-resizing-window[data-resize-axis="e"] *,
+body.is-resizing-window[data-resize-axis="w"],
+body.is-resizing-window[data-resize-axis="w"] * {
+  cursor:
+    url("../img/cursors/horizontal-resize.svg") 16 16,
+    ew-resize !important;
+}
+
+body.is-resizing-window[data-resize-axis="ne"],
+body.is-resizing-window[data-resize-axis="ne"] *,
+body.is-resizing-window[data-resize-axis="sw"],
+body.is-resizing-window[data-resize-axis="sw"] * {
+  cursor:
+    url("../img/cursors/diagonal-resize-2.svg") 16 16,
+    nesw-resize !important;
+}
+
+body.is-resizing-window[data-resize-axis="nw"],
+body.is-resizing-window[data-resize-axis="nw"] *,
+body.is-resizing-window[data-resize-axis="se"],
+body.is-resizing-window[data-resize-axis="se"] * {
+  cursor:
+    url("../img/cursors/diagonal-resize-1.svg") 16 16,
+    nwse-resize !important;
+}
+
+.mac-window-resize-handle--n,
+.mac-window-resize-handle--s {
+  cursor:
+    url("../img/cursors/vertical-resize.svg") 16 16,
+    ns-resize !important;
+}
+
+.mac-window-resize-handle--e,
+.mac-window-resize-handle--w {
+  cursor:
+    url("../img/cursors/horizontal-resize.svg") 16 16,
+    ew-resize !important;
+}
+
+.mac-window-resize-handle--ne,
+.mac-window-resize-handle--sw {
+  cursor:
+    url("../img/cursors/diagonal-resize-2.svg") 16 16,
+    nesw-resize !important;
+}
+
+.mac-window-resize-handle--nw,
+.mac-window-resize-handle--se {
+  cursor:
+    url("../img/cursors/diagonal-resize-1.svg") 16 16,
+    nwse-resize !important;
+}
+
 /* ── Shared macOS Window Controls ── */
+.mac-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+/* Counter-scale so traffic lights stay a fixed visual size when .desktop zoom changes. */
+.desktop .mac-controls {
+  zoom: calc(1 / var(--desktop-text-scale, 1));
+}
+
 .mac-close,
 .mac-min,
 .mac-max {
@@ -121,6 +215,19 @@ pre,
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: var(--mac-dot-size);
+  height: var(--mac-dot-size);
+  box-sizing: border-box;
+  border-radius: 50%;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.mac-close.disabled,
+.mac-min.disabled,
+.mac-max.disabled {
+  pointer-events: none;
+  cursor: default !important;
 }
 
 .mac-close::after,

@@ -39,17 +39,7 @@ body.dark-theme .mail-window {
   border-color: rgba(255, 255, 255, 0.12);
 }
 
-.mail-dots {
-  display: flex;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
 .mail-dot {
-  width: 10px;
-  height: 10px;
-  box-sizing: border-box;
-  border-radius: 50%;
   background: #ccc;
 }
 
@@ -150,14 +140,14 @@ body.dark-theme .mail-chrome-toolbar__btn {
 .mail-sidebar {
   width: 168px;
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.55);
+  background: #f0f0f2;
   border-right: 1px solid rgba(0, 0, 0, 0.1);
   padding: 8px 0 12px;
   overflow-y: auto;
 }
 
 body.dark-theme .mail-sidebar {
-  background: rgba(34, 34, 36, 0.85);
+  background: #222224;
   border-right-color: rgba(255, 255, 255, 0.08);
 }
 
@@ -262,9 +252,11 @@ body.dark-theme .mail-list-pane__empty {
 .mail-compose-pane {
   flex: 1;
   min-width: 0;
+  min-height: 0;
   background: #fff;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 body.dark-theme .mail-compose-pane {
@@ -316,11 +308,13 @@ body.dark-theme .mail-compose-toolbar__btn {
 .mail-compose-form {
   flex: 1;
   min-height: 0;
+  min-width: 400px;
   padding: 16px 18px 18px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  overflow-y: auto;
+  overflow: auto;
+  box-sizing: border-box;
 }
 
 .mail-compose-form__intro {
@@ -339,6 +333,7 @@ body.dark-theme .mail-compose-form__intro {
   font-size: 12px;
   color: #86868b;
   line-height: 1.4;
+  min-width: 360px;
 }
 
 body.dark-theme .mail-compose-form__hint {
