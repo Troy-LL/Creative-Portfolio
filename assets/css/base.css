@@ -26,6 +26,28 @@
   box-sizing: border-box;
 }
 
+/* OS-like: shell chrome is not text-selectable; fields/docs opt back in. */
+#desktop,
+#desktop * {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#desktop input,
+#desktop textarea,
+#desktop [contenteditable="true"],
+#desktop .user-select-text,
+#desktop .preview-body,
+#desktop .preview-body * {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+#desktop img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
 body {
   background: #000;
   font-family: var(--font);
