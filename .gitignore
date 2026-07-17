@@ -21,5 +21,17 @@ founders-cafe/dist/
 # Cursor / local reference material
 skills/
 
+# Local code intelligence indexes
+.codegraph/
+.code-review-graph/
+
 # Design notes (not loaded by the browser)
 design-philosophy.md
+
+.worktrees/
+.superpowers/
+
+# Playwright
+test-results/
+playwright-report/
+docs/testing/greybox-log.jsonl
