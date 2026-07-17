@@ -30,4 +30,10 @@ export default defineConfig({
       },
     },
   ],
+  webServer: {
+    command: "npx --yes serve -l 4173 .",
+    url: baseURL,
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
+  },
 });
