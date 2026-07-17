@@ -20,9 +20,19 @@ npx playwright test
 | `clickable-chrome` | pass | settings + finder close/min hit-test + action |
 | `drag-windows` | pass | settings via `.settings-dots` |
 | `resize-windows` | pass | finder SE handle ≥ +40px, mins 400×300 |
-| `perf.budget` | pass | scenarios logged; budget 8000ms |
+| `dock-clearance` | pass | workarea excludes dock; settings@1280×720 clear |
+| `os-selection` | pass | shell `user-select: none` |
+
+## Deeper loop (2026-07-17)
+
+- Spec: `docs/superpowers/specs/2026-07-17-cicd-os-desktop-framing-design.md`
+- Sanity probe: `docs/testing/sanity-probe-2026-07-17.json` (0 fails after fix)
+- Suite: **17 passed** (prior 15 + dock-clearance + os-selection)
+- Fixes: dock-aware workarea insets + viewport/visualViewport refit; OS-like `#desktop` user-select
+- CI: `.github/workflows/ci.yml` (`deploy-sanity` + `e2e`)
 
 ## Performance
+
 
 - Budget: **8000ms** per scenario (`withScenario` / greybox log)
 - Typical open-app scenario: ~3.5–4.5s (boot splash dominates first open)
