@@ -47,6 +47,20 @@ export function getAppearance() {
   }
 }
 
+export function animationsEnabled() {
+  return getAppearance().animations === true;
+}
+
+/** @returns {"light" | "dark"} */
+export function getEffectiveTheme(state = getAppearance()) {
+  if (state.themeMode === "auto") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  }
+  return state.themeMode === "light" ? "light" : "dark";
+}
+
 function applyDarkClass(isDark) {
   document.body.classList.toggle("dark-theme", isDark);
 }
