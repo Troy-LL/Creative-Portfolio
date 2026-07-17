@@ -1,0 +1,72 @@
+{
+  "shell": {
+    "work": {
+      "top": 25.859375,
+      "bottom": 807.640625,
+      "height": 781.78125,
+      "width": 1440
+    },
+    "dock": {
+      "top": 809.9323120117188,
+      "bottom": 884.9323120117188,
+      "height": 75,
+      "width": 459
+    },
+    "menu": {
+      "bottom": 27.723199993371964,
+      "height": 28
+    },
+    "wallpaperUserSelect": "none",
+    "workareaStyle": "position: absolute; inset: 25.8669px 0px 92.3691px; pointer-events: none; z-index: 1;"
+  },
+  "findings": [
+    {
+      "ts": "2026-07-17T06:30:44.490Z",
+      "signal": "workarea",
+      "app": "shell",
+      "detail": "work.bottom=807.640625 dock.top=809.9323120117188 overlap=false us=none"
+    },
+    {
+      "ts": "2026-07-17T06:30:45.482Z",
+      "signal": "pass",
+      "app": "settings",
+      "detail": "{\"underDock\":false,\"outFrame\":false,\"w\":{\"l\":360,\"t\":180,\"r\":1080,\"b\":720,\"width\":720,\"height\":540},\"dockTop\":811,\"workBottom\":803}"
+    },
+    {
+      "ts": "2026-07-17T06:30:46.715Z",
+      "signal": "pass",
+      "app": "contacts",
+      "detail": "{\"underDock\":false,\"outFrame\":false,\"w\":{\"l\":60,\"t\":60,\"r\":780,\"b\":580,\"width\":720,\"height\":520},\"dockTop\":811,\"workBottom\":803}"
+    },
+    {
+      "ts": "2026-07-17T06:30:49.919Z",
+      "signal": "pass",
+      "app": "mail",
+      "detail": "{\"underDock\":false,\"outFrame\":false,\"w\":{\"l\":520,\"t\":36,\"r\":1440,\"b\":596,\"width\":920,\"height\":560},\"dockTop\":811,\"workBottom\":803}"
+    },
+    {
+      "ts": "2026-07-17T06:30:53.135Z",
+      "signal": "pass",
+      "app": "finder",
+      "detail": "{\"underDock\":false,\"outFrame\":false,\"w\":{\"l\":340,\"t\":210,\"r\":1100,\"b\":690,\"width\":760,\"height\":480},\"dockTop\":811,\"workBottom\":803}"
+    },
+    {
+      "ts": "2026-07-17T06:30:56.385Z",
+      "signal": "pass",
+      "app": "safari",
+      "detail": "{\"underDock\":false,\"outFrame\":false,\"w\":{\"l\":200,\"t\":48,\"r\":1240,\"b\":768,\"width\":1040,\"height\":720},\"dockTop\":811,\"workBottom\":803}"
+    },
+    {
+      "ts": "2026-07-17T06:30:59.668Z",
+      "signal": "pass",
+      "app": "spotify",
+      "detail": "{\"underDock\":false,\"outFrame\":false,\"w\":{\"l\":240,\"t\":44,\"r\":1200,\"b\":684,\"width\":960,\"height\":640},\"dockTop\":811,\"workBottom\":803}"
+    },
+    {
+      "ts": "2026-07-17T06:31:03.438Z",
+      "signal": "pass",
+      "app": "settings@1280x720",
+      "detail": "{\"underDock\":false,\"outFrame\":false,\"w\":{\"b\":623,\"height\":540},\"dockTop\":631,\"workBottom\":623}"
+    }
+  ]
+}
