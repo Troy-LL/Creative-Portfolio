@@ -60,6 +60,29 @@ export function assertInFrame(box, frameBox, tolerance = 2) {
 }
 
 /**
+ * Wait for GSAP open settle (`has-explicit-layout`), then assert the window
+ * rect is fully inside `#desktop-workarea` (2px tolerance).
+ * @param {import("@playwright/test").Page} page
+ * @param {string} windowSelector
+ */
+export async function assertWindowInDesktop(page, windowSelector) {
+  const win = page.locator(windowSelector);
+  await expect(win).toBeVisible();
+  await expect(win).toHaveClass(/has-explicit-layout/, { timeout: 10_000 });
+
+  const box = await win.evaluate((el) => {
+    const r = el.getBoundingClientRect();
+    return { x: r.x, y: r.y, width: r.width, height: r.height };
+  });
+  const frameBox = await page.locator("#desktop-workarea").evaluate((el) => {
+    const r = el.getBoundingClientRect();
+    return { x: r.x, y: r.y, width: r.width, height: r.height };
+  });
+
+  assertInFrame(box, frameBox, 2);
+}
+
+/**
  * Time a scenario, append greybox JSONL, screenshot on fail.
  * @param {import("@playwright/test").Page} page
  * @param {{ scenario: string, app: string }} meta
