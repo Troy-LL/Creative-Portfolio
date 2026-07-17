@@ -19,15 +19,15 @@
   left: 50%;
   margin-top: -240px;
   margin-left: -380px;
-  background: #ffffff;
+  background: var(--win-bg);
   border-radius: 12px;
   box-shadow:
     0 16px 40px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
+    0 0 0 1px var(--win-border);
   display: flex;
   overflow: hidden;
   min-height: 0;
-  color: #333;
+  color: var(--win-text);
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
     sans-serif;
@@ -38,8 +38,8 @@
   width: 220px;
   min-width: 220px;
   flex-shrink: 0;
-  background: #ebebeb;
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--win-sidebar);
+  border-right: 1px solid var(--win-border);
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
@@ -184,7 +184,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #ffffff;
+  background: var(--win-bg);
 }
 
 .finder-topbar {
@@ -309,6 +309,7 @@
   gap: 30px;
   overflow: auto;
   box-sizing: border-box;
+  background: var(--win-bg);
 }
 
 /* Empty folder: center message in the content pane (avoid .finder-icon-label sizing hacks) */
@@ -322,7 +323,7 @@
   margin: 0;
   opacity: 0.5;
   font-size: 12px;
-  color: #666;
+  color: var(--win-text-muted);
   text-align: center;
   line-height: 1.4;
   max-width: 100%;
@@ -330,13 +331,13 @@
 
 .finder-statusbar {
   height: 28px;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 1px solid var(--win-border);
   display: flex;
   align-items: center;
   padding: 0 16px;
   font-size: 11px;
-  color: #666;
-  background: #fafafa;
+  color: var(--win-text-muted);
+  background: var(--win-chrome);
 }
 
 /* Icons inside Finder content */
@@ -451,16 +452,9 @@
 
 /* ── Finder: dark mode (matches Control Center “Dark mode”) ── */
 body.dark-theme .finder-window {
-  background: #1c1c1e;
-  color: #f2f2f7;
   box-shadow:
     0 16px 48px rgba(0, 0, 0, 0.65),
-    0 0 0 1px rgba(255, 255, 255, 0.08);
-}
-
-body.dark-theme .finder-sidebar {
-  background: #2c2c2e;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+    0 0 0 1px var(--win-border);
 }
 
 body.dark-theme .finder-sidebar-title {
@@ -472,7 +466,7 @@ body.dark-theme .finder-sidebar-item {
 }
 
 body.dark-theme .finder-sidebar-item:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--win-hover);
 }
 
 body.dark-theme .finder-sidebar-item.active {
@@ -493,7 +487,7 @@ body.dark-theme .finder-sidebar-item--disabled .finder-si-svg {
 }
 
 body.dark-theme .finder-segment {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--win-hover);
 }
 
 body.dark-theme .finder-segment__btn {
@@ -512,10 +506,6 @@ body.dark-theme .finder-content--recents .finder-icon--reflect .finder-icon-visu
     rgba(200, 200, 210, 0.18),
     transparent
   );
-}
-
-body.dark-theme .finder-main {
-  background: #1c1c1e;
 }
 
 body.dark-theme .finder-topbar {
@@ -546,20 +536,6 @@ body.dark-theme .finder-toolbar-right .ui-chrome--inactive {
 
 body.dark-theme .finder-toolbar-right .ui-chrome--inactive .finder-icon-svg {
   stroke: currentColor;
-}
-
-body.dark-theme .finder-content {
-  background: #1c1c1e;
-}
-
-body.dark-theme .finder-empty-message {
-  color: rgba(235, 235, 245, 0.45);
-}
-
-body.dark-theme .finder-statusbar {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  background: #2c2c2e;
-  color: rgba(235, 235, 245, 0.65);
 }
 
 body.dark-theme .finder-icon-label {
