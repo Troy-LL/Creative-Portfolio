@@ -58,15 +58,55 @@ function getConfigForWindow(win) {
 
 
 
-function getWorkareaBounds() {
-
+function syncWorkareaInsets() {
   const workarea = document.getElementById("desktop-workarea");
+  const desktop = document.getElementById("desktop");
+  if (!workarea || !desktop) return;
 
-  if (!workarea) return null;
+  const dr = desktop.getBoundingClientRect();
+  const menu = document.querySelector(".desktop-menubar");
+  const dock = document.querySelector(".desktop-dock");
 
-  return workarea.getBoundingClientRect();
+  const topInset = menu
+    ? Math.max(0, menu.getBoundingClientRect().bottom - dr.top)
+    : 28;
 
+  let bottomInset = 0;
+  let leftInset = 0;
+  let rightInset = 0;
+
+  if (dock) {
+    const d = dock.getBoundingClientRect();
+    const pad = 8;
+    const centerY = (d.top + d.bottom) / 2;
+    const centerX = (d.left + d.right) / 2;
+    const midY = dr.top + dr.height / 2;
+    const midX = dr.left + dr.width / 2;
+
+    if (d.width >= d.height && centerY >= midY) {
+      bottomInset = Math.max(0, dr.bottom - d.top + pad);
+    } else if (d.height > d.width && centerX <= midX) {
+      leftInset = Math.max(0, d.right - dr.left + pad);
+    } else if (d.height > d.width && centerX > midX) {
+      rightInset = Math.max(0, dr.right - d.left + pad);
+    } else {
+      bottomInset = Math.max(0, dr.bottom - d.top + pad);
+    }
+  }
+
+  workarea.style.top = topInset + "px";
+  workarea.style.bottom = bottomInset + "px";
+  workarea.style.left = leftInset + "px";
+  workarea.style.right = rightInset + "px";
 }
+
+function getWorkareaBounds() {
+  syncWorkareaInsets();
+  const workarea = document.getElementById("desktop-workarea");
+  if (!workarea) return null;
+  return workarea.getBoundingClientRect();
+}
+
 
 
 
@@ -290,64 +330,39 @@ function saveStoredSize(key, state) {
 
 
 function clampWindowToWorkarea(win, minWidth, minHeight) {
-
   const wa = getWorkareaBounds();
-
   if (!wa) return;
 
-
-
   const { left: parentLeft, top: parentTop } = getParentOffset(win);
-
   const minLeft = wa.left - parentLeft;
-
   const minTop = wa.top - parentTop;
-
   const maxRight = wa.right - parentLeft;
-
   const maxBottom = wa.bottom - parentTop;
 
-
-
   let left = parseFloat(win.style.left) || 0;
-
   let top = parseFloat(win.style.top) || 0;
-
   let width = parseFloat(win.style.width) || minWidth;
-
   let height = parseFloat(win.style.height) || minHeight;
 
+  const maxWidth = Math.max(0, maxRight - minLeft);
+  const maxHeight = Math.max(0, maxBottom - minTop);
+  const effMinW = Math.min(minWidth, maxWidth);
+  const effMinH = Math.min(minHeight, maxHeight);
 
-
-  const maxWidth = maxRight - minLeft;
-
-  const maxHeight = maxBottom - minTop;
-
-  width = Math.max(minWidth, Math.min(width, maxWidth));
-
-  height = Math.max(minHeight, Math.min(height, maxHeight));
-
-
+  width = Math.max(effMinW, Math.min(width, maxWidth));
+  height = Math.max(effMinH, Math.min(height, maxHeight));
 
   if (left < minLeft) left = minLeft;
-
   if (top < minTop) top = minTop;
+  if (left + width > maxRight) left = Math.max(minLeft, maxRight - width);
+  if (top + height > maxBottom) top = Math.max(minTop, maxBottom - height);
 
-  if (left + width > maxRight) left = maxRight - width;
-
-  if (top + height > maxBottom) top = maxBottom - height;
-
-
-
-  win.style.left = `${left}px`;
-
-  win.style.top = `${top}px`;
-
-  win.style.width = `${width}px`;
-
-  win.style.height = `${height}px`;
-
+  win.style.left = left + "px";
+  win.style.top = top + "px";
+  win.style.width = width + "px";
+  win.style.height = height + "px";
 }
+
 
 
 
@@ -808,27 +823,43 @@ function patchFocusWindowForLayout() {
 
 
 export function initResizableWindows() {
-
   if (window.matchMedia("(max-width: 768px)").matches) return;
 
-
+  syncWorkareaInsets();
 
   WINDOW_CONFIGS.forEach((config) => {
-
     document.querySelectorAll(config.selector).forEach((win) => {
-
       if (!(win instanceof HTMLElement)) return;
-
       setupWindowResize(win, config);
-
     });
-
   });
-
-
 
   patchFocusWindowForLayout();
 
+  const refitVisible = () => {
+    syncWorkareaInsets();
+    WINDOW_CONFIGS.forEach((config) => {
+      document.querySelectorAll(config.selector).forEach((win) => {
+        if (!(win instanceof HTMLElement)) return;
+        const overlay = win.closest(".window-overlay");
+        if (overlay && !overlay.classList.contains("is-visible")) return;
+        if (!win.classList.contains("has-explicit-layout")) return;
+        clampWindowToWorkarea(win, config.minWidth, config.minHeight);
+        syncDraggable(win);
+      });
+    });
+  };
+
+  window.addEventListener("resize", refitVisible, { passive: true });
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", refitVisible, {
+      passive: true,
+    });
+    window.visualViewport.addEventListener("scroll", refitVisible, {
+      passive: true,
+    });
+  }
 }
+
 
 
