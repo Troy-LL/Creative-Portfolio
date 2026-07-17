@@ -1,9 +1,14 @@
 import { getPreviewMountEl } from "../core/preview-mount.js";
+import { animationsEnabled } from "./appearance-state.js";
 import { registerManagedWindow } from "./window-resize.js";
 
 export function initPreviewViewers() {
   window.openPdfViewer = openPdfViewer;
   window.openImageViewer = openImageViewer;
+}
+
+function finishPreviewOpen(win, isMobile) {
+  if (!isMobile) registerManagedWindow(win);
 }
 
 function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
@@ -28,6 +33,14 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
 
     window.focusWindow(win);
 
+    if (!animationsEnabled() || typeof gsap === "undefined") {
+      if (typeof gsap !== "undefined") {
+        gsap.set(win, { scale: 1 });
+      }
+      finishPreviewOpen(win, isMobile);
+      return;
+    }
+
     gsap.fromTo(
       win,
       { scale: 0.98 },
@@ -35,9 +48,7 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
         scale: 1,
         duration: 0.3,
         ease: "back.out(2)",
-        onComplete: () => {
-          if (!isMobile) registerManagedWindow(win);
-        },
+        onComplete: () => finishPreviewOpen(win, isMobile),
       },
     );
     return;
@@ -70,17 +81,25 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
 
   const win = overlay.querySelector(".preview-window");
 
-  const animConfig = isMobile
-    ? { duration: 0.35 }
-    : { scale: 1, y: 0, duration: 0.35, ease: "back.out(1.4)" };
+  if (!animationsEnabled() || typeof gsap === "undefined") {
+    win.style.opacity = "1";
+    if (typeof gsap !== "undefined") {
+      gsap.set(win, { opacity: 1, scale: 1, y: 0 });
+    } else {
+      win.style.transform = "none";
+    }
+    finishPreviewOpen(win, isMobile);
+  } else {
+    const animConfig = isMobile
+      ? { duration: 0.35 }
+      : { scale: 1, y: 0, duration: 0.35, ease: "back.out(1.4)" };
 
-  gsap.set(win, { opacity: 1 });
-  gsap.to(win, {
-    ...animConfig,
-    onComplete: () => {
-      if (!isMobile) registerManagedWindow(win);
-    },
-  });
+    gsap.set(win, { opacity: 1 });
+    gsap.to(win, {
+      ...animConfig,
+      onComplete: () => finishPreviewOpen(win, isMobile),
+    });
+  }
 
   window.focusWindow(win);
 
@@ -134,16 +153,24 @@ function openImageViewer(imgSrc, title) {
   const win = overlay.querySelector(".preview-window");
   const isMobile = document.documentElement.getAttribute("data-view") === "mobile";
 
-  gsap.set(win, { opacity: 1 });
-  gsap.to(win, {
-    scale: 1,
-    y: 0,
-    duration: 0.35,
-    ease: "back.out(1.4)",
-    onComplete: () => {
-      if (!isMobile) registerManagedWindow(win);
-    },
-  });
+  if (!animationsEnabled() || typeof gsap === "undefined") {
+    win.style.opacity = "1";
+    if (typeof gsap !== "undefined") {
+      gsap.set(win, { opacity: 1, scale: 1, y: 0 });
+    } else {
+      win.style.transform = "none";
+    }
+    finishPreviewOpen(win, isMobile);
+  } else {
+    gsap.set(win, { opacity: 1 });
+    gsap.to(win, {
+      scale: 1,
+      y: 0,
+      duration: 0.35,
+      ease: "back.out(1.4)",
+      onComplete: () => finishPreviewOpen(win, isMobile),
+    });
+  }
 
   window.focusWindow(win);
 
