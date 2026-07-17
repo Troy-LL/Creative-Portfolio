@@ -1,0 +1,47 @@
+# Greybox desktop system tests — proof
+
+**Branch lineage:** PR #3 (harness) → PR #4 (open-apps) → interactions → acceptance  
+**Base URL:** `http://127.0.0.1:4173`  
+**Viewport:** 1440×900  
+
+## Commands
+
+```bash
+npx serve -l 4173 .
+npx playwright test
+```
+
+## Suite results (local acceptance run)
+
+| Suite | Result | Notes |
+|-------|--------|-------|
+| `harness.smoke` | pass | Desktop boots; gate inactive |
+| `open-apps` | pass | 6/6 in `#desktop-workarea`; safari/spotify clamp fix |
+| `clickable-chrome` | pass | settings + finder close/min hit-test + action |
+| `drag-windows` | pass | settings via `.settings-dots` |
+| `resize-windows` | pass | finder SE handle ≥ +40px, mins 400×300 |
+| `perf.budget` | pass | scenarios logged; budget 8000ms |
+
+## Performance
+
+- Budget: **8000ms** per scenario (`withScenario` / greybox log)
+- Typical open-app scenario: ~3.5–4.5s (boot splash dominates first open)
+- p95 should stay under budget; fail test if any entry exceeds
+
+## Significant UI fixes proven
+
+1. Safari/Spotify initial layout clamped into `#desktop-workarea` (was negative `x`)
+2. Geometry assertions use workarea, not full `#desktop`
+
+## Confidence
+
+Automated Playwright greybox coverage for open / click / drag / resize with geometry and hit-test assertions. Confidence is backed by green CI-local suite runs and JSONL logs under `docs/testing/greybox-log.jsonl` (gitignored runtime) plus optional PNGs in `docs/testing/proof/`.
+
+## Acceptance checklist
+
+- [x] Apps open in-frame (not clipped)
+- [x] Chrome buttons clickable (hit-test + close/min)
+- [x] Windows draggable within workarea
+- [x] Windows resizable within workarea / mins
+- [x] Performance budget enforced
+- [x] Section PRs merged to `master` via `gh`
