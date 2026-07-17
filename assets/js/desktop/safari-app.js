@@ -1,4 +1,5 @@
 /** Set by initSafariApp — lets interactions.js open Safari like other dock apps. */
+import { pushThemeToSafariFrame } from "./appearance-state.js";
 import { closeMacWindow, registerWindowCloseHook } from "./window-chrome.js";
 import { animateWindowOpen } from "./window-resize.js";
 
@@ -191,6 +192,7 @@ export function initSafariApp() {
 
   iframe?.addEventListener("load", () => {
     requestAnimationFrame(updatePreviewScale);
+    pushThemeToSafariFrame();
   });
 
   window.addEventListener(

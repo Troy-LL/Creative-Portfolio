@@ -209,6 +209,19 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const onMessage = (event) => {
+      if (event.origin !== window.location.origin) return;
+      const data = event.data;
+      if (!data || data.source !== "portfolio-os" || data.type !== "portfolio-theme") return;
+      if (data.theme !== "light" && data.theme !== "dark") return;
+      setTheme(data.theme);
+      setEffectiveTheme(data.theme);
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
+
+  useEffect(() => {
     const currentWeek = getWeekKey();
     const storedWeek = localStorage.getItem(STORAGE_BEAN_WEEK_KEY);
     const shouldReset = storedWeek !== currentWeek;
