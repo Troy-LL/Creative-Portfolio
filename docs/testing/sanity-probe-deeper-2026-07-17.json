@@ -1,0 +1,548 @@
+{
+  "ts": "2026-07-17T06:42:16.736Z",
+  "summary": {
+    "pass": 68,
+    "fail": 2,
+    "notes": [
+      "Simulated via documentElement.zoom=1.25 + visualViewport/window resize events (not true pinch).",
+      "mac-max.disabled has pointer-events:none (intentional) — center hits parent dots strip; not a hit-test regression on active chrome. max blocked at center: top=DIV.settings-dots mac-controls reason=blocked",
+      "mac-max.disabled has pointer-events:none (intentional) — center hits parent dots strip; not a hit-test regression on active chrome. max blocked at center: top=DIV.contacts-dots mac-controls reason=blocked",
+      "mac-max.disabled has pointer-events:none (intentional) — center hits parent dots strip; not a hit-test regression on active chrome. max blocked at center: top=DIV.mail-dots mac-controls reason=blocked",
+      "mac-max.disabled has pointer-events:none (intentional) — center hits parent dots strip; not a hit-test regression on active chrome. max blocked at center: top=DIV.finder-window-controls mac-controls reason=blocked",
+      "mac-max.disabled has pointer-events:none (intentional) — center hits parent dots strip; not a hit-test regression on active chrome. max blocked at center: top=DIV.safari-dots mac-controls reason=blocked",
+      "mac-max.disabled has pointer-events:none (intentional) — center hits parent dots strip; not a hit-test regression on active chrome. max blocked at center: top=DIV.spotify-dots mac-controls reason=blocked",
+      "min hides overlay but keeps dock is-open (closeMacWindow removeDockIndicator=false) — not a true minimize-to-dock",
+      "Passed at 1100x800 only because 100+600 < workBottom(~703); fails at 1280x720 where workBottom~623."
+    ]
+  },
+  "findings": [
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "settings",
+      "viewport": "1440x900",
+      "detail": "in-frame+above-dock w=720x540 bottom=720 dockTop=811"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "contacts",
+      "viewport": "1440x900",
+      "detail": "in-frame+above-dock w=720x520 bottom=580 dockTop=811"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "mail",
+      "viewport": "1440x900",
+      "detail": "in-frame+above-dock w=920x560 bottom=596 dockTop=811"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "finder",
+      "viewport": "1440x900",
+      "detail": "in-frame+above-dock w=760x480 bottom=690 dockTop=811"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "safari",
+      "viewport": "1440x900",
+      "detail": "in-frame+above-dock w=1040x720 bottom=768 dockTop=811"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "spotify",
+      "viewport": "1440x900",
+      "detail": "in-frame+above-dock w=960x640 bottom=684 dockTop=811"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "settings",
+      "viewport": "1280x720",
+      "detail": "in-frame+above-dock w=720x540 bottom=623 dockTop=631"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "contacts",
+      "viewport": "1280x720",
+      "detail": "in-frame+above-dock w=720x520 bottom=580 dockTop=631"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "mail",
+      "viewport": "1280x720",
+      "detail": "in-frame+above-dock w=920x560 bottom=596 dockTop=631"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "finder",
+      "viewport": "1280x720",
+      "detail": "in-frame+above-dock w=760x480 bottom=600 dockTop=631"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "safari",
+      "viewport": "1280x720",
+      "detail": "in-frame+above-dock w=1040x595 bottom=623 dockTop=631"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "spotify",
+      "viewport": "1280x720",
+      "detail": "in-frame+above-dock w=960x595 bottom=623 dockTop=631"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "settings",
+      "viewport": "1920x1080",
+      "detail": "in-frame+above-dock w=720x540 bottom=810 dockTop=991"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "contacts",
+      "viewport": "1920x1080",
+      "detail": "in-frame+above-dock w=720x520 bottom=580 dockTop=991"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "mail",
+      "viewport": "1920x1080",
+      "detail": "in-frame+above-dock w=920x560 bottom=596 dockTop=991"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "finder",
+      "viewport": "1920x1080",
+      "detail": "in-frame+above-dock w=760x480 bottom=780 dockTop=991"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "safari",
+      "viewport": "1920x1080",
+      "detail": "in-frame+above-dock w=1040x720 bottom=768 dockTop=991"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "spotify",
+      "viewport": "1920x1080",
+      "detail": "in-frame+above-dock w=960x640 bottom=684 dockTop=991"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "settings",
+      "viewport": "1100x800",
+      "detail": "in-frame+above-dock w=720x540 bottom=670 dockTop=711"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "contacts",
+      "viewport": "1100x800",
+      "detail": "in-frame+above-dock w=720x520 bottom=580 dockTop=711"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "mail",
+      "viewport": "1100x800",
+      "detail": "in-frame+above-dock w=920x560 bottom=596 dockTop=711"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "finder",
+      "viewport": "1100x800",
+      "detail": "in-frame+above-dock w=760x480 bottom=640 dockTop=711"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "safari",
+      "viewport": "1100x800",
+      "detail": "in-frame+above-dock w=1040x675 bottom=703 dockTop=711"
+    },
+    {
+      "scenario": "open.sequential",
+      "signal": "pass",
+      "app": "spotify",
+      "viewport": "1100x800",
+      "detail": "in-frame+above-dock w=960x640 bottom=684 dockTop=711"
+    },
+    {
+      "scenario": "open.multi",
+      "signal": "pass",
+      "app": "settings",
+      "viewport": "1440x900",
+      "detail": "in-frame+above-dock w=720x540 bottom=720 dockTop=811"
+    },
+    {
+      "scenario": "open.multi",
+      "signal": "pass",
+      "app": "finder",
+      "viewport": "1440x900",
+      "detail": "in-frame+above-dock w=760x480 bottom=690 dockTop=811"
+    },
+    {
+      "scenario": "open.multi",
+      "signal": "pass",
+      "app": "safari",
+      "viewport": "1440x900",
+      "detail": "in-frame+above-dock w=1040x720 bottom=768 dockTop=811"
+    },
+    {
+      "scenario": "z-order.multi",
+      "signal": "pass",
+      "app": "shell",
+      "detail": "[{\"id\":\"settingsOverlay\",\"z\":105,\"focused\":false,\"visible\":true},{\"id\":\"finderOverlay\",\"z\":106,\"focused\":false,\"visible\":true},{\"id\":\"safariOverlay\",\"z\":107,\"focused\":true,\"visible\":true}]"
+    },
+    {
+      "scenario": "overlay.stuck",
+      "signal": "pass",
+      "app": "shell",
+      "detail": "no stuck overlays among 6"
+    },
+    {
+      "scenario": "viewport.mid-resize",
+      "signal": "pass",
+      "app": "settings",
+      "viewport": "1280x720",
+      "detail": "in-frame+above-dock w=720x540 bottom=623 dockTop=631"
+    },
+    {
+      "scenario": "viewport.mid-resize",
+      "signal": "pass",
+      "app": "finder",
+      "viewport": "1280x720",
+      "detail": "in-frame+above-dock w=760x480 bottom=623 dockTop=631"
+    },
+    {
+      "scenario": "viewport.mid-resize",
+      "signal": "pass",
+      "app": "safari",
+      "viewport": "1280x720",
+      "detail": "in-frame+above-dock w=1040x595 bottom=623 dockTop=631"
+    },
+    {
+      "scenario": "viewport.mid-resize",
+      "signal": "pass",
+      "app": "settings",
+      "viewport": "1920x1080",
+      "detail": "in-frame+above-dock w=720x540 bottom=623 dockTop=991"
+    },
+    {
+      "scenario": "viewport.mid-resize",
+      "signal": "pass",
+      "app": "finder",
+      "viewport": "1920x1080",
+      "detail": "in-frame+above-dock w=760x480 bottom=623 dockTop=991"
+    },
+    {
+      "scenario": "viewport.mid-resize",
+      "signal": "pass",
+      "app": "safari",
+      "viewport": "1920x1080",
+      "detail": "in-frame+above-dock w=1040x595 bottom=623 dockTop=991"
+    },
+    {
+      "scenario": "viewport.mid-resize",
+      "signal": "pass",
+      "app": "settings",
+      "viewport": "1100x800",
+      "detail": "in-frame+above-dock w=720x540 bottom=623 dockTop=711"
+    },
+    {
+      "scenario": "viewport.mid-resize",
+      "signal": "pass",
+      "app": "finder",
+      "viewport": "1100x800",
+      "detail": "in-frame+above-dock w=760x480 bottom=623 dockTop=711"
+    },
+    {
+      "scenario": "viewport.mid-resize",
+      "signal": "pass",
+      "app": "safari",
+      "viewport": "1100x800",
+      "detail": "in-frame+above-dock w=1040x595 bottom=623 dockTop=711"
+    },
+    {
+      "scenario": "visualViewport.zoom",
+      "signal": "fail",
+      "app": "shell",
+      "viewport": "1440x900@zoom1.25",
+      "detail": "windows not refit under simulated zoom: [{\"cls\":\"settings-window\",\"bottom\":778.75,\"right\":1350,\"width\":900,\"height\":675,\"outFrame\":true,\"underDock\":false},{\"cls\":\"safari-window\",\"bottom\":798.4375,\"right\":1375,\"width\":1300,\"height\":743.75,\"outFrame\":true,\"underDock\":true},{\"cls\":\"finder-window\",\"bottom\":778.75,\"right\":1375,\"width\":950,\"height\":600,\"outFrame\":true,\"underDock\":false}]",
+      "screenshot": "docs/testing/proof/probe-deeper-vv-zoom-fail.png"
+    },
+    {
+      "scenario": "visualViewport.zoom",
+      "signal": "note",
+      "detail": "Simulated via documentElement.zoom=1.25 + visualViewport/window resize events (not true pinch)."
+    },
+    {
+      "scenario": "os.selection.shell",
+      "signal": "pass",
+      "app": "shell",
+      "detail": "{\"wallpaper\":\"none\",\"menubar\":\"none\",\"dock\":\"none\"}"
+    },
+    {
+      "scenario": "os.selection.resume",
+      "signal": "pass",
+      "app": "preview",
+      "detail": "{\"previewBody\":\"text\",\"child\":\"text\"}"
+    },
+    {
+      "scenario": "open.preview-clamp",
+      "signal": "pass",
+      "app": "preview",
+      "viewport": "1440x900",
+      "detail": "preview in frame at open"
+    },
+    {
+      "scenario": "viewport.preview-refit",
+      "signal": "pass",
+      "app": "preview",
+      "viewport": "1100x800",
+      "detail": "{\"underDock\":false,\"outFrame\":false,\"w\":{\"bottom\":700,\"right\":950,\"width\":800,\"height\":600},\"workBottom\":703,\"dockTop\":711,\"style\":{\"left\":\"150px\",\"top\":\"100px\",\"width\":\"800px\",\"height\":\"600px\"}}"
+    },
+    {
+      "scenario": "chrome.hit-test",
+      "signal": "pass",
+      "app": "settings",
+      "detail": "close hit-testable"
+    },
+    {
+      "scenario": "chrome.hit-test",
+      "signal": "pass",
+      "app": "settings",
+      "detail": "min hit-testable"
+    },
+    {
+      "scenario": "chrome.hit-test",
+      "signal": "note",
+      "app": "settings",
+      "detail": "mac-max.disabled has pointer-events:none (intentional) — center hits parent dots strip; not a hit-test regression on active chrome. max blocked at center: top=DIV.settings-dots mac-controls reason=blocked",
+      "screenshot": "docs/testing/proof/probe-deeper-hit-settings-max-fail.png"
+    },
+    {
+      "scenario": "chrome.close",
+      "signal": "pass",
+      "app": "settings",
+      "detail": "close hides overlay"
+    },
+    {
+      "scenario": "chrome.hit-test",
+      "signal": "pass",
+      "app": "contacts",
+      "detail": "close hit-testable"
+    },
+    {
+      "scenario": "chrome.hit-test",
+      "signal": "pass",
+      "app": "contacts",
+      "detail": "min hit-testable"
+    },
+    {
+      "scenario": "chrome.hit-test",
+      "signal": "note",
+      "app": "contacts",
+      "detail": "mac-max.disabled has pointer-events:none (intentional) — center hits parent dots strip; not a hit-test regression on active chrome. max blocked at center: top=DIV.contacts-dots mac-controls reason=blocked",
+      "screenshot": "docs/testing/proof/probe-deeper-hit-contacts-max-fail.png"
+    },
+    {
+      "scenario": "chrome.close",
+      "signal": "pass",
+      "app": "contacts",
+      "detail": "close hides overlay"
+    },
+    {
+      "scenario": "chrome.hit-test",
+      "signal": "pass",
+      "app": "mail",
+      "detail": "close hit-testable"
+    },
+    {
+      "scenario": "chrome.hit-test",
+      "signal": "pass",
+      "app": "mail",
+      "detail": "min hit-testable"
+    },
+    {
+      "scenario": "chrome.hit-test",
+      "signal": "note",
+      "app": "mail",
+      "detail": "mac-max.disabled has pointer-events:none (intentional) — center hits parent dots strip; not a hit-test regression on active chrome. max blocked at center: top=DIV.mail-dots mac-controls reason=blocked",
+      "screenshot": "docs/testing/proof/probe-deeper-hit-mail-max-fail.png"
+    },
+    {
+      "scenario": "chrome.close",
+      "signal": "pass",
+      "app": "mail",
+      "detail": "close hides overlay"
+    },
+    {
+      "scenario": "chrome.hit-test",
+      "signal": "pass",
+      "app": "finder",
+      "detail": "close hit-testable"
+    },
+    {
+      "scenario": "chrome.hit-test",
+      "signal": "pass",
+      "app": "finder",
+      "detail": "min hit-testable"
+    },
+    {
+      "scenario": "chrome.hit-test",
+      "signal": "note",
+      "app": "finder",
+      "detail": "mac-max.disabled has pointer-events:none (intentional) — center hits parent dots strip; not a hit-test regression on active chrome. max blocked at center: top=DIV.finder-window-controls mac-controls reason=blocked",
+      "screenshot": "docs/testing/proof/probe-deeper-hit-finder-max-fail.png"
+    },
+    {
+      "scenario": "chrome.close",
+      "signal": "pass",
+      "app": "finder",
+      "detail": "close hides overlay"
+    },
+    {
+      "scenario": "chrome.hit-test",
+      "signal": "pass",
+      "app": "safari",
+      "detail": "close hit-testable"
+    },
+    {
+      "scenario": "chrome.hit-test",
+      "signal": "pass",
+      "app": "safari",
+      "detail": "min hit-testable"
+    },
+    {
+      "scenario": "chrome.hit-test",
+      "signal": "note",
+      "app": "safari",
+      "detail": "mac-max.disabled has pointer-events:none (intentional) — center hits parent dots strip; not a hit-test regression on active chrome. max blocked at center: top=DIV.safari-dots mac-controls reason=blocked",
+      "screenshot": "docs/testing/proof/probe-deeper-hit-safari-max-fail.png"
+    },
+    {
+      "scenario": "chrome.close",
+      "signal": "pass",
+      "app": "safari",
+      "detail": "close hides overlay"
+    },
+    {
+      "scenario": "chrome.hit-test",
+      "signal": "pass",
+      "app": "spotify",
+      "detail": "close hit-testable"
+    },
+    {
+      "scenario": "chrome.hit-test",
+      "signal": "pass",
+      "app": "spotify",
+      "detail": "min hit-testable"
+    },
+    {
+      "scenario": "chrome.hit-test",
+      "signal": "note",
+      "app": "spotify",
+      "detail": "mac-max.disabled has pointer-events:none (intentional) — center hits parent dots strip; not a hit-test regression on active chrome. max blocked at center: top=DIV.spotify-dots mac-controls reason=blocked",
+      "screenshot": "docs/testing/proof/probe-deeper-hit-spotify-max-fail.png"
+    },
+    {
+      "scenario": "chrome.close",
+      "signal": "pass",
+      "app": "spotify",
+      "detail": "close hides overlay"
+    },
+    {
+      "scenario": "chrome.min",
+      "signal": "note",
+      "app": "mail",
+      "detail": "min hides overlay but keeps dock is-open (closeMacWindow removeDockIndicator=false) — not a true minimize-to-dock"
+    },
+    {
+      "scenario": "chrome.min",
+      "signal": "pass",
+      "app": "mail",
+      "detail": "{\"visible\":false,\"dockOpen\":true}"
+    },
+    {
+      "scenario": "drag.after-viewport",
+      "signal": "pass",
+      "app": "settings",
+      "viewport": "1100x800",
+      "detail": "dx=80 dy=50"
+    },
+    {
+      "scenario": "drag.after-viewport",
+      "signal": "pass",
+      "app": "settings",
+      "viewport": "1100x800",
+      "detail": "in-frame+above-dock w=720x540 bottom=673 dockTop=711"
+    },
+    {
+      "scenario": "resize.after-viewport",
+      "signal": "pass",
+      "app": "finder",
+      "viewport": "1440x900",
+      "detail": "dw=70 dh=50"
+    },
+    {
+      "scenario": "resize.after-viewport",
+      "signal": "pass",
+      "app": "finder",
+      "viewport": "1440x900",
+      "detail": "in-frame+above-dock w=830x530 bottom=690 dockTop=811"
+    },
+    {
+      "scenario": "drag.after-viewport",
+      "signal": "pass",
+      "app": "contacts",
+      "viewport": "1280x720",
+      "detail": "dx=90 dy=40"
+    },
+    {
+      "scenario": "drag.after-viewport",
+      "signal": "pass",
+      "app": "contacts",
+      "viewport": "1280x720",
+      "detail": "in-frame+above-dock w=720x520 bottom=620 dockTop=631"
+    },
+    {
+      "scenario": "console.errors",
+      "signal": "pass",
+      "app": "shell",
+      "detail": "no console errors / pageerrors"
+    },
+    {
+      "scenario": "viewport.preview-refit",
+      "signal": "fail",
+      "app": "preview",
+      "viewport": "1280x720",
+      "detail": "Resume preview not clamped after viewport shrink (absent from WINDOW_CONFIGS/refitVisible). style stays 800x600@150,100; bottom=700 workBottom=623 dockTop=631",
+      "screenshot": "docs/testing/proof/probe-deeper-preview-1280x720-fail.png"
+    },
+    {
+      "scenario": "viewport.preview-refit",
+      "signal": "note",
+      "app": "preview",
+      "viewport": "1100x800",
+      "detail": "Passed at 1100x800 only because 100+600 < workBottom(~703); fails at 1280x720 where workBottom~623."
+    }
+  ]
+}

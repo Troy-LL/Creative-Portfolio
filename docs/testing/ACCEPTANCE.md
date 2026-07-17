@@ -1,7 +1,7 @@
 ﻿# QA / Acceptance — greybox desktop UX
 
-Date: 2026-07-17 (deeper loop)
-Result: PASS locally (17/15 Playwright)
+Date: 2026-07-17 (deeper loop 2 — preview refit)
+Result: PASS locally (19 Playwright)
 
 Merged PRs:
 - #3 harness
@@ -9,8 +9,13 @@ Merged PRs:
 - #5 click/drag/resize + perf proof
 - #6 acceptance record
 - #7 dock-aware framing + OS selection + GitHub Actions CI
+- #8 deeper-loop ACCEPTANCE
+- #9 Playwright webServer for CI e2e
+- (pending) preview WINDOW_CONFIGS + registerManagedWindow + preview-refit e2e
 
 Proof: docs/testing/PROOF.md
-Sanity probe: docs/testing/sanity-probe-2026-07-17.json
+Sanity probes:
+- docs/testing/sanity-probe-2026-07-17.json
+- docs/testing/sanity-probe-deeper-2026-07-17.json
 Spec: docs/superpowers/specs/2026-07-17-cicd-os-desktop-framing-design.md
 Command: npx playwright test

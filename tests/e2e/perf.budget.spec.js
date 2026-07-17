@@ -51,8 +51,12 @@ test("greybox log has no scenario over performance budget", async () => {
     .split(/\r?\n/)
     .filter(Boolean)
     .map((l) => JSON.parse(l));
+  // Failures already assert in their own tests; budget applies to successful scenarios.
   const over = lines.filter(
-    (e) => typeof e.durationMs === "number" && e.durationMs > BUDGET_MS,
+    (e) =>
+      e.signal === "pass" &&
+      typeof e.durationMs === "number" &&
+      e.durationMs > BUDGET_MS,
   );
   expect(over, JSON.stringify(over, null, 2)).toEqual([]);
 });
