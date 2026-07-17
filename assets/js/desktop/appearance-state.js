@@ -51,39 +51,39 @@ export function animationsEnabled() {
   return getAppearance().animations === true;
 }
 
-  /** @returns {"light" | "dark"} */
-  export function getEffectiveTheme(state = getAppearance()) {
-    if (state.themeMode === "auto") {
-      return window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
-    }
-    return state.themeMode === "light" ? "light" : "dark";
+/** @returns {"light" | "dark"} */
+export function getEffectiveTheme(state = getAppearance()) {
+  if (state.themeMode === "auto") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
   }
+  return state.themeMode === "light" ? "light" : "dark";
+}
 
-  export function pushThemeToSafariFrame(theme = getEffectiveTheme()) {
-    const iframe = document.getElementById("safariFrame");
-    if (!iframe) return;
+export function pushThemeToSafariFrame(theme = getEffectiveTheme()) {
+  const iframe = document.getElementById("safariFrame");
+  if (!iframe) return;
+  try {
+    const win = iframe.contentWindow;
+    if (!win) return;
+    win.postMessage(
+      { source: "portfolio-os", type: "portfolio-theme", theme },
+      window.location.origin,
+    );
     try {
-      const win = iframe.contentWindow;
-      if (!win) return;
-      win.postMessage(
-        { source: "portfolio-os", type: "portfolio-theme", theme },
-        window.location.origin,
-      );
-      try {
-        win.localStorage.setItem("founders-theme", theme);
-      } catch {
-        /* ignore cross-origin / denied */
-      }
+      win.localStorage.setItem("founders-theme", theme);
     } catch {
-      /* ignore */
+      /* ignore cross-origin / denied */
     }
+  } catch {
+    /* ignore */
   }
+}
 
-  function applyDarkClass(isDark) {
-    document.body.classList.toggle("dark-theme", isDark);
-  }
+function applyDarkClass(isDark) {
+  document.body.classList.toggle("dark-theme", isDark);
+}
 
 function syncControlCenterUi(state) {
   const btnDark = document.getElementById("btnDarkMode");
@@ -131,15 +131,18 @@ export function applyAppearance(state = getAppearance()) {
 
   if (themeMode === "auto") {
     applyDarkClass(mq.matches);
-    mqListener = () => applyDarkClass(mq.matches);
+    mqListener = () => {
+      applyDarkClass(mq.matches);
+      pushThemeToSafariFrame(getEffectiveTheme());
+    };
     mq.addEventListener("change", mqListener);
   } else {
     applyDarkClass(themeMode === "dark");
   }
 
-    syncControlCenterUi(state);
-    pushThemeToSafariFrame(getEffectiveTheme(state));
-  }
+  syncControlCenterUi(state);
+  pushThemeToSafariFrame(getEffectiveTheme(state));
+}
 
 export function saveAppearance(partial) {
   const next = { ...getAppearance(), ...partial };
