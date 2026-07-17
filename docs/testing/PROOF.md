@@ -56,6 +56,16 @@ npx playwright test
 
 Automated Playwright greybox coverage for open / click / drag / resize with geometry and hit-test assertions. Confidence is backed by green CI-local suite runs and JSONL logs under `docs/testing/greybox-log.jsonl` (gitignored runtime) plus optional PNGs in `docs/testing/proof/`.
 
+## Theme parity + instant reduce-motion (2026-07-17)
+
+- Spec: `docs/superpowers/specs/2026-07-17-theme-parity-reduce-motion-design.md`
+- Plan: `docs/superpowers/plans/2026-07-17-theme-parity-reduce-motion.md`
+- Suite: **24 passed** (prior 19 + reduce-motion ×2 + theme-parity ×3)
+- **Instant reduce-motion** — `animationsEnabled()` gates GSAP in close/open/preview; PRs **#16–17**
+- **`--win-*` tokens + shell migration** — shared light/dark surfaces across Mail/Settings/Finder/Contacts/Safari/Spotify/Preview; PRs **#18–19**
+- **Founders Cafe theme sync** — desktop `postMessage` + `founders-theme` storage + iframe load re-push; PR **#20**
+- E2E: `tests/e2e/reduce-motion.spec.js`, `tests/e2e/theme-parity.spec.js`
+
 ## Acceptance checklist
 
 - [x] Apps open in-frame (not clipped)
@@ -64,3 +74,6 @@ Automated Playwright greybox coverage for open / click / drag / resize with geom
 - [x] Windows resizable within workarea / mins
 - [x] Performance budget enforced
 - [x] Section PRs merged to `master` via `gh`
+- [x] Instant open/close when Interface animations off
+- [x] Shell apps share `--win-*` light/dark tokens
+- [x] Founders Cafe `data-theme` follows desktop

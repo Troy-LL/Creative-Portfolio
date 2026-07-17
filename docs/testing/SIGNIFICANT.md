@@ -45,3 +45,13 @@ Probe: `docs/testing/sanity-probe-deeper-2026-07-17.json` (`tests/e2e/_probe-dee
 **Re-validated green in this loop:** sequential open + dock clearance @ 1440×900 / 1280×720 / 1920×1080 / 1100×800; multi-open clamp; mid-session viewport resize clamp; shell `user-select: none` + Resume `.preview-body` `text`; close/min hit-tests; drag+resize after viewport change; no stuck overlays / console errors.
 
 **Fixed in deeper loop 2:** Preview registered via `registerManagedWindow` + `.preview-window` in `WINDOW_CONFIGS` — viewport shrink now clamps Resume PDF (covered by `tests/e2e/preview-refit.spec.js`).
+
+## Theme parity + instant reduce-motion (2026-07-17)
+
+**Shipped (PRs #16–20):**
+
+- **Instant reduce-motion close/open** (#16–17) — when Interface animations are off, `closeMacWindow` / `animateWindowOpen` / preview open skip GSAP fades (no ~250ms tween). Covered by `tests/e2e/reduce-motion.spec.js`.
+- **`--win-*` tokens + shell migration** (#18–19) — shared CSS custom properties for window surfaces; Settings light mode no longer stuck on dark-only hardcodes. Covered by `tests/e2e/theme-parity.spec.js` shell cases.
+- **Founders Cafe theme sync** (#20) — desktop pushes theme into `#safariFrame` via `postMessage` + same-origin `localStorage` (`founders-theme`); Cafe sets `data-theme`. Covered by cafe-sync e2e.
+
+**Still noted (out of scope):** SQL terminal CRT theming; fake minimize / inert mac-max.

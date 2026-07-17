@@ -556,16 +556,16 @@ git commit -m "feat: sync Founders Cafe theme from desktop appearance"
 - Modify: `docs/testing/SIGNIFICANT.md`
 - Modify: `docs/testing/ACCEPTANCE.md`
 
-- [ ] **Step 1: Run full Playwright suite**
+- [x] **Step 1: Run full Playwright suite**
 
 Run: `npx playwright test --reporter=list`  
 Expected: all passed (prior count + new motion/theme tests)
 
-- [ ] **Step 2: Record acceptance**
+- [x] **Step 2: Record acceptance**
 
 Append to PROOF/SIGNIFICANT/ACCEPTANCE: theme tokens, Cafe sync, instant close/open, PR numbers.
 
-- [ ] **Step 3: Commit + PR merge**
+- [x] **Step 3: Commit + PR merge**
 
 ```bash
 git commit -m "docs: accept theme parity and instant reduce-motion"

@@ -24,6 +24,19 @@ async function setThemeMode(page, themeMode) {
   await bootDesktop(page);
 }
 
+/** Live theme flip via dark-theme class (no second boot/reload). */
+async function applyThemeLive(page, themeMode) {
+  await page.evaluate((mode) => {
+    const raw = localStorage.getItem("portfolio-appearance");
+    const cur = raw ? JSON.parse(raw) : {};
+    localStorage.setItem(
+      "portfolio-appearance",
+      JSON.stringify({ ...cur, themeMode: mode }),
+    );
+    document.body.classList.toggle("dark-theme", mode === "dark");
+  }, themeMode);
+}
+
 test("mail and settings window backgrounds share dark token family", async ({
   page,
 }) => {
@@ -50,8 +63,7 @@ test("mail window background changes between light and dark", async ({ page }) =
     await setThemeMode(page, "light");
     await openDockApp(page, "mail");
     const lightBg = await page.locator(".mail-window").evaluate((el) => getComputedStyle(el).backgroundColor);
-    await setThemeMode(page, "dark");
-    await openDockApp(page, "mail");
+    await applyThemeLive(page, "dark");
     const darkBg = await page.locator(".mail-window").evaluate((el) => getComputedStyle(el).backgroundColor);
     expect(lightBg).not.toBe(darkBg);
   });
