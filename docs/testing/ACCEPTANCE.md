@@ -11,7 +11,7 @@ Merged PRs:
 - #7 dock-aware framing + OS selection + GitHub Actions CI
 - #8 deeper-loop ACCEPTANCE
 - #9 Playwright webServer for CI e2e
-- (pending) preview WINDOW_CONFIGS + registerManagedWindow + preview-refit e2e
+- #10 preview WINDOW_CONFIGS + registerManagedWindow + preview-refit e2e
 
 Proof: docs/testing/PROOF.md
 Sanity probes:
