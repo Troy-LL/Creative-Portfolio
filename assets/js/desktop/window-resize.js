@@ -124,6 +124,19 @@ export function ensureExplicitLayout(win) {
 
 
 
+  // Draggable.init can bake left:50% → 50px while the overlay is display:none,
+  // which breaks margin-based centering (safari/spotify). Drop those inlines once
+  // so stylesheet left/top/margin can resolve before we measure.
+  if (!win.classList.contains("has-explicit-layout")) {
+
+    win.style.removeProperty("left");
+
+    win.style.removeProperty("top");
+
+  }
+
+
+
   if (typeof gsap !== "undefined") {
 
     gsap.killTweensOf(win, "x,y,scale,transform");
@@ -352,11 +365,15 @@ function applyWindowLayout(win, config) {
 
     win.style.height = `${Math.max(stored.height, config.minHeight)}px`;
 
-    clampWindowToWorkarea(win, config.minWidth, config.minHeight);
-
-    syncDraggable(win);
-
   }
+
+
+
+  // Always clamp — default open must stay inside #desktop-workarea even when
+  // there is no stored size (safari/spotify centering edge cases).
+  clampWindowToWorkarea(win, config.minWidth, config.minHeight);
+
+  syncDraggable(win);
 
 }
 

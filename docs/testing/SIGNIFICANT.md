@@ -8,7 +8,7 @@ Log these signals to `docs/testing/greybox-log.jsonl` (fields: `ts`, `scenario`,
 |-------|-------------|
 | **boot gate** | Desktop viewport incorrectly shows / hides the mobile gate |
 | **open visibility** | App overlay/window open or fail to become visible |
-| **geometry clip** | Window bounding box leaves `#desktop` (tolerance 2px) |
+| **geometry clip** | Window bounding box leaves `#desktop-workarea` (tolerance 2px) |
 | **hit-test** | Chrome control not under `elementFromPoint` at its center |
 | **drag delta** | Titlebar drag moves window by unexpected delta or clamps oddly |
 | **resize delta** | Resize handle changes size incorrectly or clips out of frame |
@@ -20,3 +20,8 @@ Log these signals to `docs/testing/greybox-log.jsonl` (fields: `ts`, `scenario`,
 - `fail` — assertion or runtime error (attach screenshot when possible)
 - `perf` — duration / budget notes
 - `note` — noteworthy but non-failing observation
+
+## Trial discoveries
+
+- Frame is `#desktop-workarea`, not `#desktop`
+- Safari/Spotify open with negative `x` (~-430..-470) — clipped left (open-apps RED)
