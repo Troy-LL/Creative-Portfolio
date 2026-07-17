@@ -1,3 +1,5 @@
+import { animationsEnabled } from "./appearance-state.js";
+
 /** Overlay id → dock app name. Preview overlays have no dock entry. */
 const OVERLAY_DOCK = {
   settingsOverlay: "settings",
@@ -72,16 +74,23 @@ export function closeMacWindow(windowEl, { removeDockIndicator = true } = {}) {
 
   ctx.windowEl.dataset.windowClosing = "true";
 
+  const finish = () => {
+    delete ctx.windowEl.dataset.windowClosing;
+    finishClose(ctx, removeDockIndicator);
+  };
+
+  if (!animationsEnabled() || typeof gsap === "undefined") {
+    finish();
+    return;
+  }
+
   gsap.to(ctx.windowEl, {
     opacity: 0,
     scale: 0.9,
     y: 18,
     duration: 0.25,
     ease: "power2.in",
-    onComplete: () => {
-      delete ctx.windowEl.dataset.windowClosing;
-      finishClose(ctx, removeDockIndicator);
-    },
+    onComplete: finish,
   });
 }
 
