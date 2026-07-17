@@ -20,13 +20,13 @@
   margin-left: calc(-0.5 * min(960px, 96vw));
   border-radius: 12px;
   overflow: hidden;
-  background: #121212;
+  background: var(--win-bg);
   box-shadow: 0 20px 56px rgba(0, 0, 0, 0.48);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--win-border);
   display: flex;
   flex-direction: column;
   pointer-events: auto;
-  color: #fff;
+  color: var(--win-text);
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
@@ -78,8 +78,8 @@
   gap: 12px;
   padding: 8px 14px;
   min-height: 36px;
-  background: #1a1a1a;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--win-chrome);
+  border-bottom: 1px solid var(--win-border);
   flex-shrink: 0;
 }
 

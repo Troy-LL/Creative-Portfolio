@@ -19,23 +19,24 @@
   left: 50%;
   margin-top: -300px;
   margin-left: -400px;
-  background: #ffffff;
+  background: var(--win-bg);
   border-radius: 12px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  color: #333;
+  color: var(--win-text);
   pointer-events: auto;
+  border: 1px solid var(--win-border);
 }
 
 .preview-titlebar {
   height: 48px;
-  background: #f1f1f1;
+  background: var(--win-chrome);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--win-border);
   position: relative;
   user-select: none;
 }
@@ -65,7 +66,7 @@
 
 .preview-body {
   flex: 1;
-  background: #ebebeb;
+  background: var(--win-bg-secondary);
   position: relative;
 }
 
@@ -84,16 +85,3 @@
 body.is-dragging iframe {
   pointer-events: none !important;
 }
-
-body.dark-theme .preview-window {
-  background: #1e1e1e;
-  color: #eee;
-}
-body.dark-theme .preview-titlebar {
-  background: #2c2c2c;
-  border-bottom: 1px solid #444;
-}
-body.dark-theme .preview-body {
-  background: #111;
-}
-
