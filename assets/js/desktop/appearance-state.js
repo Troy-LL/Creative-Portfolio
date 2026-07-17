@@ -51,19 +51,39 @@ export function animationsEnabled() {
   return getAppearance().animations === true;
 }
 
-/** @returns {"light" | "dark"} */
-export function getEffectiveTheme(state = getAppearance()) {
-  if (state.themeMode === "auto") {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
+  /** @returns {"light" | "dark"} */
+  export function getEffectiveTheme(state = getAppearance()) {
+    if (state.themeMode === "auto") {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+    }
+    return state.themeMode === "light" ? "light" : "dark";
   }
-  return state.themeMode === "light" ? "light" : "dark";
-}
 
-function applyDarkClass(isDark) {
-  document.body.classList.toggle("dark-theme", isDark);
-}
+  export function pushThemeToSafariFrame(theme = getEffectiveTheme()) {
+    const iframe = document.getElementById("safariFrame");
+    if (!iframe) return;
+    try {
+      const win = iframe.contentWindow;
+      if (!win) return;
+      win.postMessage(
+        { source: "portfolio-os", type: "portfolio-theme", theme },
+        window.location.origin,
+      );
+      try {
+        win.localStorage.setItem("founders-theme", theme);
+      } catch {
+        /* ignore cross-origin / denied */
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function applyDarkClass(isDark) {
+    document.body.classList.toggle("dark-theme", isDark);
+  }
 
 function syncControlCenterUi(state) {
   const btnDark = document.getElementById("btnDarkMode");
@@ -117,8 +137,9 @@ export function applyAppearance(state = getAppearance()) {
     applyDarkClass(themeMode === "dark");
   }
 
-  syncControlCenterUi(state);
-}
+    syncControlCenterUi(state);
+    pushThemeToSafariFrame(getEffectiveTheme(state));
+  }
 
 export function saveAppearance(partial) {
   const next = { ...getAppearance(), ...partial };

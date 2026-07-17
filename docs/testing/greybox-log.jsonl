@@ -24,3 +24,8 @@
 {"ts":"2026-07-17T07:39:28.535Z","scenario":"theme.shell-toggle","app":"mail","signal":"pass","durationMs":11340,"detail":"ok"}
 {"ts":"2026-07-17T07:42:05.681Z","scenario":"theme.shell-dark","app":"mail","signal":"pass","durationMs":5908,"detail":"ok"}
 {"ts":"2026-07-17T07:42:16.749Z","scenario":"theme.shell-toggle","app":"mail","signal":"pass","durationMs":10800,"detail":"ok"}
+{"ts":"2026-07-17T07:45:58.348Z","scenario":"motion.close-instant","app":"settings","signal":"pass","durationMs":6603,"detail":"ok"}
+{"ts":"2026-07-17T07:46:05.291Z","scenario":"motion.open-instant","app":"settings","signal":"pass","durationMs":6361,"detail":"ok"}
+{"ts":"2026-07-17T07:46:11.896Z","scenario":"theme.shell-dark","app":"mail","signal":"pass","durationMs":6186,"detail":"ok"}
+{"ts":"2026-07-17T07:46:24.501Z","scenario":"theme.shell-toggle","app":"mail","signal":"pass","durationMs":12093,"detail":"ok"}
+{"ts":"2026-07-17T07:46:31.163Z","scenario":"theme.cafe-sync","app":"safari","signal":"pass","durationMs":6332,"detail":"ok"}

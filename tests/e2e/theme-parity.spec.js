@@ -56,3 +56,20 @@ test("mail window background changes between light and dark", async ({ page }) =
     expect(lightBg).not.toBe(darkBg);
   });
 });
+
+test("founders cafe data-theme follows desktop dark", async ({ page }) => {
+  await withScenario(page, { scenario: "theme.cafe-sync", app: "safari" }, async () => {
+    await setThemeMode(page, "dark");
+    await openDockApp(page, "safari");
+    // Favorites tile: data-safari-href="assets/founders-cafe/index.html"
+    const tile = page.locator('[data-safari-href*="founders"]').first();
+    await expect(tile).toBeVisible();
+    await tile.click();
+    const frame = page.frameLocator("#safariFrame");
+    await expect
+      .poll(async () => {
+        return frame.locator("html").evaluate((el) => el.getAttribute("data-theme"));
+      }, { timeout: 15000 })
+      .toBe("dark");
+  });
+});
