@@ -1,3 +1,5 @@
+import { animationsEnabled } from "./appearance-state.js";
+
 /**
 
  * macOS-style window resize for Portfolio OS desktop windows.
@@ -445,9 +447,15 @@ export function animateWindowOpen(winOrSelector, options = {}) {
 
 
 
-  if (typeof gsap === "undefined") {
+  if (!animationsEnabled() || typeof gsap === "undefined") {
 
     win.style.opacity = "1";
+
+    if (typeof gsap !== "undefined") {
+
+      gsap.set(win, { opacity: 1, scale: 1, y: 0, x: 0 });
+
+    }
 
     finish();
 
