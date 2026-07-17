@@ -4,6 +4,12 @@
   "description": "Portfolio shell; Founders Cafe replica builds into assets/founders-cafe for Safari.",
   "scripts": {
     "build": "node scripts/build-founders-cafe.cjs",
-    "build:founders-cafe": "node scripts/build-founders-cafe.cjs"
+    "build:founders-cafe": "node scripts/build-founders-cafe.cjs",
+    "serve": "npx --yes serve -l 4173 .",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
   }
 }
