@@ -1,4 +1,4 @@
-# Dependencies
+﻿# Dependencies
 node_modules/
 **/node_modules/
 
@@ -16,7 +16,7 @@ Thumbs.db
 founders-cafe/.vite/
 founders-cafe/dist/
 
-# ── Not used by the deployed static site (only index.html + assets/ are served) ──
+# â”€â”€ Not used by the deployed static site (only index.html + assets/ are served) â”€â”€
 
 # Cursor / local reference material
 skills/
@@ -34,4 +34,4 @@ design-philosophy.md
 # Playwright
 test-results/
 playwright-report/
-docs/testing/greybox-log.jsonl
+# Tracked: docs/testing/proof/*.png and docs/testing/greybox-log.jsonl
