@@ -5,6 +5,7 @@ const baseURL = process.env.PORTFOLIO_BASE_URL || "http://127.0.0.1:4173";
 
 export default defineConfig({
   testDir: "tests/e2e",
+  testIgnore: ["**/_*.spec.js"],
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,

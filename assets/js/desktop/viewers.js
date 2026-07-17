@@ -1,4 +1,5 @@
 import { getPreviewMountEl } from "../core/preview-mount.js";
+import { registerManagedWindow } from "./window-resize.js";
 
 export function initPreviewViewers() {
   window.openPdfViewer = openPdfViewer;
@@ -9,6 +10,8 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
   const mount = getPreviewMountEl();
   if (!mount) return;
 
+  const isMobile = document.documentElement.getAttribute("data-view") === "mobile";
+
   const existingOverlay = document.querySelector(".preview-overlay");
   if (existingOverlay) {
     const win = existingOverlay.querySelector(".preview-window");
@@ -18,7 +21,7 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
     if (titleEl) titleEl.textContent = title || "Preview";
     if (iframe) iframe.src = pdfSrc;
 
-    if (win && document.documentElement.getAttribute("data-view") !== "mobile") {
+    if (win && !isMobile) {
       win.style.width = width;
       win.style.height = height;
     }
@@ -28,7 +31,14 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
     gsap.fromTo(
       win,
       { scale: 0.98 },
-      { scale: 1, duration: 0.3, ease: "back.out(2)" },
+      {
+        scale: 1,
+        duration: 0.3,
+        ease: "back.out(2)",
+        onComplete: () => {
+          if (!isMobile) registerManagedWindow(win);
+        },
+      },
     );
     return;
   }
@@ -60,13 +70,17 @@ function openPdfViewer(pdfSrc, title, width = "800px", height = "600px") {
 
   const win = overlay.querySelector(".preview-window");
 
-  const isMobile = document.documentElement.getAttribute("data-view") === "mobile";
   const animConfig = isMobile
     ? { duration: 0.35 }
     : { scale: 1, y: 0, duration: 0.35, ease: "back.out(1.4)" };
 
   gsap.set(win, { opacity: 1 });
-  gsap.to(win, animConfig);
+  gsap.to(win, {
+    ...animConfig,
+    onComplete: () => {
+      if (!isMobile) registerManagedWindow(win);
+    },
+  });
 
   window.focusWindow(win);
 
@@ -118,6 +132,7 @@ function openImageViewer(imgSrc, title) {
   mount.appendChild(overlay);
 
   const win = overlay.querySelector(".preview-window");
+  const isMobile = document.documentElement.getAttribute("data-view") === "mobile";
 
   gsap.set(win, { opacity: 1 });
   gsap.to(win, {
@@ -125,14 +140,14 @@ function openImageViewer(imgSrc, title) {
     y: 0,
     duration: 0.35,
     ease: "back.out(1.4)",
+    onComplete: () => {
+      if (!isMobile) registerManagedWindow(win);
+    },
   });
 
   window.focusWindow(win);
 
-  if (
-    typeof Draggable !== "undefined" &&
-    document.documentElement.getAttribute("data-view") !== "mobile"
-  ) {
+  if (typeof Draggable !== "undefined" && !isMobile) {
     Draggable.create(win, {
       type: "top,left",
       handle: ".preview-titlebar",

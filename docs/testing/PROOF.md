@@ -22,6 +22,7 @@ npx playwright test
 | `resize-windows` | pass | finder SE handle ≥ +40px, mins 400×300 |
 | `dock-clearance` | pass | workarea excludes dock; settings@1280×720 clear |
 | `os-selection` | pass | shell `user-select: none` |
+| `preview-refit` | pass | Resume PDF refits after 1440→1280×720; body selectable |
 
 ## Deeper loop (2026-07-17)
 
@@ -30,6 +31,14 @@ npx playwright test
 - Suite: **17 passed** (prior 15 + dock-clearance + os-selection)
 - Fixes: dock-aware workarea insets + viewport/visualViewport refit; OS-like `#desktop` user-select
 - CI: `.github/workflows/ci.yml` (`deploy-sanity` + `e2e`)
+
+## Deeper loop 2 — preview refit (2026-07-17)
+
+- Probe: `docs/testing/sanity-probe-deeper-2026-07-17.json` (68 pass / 2 real fails pre-fix)
+- **Fix:** `.preview-window` added to `WINDOW_CONFIGS`; `registerManagedWindow()` after PDF/image open so clamp + `refitVisible` apply
+- Suite: **19 passed** (+ `preview-refit` viewport shrink + resume selection)
+- CI: master green after Playwright `webServer` (#9)
+- Still noted (not fixed): fake minimize; page-zoom sim is layout-viewport-centric
 
 ## Performance
 

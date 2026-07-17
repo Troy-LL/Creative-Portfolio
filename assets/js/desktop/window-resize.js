@@ -40,6 +40,9 @@ const WINDOW_CONFIGS = [
 
   { selector: ".spotify-window", key: "spotify-window", minWidth: 400, minHeight: 300 },
 
+  // PDF/image preview overlays are created dynamically (not in DOM at init).
+  { selector: ".preview-window", key: "preview-window", minWidth: 320, minHeight: 240 },
+
 ];
 
 
@@ -766,6 +769,30 @@ function setupWindowResize(win, config) {
 
   });
 
+  win.dataset.resizeBound = "1";
+
+}
+
+
+
+/**
+ * Register a dynamically created mac-window (e.g. PDF preview) for clamp/refit/resize.
+ * Safe to call repeatedly.
+ * @param {HTMLElement | string | null | undefined} winOrSelector
+ */
+export function registerManagedWindow(winOrSelector) {
+  const win = resolveWindow(winOrSelector);
+  if (!(win instanceof HTMLElement)) return;
+
+  const config = getConfigForWindow(win);
+  if (!config) return;
+
+  if (win.dataset.resizeBound === "1") {
+    applyWindowLayout(win, config);
+    return;
+  }
+
+  setupWindowResize(win, config);
 }
 
 
