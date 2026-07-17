@@ -35,3 +35,14 @@ design-philosophy.md
 test-results/
 playwright-report/
 # Tracked: docs/testing/proof/*.png and docs/testing/greybox-log.jsonl
+
+# Agent / editor local state (track continual-learning explicitly below)
+.cursor/*
+!.cursor/hooks/
+.cursor/hooks/*
+!.cursor/hooks/state/
+.cursor/hooks/state/*
+!.cursor/hooks/state/continual-learning.json
+!.cursor/hooks/state/continual-learning-index.json
+.claude/
+.ci-artifacts/
