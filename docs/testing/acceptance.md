@@ -1,4 +1,4 @@
-ï»¿# QA / Acceptance â€” greybox desktop UX
+# QA / Acceptance — greybox desktop UX
 
 Date: 2026-07-17 (theme parity + instant reduce-motion)
 Result: PASS locally (**24** Playwright)
@@ -19,11 +19,11 @@ Merged PRs:
 - #20 sync Founders Cafe theme from desktop appearance
 
 Theme / motion acceptance notes:
-- Instant reduce-motion close/open (PRs #16â€“17)
-- `--win-*` tokens + shell migration (PRs #18â€“19)
+- Instant reduce-motion close/open (PRs #16–17)
+- `--win-*` tokens + shell migration (PRs #18–19)
 - Founders Cafe theme sync (PR #20)
 
-Proof: docs/testing/PROOF.md
+Proof: docs/testing/proof.md
 Sanity probes:
 - docs/testing/sanity-probe-2026-07-17.json
 - docs/testing/sanity-probe-deeper-2026-07-17.json

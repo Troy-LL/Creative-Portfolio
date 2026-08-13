@@ -93,7 +93,7 @@ of the lock screen and home screen (purely decorative, `position: fixed; top: 12
 
 ---
 
-## CSS Architecture Rules (from design-philosophy.md)
+## CSS Architecture Rules (from docs/design-philosophy.md)
 - Scope ALL mobile styles in `assets/css/mobile.css` — import it last in `index.html`
   after all existing stylesheets.
 - Use `--sys-color` (already defined) for accent color consistency.
@@ -105,7 +105,7 @@ of the lock screen and home screen (purely decorative, `position: fixed; top: 12
 
 ---
 
-## File Wiring Checklist (from design-philosophy.md)
+## File Wiring Checklist (from docs/design-philosophy.md)
 New mobile layer must be registered in:
 1. `index.html` — add `<link rel="stylesheet" href="assets/css/mobile.css" />` and
    the `<script src="assets/js/mobile/init.js" defer></script>` tag
