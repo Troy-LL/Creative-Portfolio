@@ -10,7 +10,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
  */
 export default defineConfig({
   /* Root-absolute URLs so script/CSS always resolve from the site origin (reliable in iframes). */
-  base: "/assets/founders-cafe/",
+  base: "/archive/desktop-os/assets/founders-cafe/",
   build: {
     outDir: path.resolve(__dirname, "../assets/founders-cafe"),
     emptyOutDir: true,

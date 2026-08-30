@@ -7,5 +7,14 @@
 ## Learned Workspace Facts
 
 - This Portfolio repo is indexed with both CodeGraph (`.codegraph/`) and code-review-graph (`.code-review-graph/`); those index dirs are local and gitignored.
-- The site is a desktop OS-style portfolio shell; Founders Cafe is a separate React/Vite app built into `assets/founders-cafe/`.
+- Root is a redesign stub. The former desktop OS shell (and Founders Cafe) lives under `archive/desktop-os/` and is not the live surface.
+- Brand SoT is external: `Troy-LL/personal` → `docs/branding.md`.
 - On Windows, Cursor MCP for these tools often needs absolute binary paths—bare `codegraph` / `code-review-graph` command names frequently fail under Cursor’s launch PATH.
+
+## Docs
+
+- Entry fold-open UI (tab / fold / inside / press / zoom): `docs/design.md`
+- Fold-open entry, not paper tear: `docs/decisions/002-fold-open-entry-not-paper-tear.md`
+- Superseded shutter ADR: `docs/decisions/001-shutter-entry-not-paper-tear.md`
+
+Scratch is local thinking only. Do not map it. Do not commit it unless asked.

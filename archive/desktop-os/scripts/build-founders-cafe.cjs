@@ -1,18 +1,19 @@
 /**
- * Root `npm run build` for Vercel / CI.
- * Installs deps in `founders-cafe/` and runs Vite → `assets/founders-cafe/`.
- * If `founders-cafe/package.json` is missing, exits 0 (use committed `assets/founders-cafe/` only).
+ * Build Founders Cafe into archive/desktop-os/assets/founders-cafe/.
+ * Run from repo root: npm run build
+ * If founders-cafe/package.json is missing, exits 0 (use committed assets).
  */
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
 
-const dir = path.join(process.cwd(), "founders-cafe");
+const archiveRoot = path.join(__dirname, "..");
+const dir = path.join(archiveRoot, "founders-cafe");
 const pkg = path.join(dir, "package.json");
 
 if (!fs.existsSync(pkg)) {
   console.log(
-    "[build] founders-cafe/ not found — skipping Vite build. Ensure assets/founders-cafe/ is committed.",
+    "[build] archive/desktop-os/founders-cafe/ not found — skipping Vite build.",
   );
   process.exit(0);
 }

@@ -17,17 +17,16 @@ jobs:
           cache: npm
       - name: Install
         run: npm ci
-      - name: Build Founders Cafe into assets
-        run: npm run build
-      - name: Assert deploy artifacts
+      - name: Assert redesign stub + archived desktop
         run: |
           test -f index.html
-          test -f assets/js/app.js
+          grep -q 'data-surface="redesign-stub"' index.html
           test -f vercel.json
           node -e "JSON.parse(require('fs').readFileSync('vercel.json','utf8'))"
-          test -d assets/founders-cafe
-          find assets/founders-cafe -type f | head
-          test -n "$(find assets/founders-cafe -type f | head -1)"
+          test -f archive/desktop-os/index.html
+          test -f archive/desktop-os/assets/js/app.js
+          test -d archive/desktop-os/assets/founders-cafe
+          test -n "$(find archive/desktop-os/assets/founders-cafe -type f | head -1)"
 
   e2e:
     name: e2e
@@ -41,8 +40,6 @@ jobs:
           cache: npm
       - name: Install
         run: npm ci
-      - name: Build Founders Cafe
-        run: npm run build
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
       - name: Run Playwright
@@ -55,5 +52,4 @@ jobs:
           path: |
             playwright-report/
             test-results/
-            docs/testing/proof/
           if-no-files-found: ignore

@@ -1,0 +1,549 @@
+:root {
+  --paper: #e8e6e0;
+  --ink: #1a1814;
+  --amber: #c9a36a;
+  --floor: #e4dfd4;
+  --muted: rgba(26, 24, 20, 0.55);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--floor);
+  color: var(--ink);
+  font-family: "Segoe UI", system-ui, sans-serif;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* —— Visitor surface: full-bleed table, card only —— */
+.site-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  position: relative;
+}
+
+.lab-devtools {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  width: min(360px, 40vw);
+  max-width: 100%;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: rgba(232, 230, 224, 0.96);
+  border-left: 1px solid rgba(20, 18, 16, 0.14);
+  backdrop-filter: blur(10px);
+  box-shadow: -10px 0 28px rgba(20, 18, 16, 0.08);
+}
+
+.lab-devtools[hidden] {
+  display: none !important;
+}
+
+/* Keep the card in the clear area while the dial is open */
+body.is-lab .site-stage {
+  margin-right: min(360px, 40vw);
+}
+
+@media (max-width: 720px) {
+  .lab-devtools {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-height: min(38vh, 320px);
+    border-left: none;
+    border-top: 1px solid rgba(20, 18, 16, 0.14);
+    box-shadow: 0 -8px 28px rgba(20, 18, 16, 0.08);
+  }
+
+  body.is-lab .site-stage {
+    margin-right: 0;
+    margin-bottom: min(38vh, 320px);
+  }
+}
+
+.lab-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.7rem 0.85rem 0.35rem;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: rgba(232, 230, 224, 0.96);
+  border-bottom: 1px solid rgba(20, 18, 16, 0.08);
+}
+
+.lab-head h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.05rem;
+}
+
+.lab-head p {
+  margin: 0.15rem 0 0;
+  font-size: 0.72rem;
+  color: var(--muted);
+  max-width: none;
+}
+
+.lab-head kbd {
+  font-size: 0.72rem;
+  padding: 0.05rem 0.3rem;
+  border: 1px solid rgba(20, 18, 16, 0.18);
+  border-radius: 3px;
+  background: rgba(244, 242, 234, 0.8);
+}
+
+.lab-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+button {
+  appearance: none;
+  border: 1px solid rgba(20, 18, 16, 0.22);
+  background: #f4f2ea;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--ink);
+}
+
+button.is-active {
+  border-color: var(--ink);
+  background: #faf9f5;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.lab-link {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-left: 0.5rem;
+}
+
+.lab-link a {
+  color: inherit;
+}
+
+.lab-motion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.85rem;
+  align-items: center;
+  margin: 0.35rem 0.7rem;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid rgba(20, 18, 16, 0.12);
+  background: rgba(244, 242, 234, 0.55);
+  font-size: 0.74rem;
+}
+
+.lab-motion legend {
+  padding: 0 0.35rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.lab-motion label {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  cursor: pointer;
+}
+
+.pane {
+  position: relative;
+  flex: 1;
+  background: var(--floor);
+  min-height: 100%;
+  overflow: hidden;
+}
+
+.pane-fps {
+  display: none;
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 5;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+body.is-lab .pane-fps {
+  display: block;
+}
+
+.css-stage {
+  --lab-card-w: 420px;
+  position: absolute;
+  inset: 0;
+  perspective: 590px;
+  perspective-origin: 50% 42%;
+}
+
+.css-stage.is-settled {
+  perspective: 590px;
+}
+
+.css-world {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  transform-style: preserve-3d;
+  display: grid;
+  place-items: center;
+  /* no isolation — it flattens nested fold preserve-3d */
+}
+
+.css-rig {
+  position: relative;
+  width: min(var(--lab-card-w, 420px), 78vw);
+  aspect-ratio: 1.75;
+  transform-style: preserve-3d;
+  transform: translate3d(0, -120%, 80px) rotateX(42deg);
+  will-change: transform;
+}
+
+.css-card {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(0deg) rotateY(0deg);
+  backface-visibility: hidden;
+  cursor: default;
+  user-select: none;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.css-card.is-live {
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.css-card.is-live:active {
+  cursor: grabbing;
+}
+
+.css-card__face {
+  position: absolute;
+  inset: 0;
+  transform: none;
+  transform-style: preserve-3d;
+  overflow: hidden;
+  background: transparent;
+  /* isolation flattens siblings and brightens stacked thirds */
+  isolation: auto;
+}
+
+.css-card__material {
+  width: 100%;
+  height: 100%;
+}
+
+.css-card__thickness {
+  display: none;
+}
+
+.css-card .physical-card {
+  --card-width: 100%;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: unset;
+}
+
+.css-card .physical-card__contact-shadow {
+  display: none;
+}
+
+/* Nested Z-fold — flat at rest (reads as one card); hinged on scroll */
+.fold-sheet {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.fold-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.fold-panel--top {
+  top: 0;
+  height: calc(100% / 3 + 1px);
+  transform-origin: 50% 100%;
+}
+
+.fold-panel--mid {
+  /* 1px overlap kills the dark hairline seam when flat */
+  top: calc(100% - 1px);
+  height: calc(100% + 1px);
+  transform-origin: 50% 0%;
+}
+
+.fold-panel--bot {
+  top: calc(100% - 1px);
+  height: calc(100% + 1px);
+  transform-origin: 50% 0%;
+}
+
+.fold-panel__face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  /* Match paper — no separate panel fill that reads as a seam */
+  background: transparent;
+  transform-style: preserve-3d;
+  box-shadow: none;
+  border: 0;
+}
+
+.fold-panel__clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.fold-panel__print {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 300%;
+}
+
+.fold-panel__print .physical-card {
+  --card-width: 100%;
+  --paper-lit-opacity: 0.1;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: unset;
+  isolation: auto;
+}
+
+/* Panel edges read as clip seams — hide on thirds */
+.fold-panel__print .physical-card__edge {
+  display: none;
+}
+
+.fold-panel__crease {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 8px;
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0;
+  transition: opacity 120ms linear;
+}
+
+.fold-sheet[data-creased="true"] .fold-panel__crease {
+  opacity: calc(var(--crease, 0) * 0.55);
+}
+
+.fold-panel__crease--top {
+  top: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(20, 16, 12, 0.12),
+    transparent
+  );
+}
+
+.fold-panel__crease--bottom {
+  bottom: 0;
+  background: linear-gradient(to top, rgba(20, 16, 12, 0.08), transparent);
+}
+
+.css-card--fold {
+  /* Hit target stays the whole card while flat / folding */
+  pointer-events: none;
+}
+
+.css-card--fold.is-live {
+  pointer-events: auto;
+}
+
+.css-scroll-hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 5vh;
+  margin: 0;
+  text-align: center;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: rgba(28, 24, 20, 0.28);
+  opacity: 0;
+  transition: opacity 700ms ease;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.css-scroll-hint[data-visible="true"] {
+  opacity: 1;
+}
+
+.css-shadows {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.css-shadow {
+  /* Card-shaped cast on the table plane (contact + soft penumbra) */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(var(--lab-card-w, 420px), 78vw);
+  aspect-ratio: 1.75;
+  height: auto;
+  transform: translate(-48%, -46%);
+  transform-origin: center center;
+  border-radius: 1px;
+  background: #1a1814;
+  pointer-events: none;
+  will-change: transform, opacity, filter;
+}
+
+.css-shadow--soft {
+  filter: blur(16px);
+  opacity: 0.22;
+}
+
+.css-shadow--contact {
+  filter: blur(4px);
+  opacity: 0.32;
+}
+
+.lab-debug {
+  margin: 0.4rem 0.7rem 0.55rem;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid rgba(20, 18, 16, 0.1);
+  background: rgba(244, 242, 234, 0.4);
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.lab-debug summary {
+  cursor: pointer;
+  color: var(--ink);
+  font-size: 0.74rem;
+}
+
+.lab-debug__hint {
+  margin-left: 0.45rem;
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.lab-debug__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.55rem;
+}
+
+.lab-debug__presets button {
+  font-size: 0.68rem;
+  padding: 0.28rem 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.lab-debug__presets button.is-active {
+  outline: 1px solid rgba(20, 18, 16, 0.35);
+  background: rgba(244, 242, 234, 0.9);
+}
+
+.lab-debug input[type="color"] {
+  width: 100%;
+  height: 1.6rem;
+  padding: 0;
+  border: 1px solid rgba(20, 18, 16, 0.15);
+  background: transparent;
+  cursor: pointer;
+}
+
+.lab-debug__actions button {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.7rem;
+}
+
+.lab-debug__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
+}
+
+.lab-debug label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.lab-debug input[type="range"] {
+  width: 100%;
+  accent-color: #1a1814;
+}
+
+.lab-debug strong {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .css-rig,
+  .css-shadow {
+    transition: none !important;
+  }
+}

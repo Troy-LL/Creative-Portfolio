@@ -1,0 +1,298 @@
+/**
+ * Pale bone uncoated stock — depth from height-lit surface, not louder noise.
+ * Blank-stock first. No glow washes. Emboss off.
+ */
+
+.physical-card {
+  --paper-base: #f4f2ea;
+  /* Soft-light of dense tooth map — keep modest; density lives in the map */
+  --paper-lit-opacity: 0.11;
+  --paper-lit-scale: 100% 100%;
+  --ink-color: #1a1814;
+  --ink-opacity: 0.9;
+  --print-scale: 1;
+  --edge-hi: rgba(255, 255, 252, 0.35);
+  --edge-lo: rgba(32, 30, 26, 0.07);
+  --ambient-shadow: rgba(28, 26, 22, 0.11);
+  --card-width: min(440px, 92vw);
+  --card-ratio: 1.75;
+
+  position: relative;
+  width: var(--card-width);
+  aspect-ratio: var(--card-ratio);
+  isolation: isolate;
+  font-synthesis: none;
+}
+
+.physical-card__filters {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Quiet contact — object on a table */
+.physical-card__contact-shadow {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: -1.6%;
+  height: 5.5%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    var(--ambient-shadow) 0%,
+    transparent 70%
+  );
+  filter: blur(4px);
+  opacity: 0.75;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.physical-card__body {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+
+/* Flat pale bone — no cloudy radial glow */
+.physical-card__surface {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 0;
+  background: var(--paper-base);
+}
+
+/* Height-lit map: soft-light = luminance scatter only */
+.physical-card__texture {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.physical-card__texture-lit {
+  position: absolute;
+  inset: 0;
+  opacity: var(--paper-lit-opacity);
+  background-size: var(--paper-lit-scale);
+  background-repeat: no-repeat;
+  background-position: center;
+  mix-blend-mode: soft-light;
+}
+
+/* No separate luminous wash — lighting is in the height map */
+.physical-card__light {
+  display: none;
+}
+
+/* Micro thickness / cut edge */
+.physical-card__edge {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 0.35px var(--edge-hi),
+    0.35px 0.45px 0 var(--edge-lo),
+    0.7px 0.9px 0 rgba(32, 30, 26, 0.035);
+}
+
+/* —— Ink in paper (shared height map, no emboss) —— */
+.physical-card__relief,
+.physical-card__ink-surface {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  padding: 7.5% 7% 8%;
+}
+
+.physical-card__ink-surface {
+  --ink-density: 0.96;
+  --ink-grain-vis: 0.55;
+  --ink-relief-op: 0.2;
+  padding: 0;
+}
+
+.physical-card__ink-relief {
+  position: absolute;
+  inset: 0;
+  padding: 7.5% 7% 8%;
+  z-index: 0;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+}
+
+.physical-card__ink-fill {
+  position: absolute;
+  inset: 0;
+  padding: 7.5% 7% 8%;
+  pointer-events: none;
+}
+
+.physical-card__ink-fill--solid {
+  z-index: 1;
+  pointer-events: auto;
+}
+
+.physical-card__ink-fill--density {
+  z-index: 2;
+}
+
+.physical-card__ink-fill--pores {
+  z-index: 3;
+  mix-blend-mode: soft-light;
+}
+
+.physical-card__print {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.physical-card__print--minimal {
+  justify-content: flex-end;
+  padding-bottom: 0.15rem;
+}
+
+.physical-card__print--minimal .physical-card__print-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0;
+}
+
+.physical-card__print-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.physical-card__print-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  text-align: right;
+}
+
+.physical-card__print-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  text-align: center;
+  margin-top: 0;
+}
+
+.physical-card__print-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  text-align: center;
+}
+
+.physical-card__ink {
+  margin: 0;
+  color: var(--ink-color);
+  font-family: Copperplate, "Copperplate Gothic", "Trajan Pro", "Times New Roman",
+    Times, Georgia, serif;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+  text-shadow: none;
+}
+
+.physical-card__ink-fill--solid .physical-card__ink {
+  color: var(--ink-color, #12100e);
+}
+
+.physical-card__ink-fill--solid .physical-card__ink--title {
+  opacity: 0.92;
+}
+
+.physical-card__ink-fill--solid .physical-card__ink--small {
+  opacity: 0.9;
+}
+
+.physical-card__ink-fill--solid .physical-card__ink--tiny {
+  opacity: 0.84;
+}
+
+.physical-card__ink-fill--solid .physical-card__ink--url {
+  opacity: 0.88;
+}
+
+/* Relief glyphs = paper-colored alpha masks for contour lighting */
+.physical-card__ink--relief {
+  color: var(--paper-base, #f4f2ea) !important;
+  opacity: 1 !important;
+}
+
+/* Dark ink coverage map + pore soft-light (density dips, not white holes) */
+.physical-card__ink--density,
+.physical-card__ink--breakup {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent;
+  background-size: var(--ink-bg-w, 100%) var(--ink-bg-h, 100%);
+  background-position: var(--ink-bg-x, 0px) var(--ink-bg-y, 0px);
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.physical-card__ink--density {
+  background-image: var(--ink-map-url);
+}
+
+.physical-card__ink--breakup {
+  background-image: var(--ink-pore-url);
+}
+
+/* Name stays title case — "Troy Lazaro" as written */
+.physical-card__ink--name {
+  font-size: calc(clamp(1.05rem, 3vw, 1.4rem) * var(--print-scale, 1));
+  letter-spacing: 0.14em;
+  text-transform: none;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.physical-card__ink--title {
+  font-size: calc(clamp(0.55rem, 1.45vw, 0.72rem) * var(--print-scale, 1));
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.physical-card__ink--small {
+  font-size: calc(clamp(0.48rem, 1.25vw, 0.62rem) * var(--print-scale, 1));
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.physical-card__ink--tiny {
+  font-size: calc(clamp(0.4rem, 1.05vw, 0.52rem) * var(--print-scale, 1));
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.physical-card__ink--url {
+  font-size: calc(clamp(0.42rem, 1.1vw, 0.55rem) * var(--print-scale, 1));
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: none;
+  font-style: normal;
+}

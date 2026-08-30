@@ -1,0 +1,569 @@
+.fold {
+  --fold-paper: #f4f2ea;
+  --fold-ink: #141210;
+  --fold-bg: #d8d2c6;
+  position: relative;
+  min-height: 100dvh;
+  /* overflow/isolation/filter on 3D ancestors flatten the fold — keep this clean */
+  touch-action: none;
+  user-select: none;
+}
+
+.fold__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 42%, #e4ddd2 0%, transparent 70%),
+    var(--fold-bg);
+}
+
+.fold__stage {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  perspective: 1100px;
+  perspective-origin: 50% 42%;
+  transform-style: preserve-3d;
+}
+
+.fold__depth {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  /* Quiet wash only — no copy bleeding through the card */
+  background:
+    radial-gradient(
+      ellipse 70% 50% at 50% 48%,
+      rgba(62, 78, 92, 0.22) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 55% 40% at 50% 58%,
+      rgba(28, 24, 20, 0.12) 0%,
+      transparent 65%
+    );
+}
+
+.fold__depth[data-visible="true"] {
+  visibility: visible;
+}
+
+.fold__fore {
+  position: relative;
+  z-index: 2;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 8vh 4vw 14vh;
+  transform-style: preserve-3d;
+  /* Keep this in the stage's 3D scene (no flatten) */
+  transform: translateZ(0);
+}
+
+.fold__card {
+  --card-w: min(440px, 86vw);
+  position: relative;
+  width: var(--card-w);
+  aspect-ratio: 1.75;
+  transform-style: preserve-3d;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+/* Soft contact only — no filter (filter flattens sibling 3D panels) */
+.fold__shadow {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: -6%;
+  height: 16%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(28, 24, 20, 0.28) 0%,
+    transparent 72%
+  );
+  pointer-events: none;
+  z-index: 0;
+  transform: translateZ(-40px);
+}
+
+.fold-sheet {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.fold-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.fold-panel--top {
+  top: 0;
+  height: calc(100% / 3);
+  transform-origin: 50% 100%;
+}
+
+.fold-panel--mid {
+  top: calc(100% - 0.5px);
+  height: 100%;
+  transform-origin: 50% 0%;
+}
+
+.fold-panel--bot {
+  top: calc(100% - 0.5px);
+  height: 100%;
+  transform-origin: 50% 0%;
+}
+
+.fold-panel__face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  /* overflow must stay visible so stock rims (rotateX/Y) aren't clipped */
+  overflow: visible;
+  background: var(--fold-paper);
+  transform-style: preserve-3d;
+  /* Outer card boundary */
+  box-shadow:
+    inset 0 0 0 0.5px rgba(255, 252, 248, 0.45),
+    0.5px 0.5px 0 rgba(40, 34, 28, 0.12);
+}
+
+.fold-panel__clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.fold-panel__print {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 300%;
+  top: 0;
+}
+
+.fold-panel__print .physical-card {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  /* isolation/filter stacks inside faces must not invent a flat root */
+  isolation: auto;
+}
+
+.fold-panel__print .physical-card__contact-shadow {
+  display: none;
+}
+
+.fold-panel__print .physical-card__texture-lit,
+.fold-panel__print .physical-card__ink-relief,
+.fold-panel__print .physical-card__ink-fill--pores {
+  /* blend modes on deep descendants can flatten nested preserve-3d in WebKit */
+  mix-blend-mode: normal;
+}
+
+.fold-panel__edge {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 0.35px rgba(255, 255, 252, 0.3),
+    0.35px 0.45px 0 rgba(32, 30, 26, 0.055);
+  z-index: 3;
+}
+
+/* Soft face shade — rgba only, no mix-blend (blend modes flatten 3D) */
+.fold-panel__shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: rgba(32, 26, 20, 0.22);
+}
+
+.fold-panel__shade--valley {
+  background: rgba(28, 22, 16, 0.32);
+}
+
+.fold-panel__crease {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 12px;
+  pointer-events: none;
+  z-index: 4;
+  opacity: calc(var(--crease, 0) * 0.95);
+}
+
+.fold-panel__crease--top {
+  top: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(20, 16, 12, 0.28),
+    rgba(20, 16, 12, 0.08) 50%,
+    transparent
+  );
+}
+
+.fold-panel__crease--bottom {
+  bottom: 0;
+  background: linear-gradient(
+    to top,
+    rgba(20, 16, 12, 0.2),
+    transparent 75%
+  );
+  box-shadow: 0 1px 0 rgba(255, 252, 248, calc(var(--crease, 0) * 0.35));
+}
+
+/* Visible cardstock edge at hinges — reference white stock rim */
+.fold-panel__thickness {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5px;
+  pointer-events: none;
+  z-index: 5;
+  transform: rotateX(90deg);
+  transform-origin: 50% 100%;
+  background: linear-gradient(
+    to bottom,
+    #faf8f2 0%,
+    #ebe4d8 40%,
+    #c4b9a8 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 252, 248, 0.7),
+    inset 0 -1px 0 rgba(40, 34, 28, 0.22);
+  opacity: calc(0.45 + var(--crease, 0) * 0.55);
+}
+
+/* Side stock edges — keep subtle so they don't read as stray flaps */
+.fold-panel__face::before,
+.fold-panel__face::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2.5px;
+  pointer-events: none;
+  z-index: 6;
+  opacity: calc(var(--crease, 0) * 0.55);
+  background: linear-gradient(
+    to right,
+    #faf8f2,
+    #ddd4c4 50%,
+    #a89e8e
+  );
+}
+
+.fold-panel__face::before {
+  left: 0;
+  transform: rotateY(-90deg);
+  transform-origin: left center;
+}
+
+.fold-panel__face::after {
+  right: 0;
+  transform: rotateY(90deg);
+  transform-origin: right center;
+  background: linear-gradient(
+    to left,
+    #faf8f2,
+    #ddd4c4 50%,
+    #a89e8e
+  );
+}
+
+.fold-panel__inside {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background: var(--fold-paper);
+}
+
+.fold-panel__inside .fold-inside[data-interactive="true"] {
+  pointer-events: auto;
+}
+
+.fold-inside {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--fold-paper);
+  pointer-events: none;
+}
+
+.fold-inside[data-interactive="true"] {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.fold-inside[data-hover="true"] .fold-inside__label {
+  letter-spacing: 0.18em;
+  opacity: 1;
+}
+
+.fold-inside__stock {
+  position: absolute;
+  inset: 0;
+  opacity: 1;
+  pointer-events: none;
+}
+
+.fold-inside__stock .physical-card {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+.fold-inside__stock .physical-card__contact-shadow {
+  display: none;
+}
+
+.fold-inside__enter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 1rem;
+  border: 0;
+  background: transparent;
+  cursor: inherit;
+  color: var(--fold-ink);
+  font-family: Copperplate, "Copperplate Gothic", "Trajan Pro", "Times New Roman",
+    Times, Georgia, serif;
+}
+
+.fold-inside__enter:disabled {
+  cursor: default;
+}
+
+.fold-inside__eyebrow {
+  font-size: clamp(0.45rem, 1.1vw, 0.58rem);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+.fold-inside__label {
+  font-size: clamp(0.8rem, 2.2vw, 1.05rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  opacity: 0.86;
+  transition: letter-spacing 160ms ease, opacity 160ms ease;
+}
+
+.fold__scroll-hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4.5vh;
+  margin: 0;
+  text-align: center;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: rgba(28, 24, 20, 0.28);
+  opacity: 0;
+  transform: translateY(-2px);
+  transition:
+    opacity 700ms ease,
+    transform 700ms ease;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.fold__scroll-hint[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fold__entered-label {
+  position: relative;
+  z-index: 3;
+  margin: 0;
+  text-align: center;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  letter-spacing: 0.08em;
+  color: rgba(28, 24, 20, 0.55);
+}
+
+.fold-world {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #1c1814;
+  color: #f2eee8;
+}
+
+.fold-world__wash {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 40%, #3a322a 0%, transparent 65%),
+    linear-gradient(160deg, #241f1a, #14110e);
+}
+
+.fold-world__grid {
+  position: absolute;
+  inset: 8%;
+  border: 1px solid rgba(242, 238, 232, 0.08);
+  background-image:
+    linear-gradient(rgba(242, 238, 232, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242, 238, 232, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.7;
+}
+
+.fold-world__copy {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: 14%;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.fold-world__eyebrow {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+.fold-world__title {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-weight: 500;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  letter-spacing: 0.04em;
+}
+
+.fold-world__body {
+  margin: 0;
+  max-width: 28rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  opacity: 0.72;
+}
+
+.fold[data-fold-phase="entered"] .fold__depth {
+  pointer-events: auto;
+}
+
+/* —— Fold debug (?debug=1) —— */
+.fold-debug {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 40;
+  width: min(280px, calc(100vw - 2rem));
+  padding: 0.75rem 0.85rem 0.9rem;
+  border-radius: 10px;
+  background: rgba(32, 28, 24, 0.88);
+  color: #f4f0e8;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(8px);
+  pointer-events: auto;
+}
+
+.fold-debug__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+}
+
+.fold-debug__head strong {
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.fold-debug__btn {
+  border: 0;
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  background: rgba(255, 255, 255, 0.12);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.fold-debug__btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.fold-debug__check {
+  display: none;
+}
+
+.fold-debug__row {
+  display: grid;
+  gap: 0.2rem;
+  margin-bottom: 0.45rem;
+}
+
+.fold-debug__label {
+  display: flex;
+  justify-content: space-between;
+  opacity: 0.9;
+}
+
+.fold-debug__label em {
+  font-style: normal;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+.fold-debug__row input[type="range"] {
+  width: 100%;
+  accent-color: #d8cfc0;
+}
+
+.fold-debug__code {
+  margin: 0.55rem 0 0.35rem;
+  padding: 0.4rem 0.45rem;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.28);
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.65rem;
+  word-break: break-all;
+}
+
+.fold-debug__hint {
+  margin: 0;
+  opacity: 0.55;
+  font-size: 0.65rem;
+}
+
+.fold-debug__hint code {
+  font-family: ui-monospace, Consolas, monospace;
+}

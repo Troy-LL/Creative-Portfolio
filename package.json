@@ -1,15 +1,34 @@
 {
+
   "name": "creative-portfolio",
+
   "private": true,
-  "description": "Portfolio shell; Founders Cafe replica builds into assets/founders-cafe for Safari.",
+
+  "description": "Portfolio redesign stub; archived Desktop TL lives in archive/desktop-os.",
+
   "scripts": {
-    "build": "node scripts/build-founders-cafe.cjs",
-    "build:founders-cafe": "node scripts/build-founders-cafe.cjs",
+
+    "build": "node archive/desktop-os/scripts/build-founders-cafe.cjs",
+
+    "build:founders-cafe": "node archive/desktop-os/scripts/build-founders-cafe.cjs",
+
     "serve": "npx --yes serve -l 4173 .",
+
+    "dev:card": "npm --prefix calling-card run dev",
+
+    "build:card": "npm --prefix calling-card run build",
+
     "test:e2e": "playwright test",
+
     "test:e2e:headed": "playwright test --headed"
+
   },
+
   "devDependencies": {
+
     "@playwright/test": "^1.49.0"
+
   }
+
 }
+
