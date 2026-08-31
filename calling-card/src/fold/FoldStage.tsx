@@ -8,12 +8,16 @@ import {
 import {
   applyLag,
   alignPose,
+  applyHatchDebug,
   clampPose,
-  creaseAmount,
+  creaseAmountFromAngles,
   FOLD_END,
   panelAngles,
-  panelShade,
+  panelAnglesAtEnd,
+  panelShadeFromAngles,
   shouldSnapOpen,
+  surfacePeel,
+  surfacePeelFromAngles,
   type CardPose,
   type FoldPhase,
 } from "./model";
@@ -334,15 +338,28 @@ export function FoldStage() {
     };
   }, []);
 
+  const debugEnd = { top: debug.top, mid: debug.mid, bot: debug.bot };
   const modelAngles = panelAngles(frame.displayFold);
   const angles = DEBUG
-    ? { top: debug.top, mid: debug.mid, bot: debug.bot }
+    ? panelAnglesAtEnd(debug.fold, debugEnd)
     : modelAngles;
-  const foldForFx = DEBUG ? 1 : frame.displayFold;
-  const shade = panelShade(foldForFx);
-  const crease = creaseAmount(foldForFx);
-  const viewTip = DEBUG ? debug.viewTip : FOLD_END.viewTip * foldForFx;
+  const foldForFx = DEBUG ? debug.fold : frame.displayFold;
+  const shade = DEBUG
+    ? panelShadeFromAngles(angles)
+    : panelShadeFromAngles(modelAngles);
+  const crease = DEBUG
+    ? creaseAmountFromAngles(angles)
+    : creaseAmountFromAngles(modelAngles);
+  const computedPeel = DEBUG
+    ? surfacePeelFromAngles(debug.fold, angles)
+    : surfacePeel(foldForFx);
+  const peel = applyHatchDebug(computedPeel, debug.hatch);
+  const viewTip = DEBUG
+    ? debug.viewTip * debug.fold
+    : FOLD_END.viewTip * foldForFx;
   const behind = Math.min(1, Math.max(0, (foldForFx - 0.25) / 0.5));
+  const hatchOpen = peel.shiftPct;
+  const wellOpacity = debug.hatch.wellOpacity * hatchOpen;
 
   const stageH =
     stageRef.current?.clientHeight ||
@@ -363,9 +380,10 @@ export function FoldStage() {
     ? 0.7 + (1 - Math.min(1, fallCss.heightNorm)) * 0.35
     : 1;
 
-  const cardStyle: CSSProperties = {
+  const stackStyle: CSSProperties = {
     transform: rigTransform,
     ["--crease" as string]: String(inEntry ? 0 : crease),
+    ["--layer-z" as string]: String(DEBUG ? debug.hatch.depthPx : 72),
   };
 
   const openish =
@@ -392,15 +410,39 @@ export function FoldStage() {
       data-debug={DEBUG || undefined}
     >
       <div className="fold__bg" aria-hidden="true" />
-      <div
-        className="fold__depth"
-        data-visible={!inEntry && behind > 0.05}
-        aria-hidden="true"
-        style={{ opacity: behind * 0.5 } as CSSProperties}
-      />
+      {!DEBUG ? (
+        <div
+          className="fold__depth"
+          data-visible={!inEntry && behind > 0.05}
+          aria-hidden="true"
+          style={{ opacity: behind * 0.5 } as CSSProperties}
+        />
+      ) : null}
       <div className="fold__stage">
         <div className="fold__fore">
-          <div ref={cardRef} className="fold__card" style={cardStyle}>
+          <div ref={cardRef} className="fold__stack" style={stackStyle}>
+            <div className="fold__hatch-slot" aria-hidden="true">
+              <div
+                className="fold__hatch-well"
+                data-open={hatchOpen > 0.04}
+                style={{
+                  opacity: inEntry ? 0 : wellOpacity,
+                  clipPath: inEntry
+                    ? "inset(100% 0 0 0)"
+                    : `inset(${peel.topPct * 100}% 0 0 0)`,
+                }}
+              />
+              <div
+                className="fold__hatch"
+                style={{
+                  ["--hatch-open" as string]: String(inEntry ? 0 : hatchOpen),
+                  transform: inEntry
+                    ? "none"
+                    : `translate3d(0, ${-peel.shiftPct * 100}%, 0)`,
+                }}
+              />
+            </div>
+            <div className="fold__card">
             <div
               className="fold__shadow"
               aria-hidden="true"
@@ -468,6 +510,7 @@ export function FoldStage() {
                 </div>
               </div>
             </div>
+            </div>
           </div>
 
           <p
@@ -481,7 +524,13 @@ export function FoldStage() {
       </div>
 
       {DEBUG ? (
-        <FoldDebugPanel value={debug} onChange={setDebug} />
+        <FoldDebugPanel
+          value={debug}
+          liveAngles={angles}
+          computedPeel={computedPeel}
+          resolvedPeel={peel}
+          onChange={setDebug}
+        />
       ) : null}
     </main>
   );

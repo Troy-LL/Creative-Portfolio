@@ -58,6 +58,19 @@ export function creaseAmount(foldProgress) {
   return Math.min(1, mag / 200);
 }
 
+/** Face shade overlays (0..~0.22). Plain rgba — no blend on 3D ancestors. */
+export function panelShadeFromAngles(angles) {
+  return {
+    top: Math.min(0.08, Math.abs(angles.top) / 500),
+    mid: Math.min(0.2, Math.abs(angles.mid) / 400),
+    bot: Math.min(0.1, Math.abs(angles.bot) / 480),
+  };
+}
+
+export function panelShade(foldProgress) {
+  return panelShadeFromAngles(panelAngles(foldProgress));
+}
+
 export function shouldSnapOpen(foldProgress) {
   return foldProgress >= SNAP_OPEN_THRESHOLD;
 }
@@ -65,4 +78,197 @@ export function shouldSnapOpen(foldProgress) {
 export function applyLag(current, target, alpha) {
   const a = clamp(alpha, 0, 1);
   return current + (target - current) * a;
+}
+
+/** Smooth cursor proximity — no step jumps at the card edge. */
+export function cursorCardWeight(nx, ny, opts = {}) {
+  const inner = opts.inner ?? 0.9;
+  const outer = opts.outer ?? 1.32;
+  const floor = opts.floor ?? 0.24;
+  const dist = Math.max(Math.abs(nx), Math.abs(ny));
+  if (dist <= inner) return 1;
+  if (dist >= outer) return floor;
+  const t = (dist - inner) / (outer - inner);
+  const s = t * t * (3 - 2 * t);
+  return 1 + (floor - 1) * s;
+}
+
+/** Click-flip: lift toward viewer, scale up, then rotateY to back. */
+export const FLIP = {
+  ms: 900,
+  /** Peak extra Z (px) at mid-flip — reads as picking the card up. */
+  liftZ: 140,
+  /** Peak scale boost at mid-flip (1 + this). */
+  scaleBoost: 0.14,
+  /** Rotation ease-in/out window on 0..1 progress. */
+  rotateStart: 0.12,
+  rotateEnd: 0.88,
+};
+
+export const FLIP_DEFAULTS = { ...FLIP };
+
+function smoothstep(edge0, edge1, x) {
+  const t = clamp((x - edge0) / (edge1 - edge0), 0, 1);
+  return t * t * (3 - 2 * t);
+}
+
+/** 0 = front flat, 1 = back flat. Lift peaks at 0.5. */
+export function flipMotion(progress) {
+  const p = clamp(progress, 0, 1);
+  const lift = Math.sin(Math.PI * p);
+  const rotP = smoothstep(FLIP.rotateStart, FLIP.rotateEnd, p);
+  return {
+    lift,
+    liftZ: lift * FLIP.liftZ,
+    scale: 1 + lift * FLIP.scaleBoost,
+    rotateY: rotP * 180,
+  };
+}
+
+/** Table-shadow footprint while flipping — avoids flanking plates at edge-on. */
+export function flipShadowFootprint(progress) {
+  const { lift, rotateY } = flipMotion(progress);
+  const edge = Math.abs(Math.cos((rotateY * Math.PI) / 180));
+  return {
+    width: Math.max(0.06, edge),
+    height: 0.35 + edge * 0.65,
+    hide: lift,
+    opacity: 1 - lift * 0.92,
+  };
+}
+
+export function flipRotateY(progress) {
+  return flipMotion(progress).rotateY;
+}
+
+export function setFlip(partial) {
+  Object.assign(FLIP, partial);
+}
+
+export function resetFlip() {
+  Object.assign(FLIP, FLIP_DEFAULTS);
+}
+
+/** Per-frame lag so a flip settles in `ms` (frame-rate independent). */
+export function flipLagAlpha(ms = FLIP.ms, dtMs = 1000 / 60) {
+  const t = clamp(Number(ms) || FLIP_DEFAULTS.ms, 120, 2400);
+  const dt = Math.max(8, Number(dtMs) || 1000 / 60);
+  return 1 - Math.pow(0.05, dt / t);
+}
+
+/** Cursor lean on at rest (front or back); off while folding or mid-flip. */
+export function shouldEnableCursorLean(
+  { foldDisplay, flipTarget, flipDisplay, foldPhase },
+  opts = {},
+) {
+  const foldEps = opts.foldEps ?? 0.04;
+  const flipEps = opts.flipEps ?? 0.02;
+  if (foldPhase !== "idle") return false;
+  if (foldDisplay > foldEps) return false;
+  if (Math.abs(flipDisplay - flipTarget) > flipEps) return false;
+  return true;
+}
+
+/**
+ * Wheel on the back starts a return flip; fold waits until the front is settled.
+ * @returns {{ kind: "flip-to-front" | "defer-fold" | "fold", flipTarget?: number, stashDelta: number }}
+ */
+export function resolveScrollOnCard({ flipTarget, flipDisplay, delta }, opts = {}) {
+  const backThreshold = opts.backThreshold ?? 0.5;
+  const flipEps = opts.flipEps ?? 0.02;
+  const onBack = flipTarget > backThreshold && flipDisplay > backThreshold;
+  const flipAnimating = Math.abs(flipDisplay - flipTarget) > flipEps;
+
+  if (onBack) {
+    if (Math.abs(delta) < 1e-6) return { kind: "fold", stashDelta: 0 };
+    return { kind: "flip-to-front", flipTarget: 0, stashDelta: delta };
+  }
+  if (flipAnimating) {
+    return { kind: "defer-fold", stashDelta: delta };
+  }
+  return { kind: "fold", stashDelta: 0 };
+}
+
+/** Locked opening tune from :4173 ?debug=1 (2026-09-01). */
+export const HATCH_OPENING = {
+  topPullPct: 0,
+  heightScale: 1.5,
+  extendBottomPct: 0.4,
+  layerZ: 80,
+  wellOpacity: 1,
+};
+
+export const HATCH_OPENING_DEFAULTS = { ...HATCH_OPENING };
+
+export function setHatchOpening(partial) {
+  Object.assign(HATCH_OPENING, partial);
+}
+
+export function resetHatchOpening() {
+  Object.assign(HATCH_OPENING, HATCH_OPENING_DEFAULTS);
+}
+
+export const SURFACE_PEEL = { shiftPct: 1 };
+
+const THIRD = 1 / 3;
+const DEG = Math.PI / 180;
+
+function hatchSilhouetteFromAngles(angles) {
+  const topSpan = THIRD * Math.abs(Math.cos(angles.top * DEG));
+  const midSpan = THIRD * Math.abs(Math.cos(angles.mid * DEG));
+  const botSpan = THIRD * Math.abs(Math.cos(angles.bot * DEG));
+  const heightPct = Math.min(
+    1,
+    Math.max(THIRD * 0.9, topSpan + midSpan + botSpan),
+  );
+  const botBottom = 2 * THIRD + THIRD * Math.cos(angles.bot * DEG);
+  const topPct = Math.max(0, Math.min(1 - heightPct, botBottom - heightPct));
+  return { heightPct, topPct };
+}
+
+function hatchOpeningFromAngles(angles) {
+  const stack = hatchSilhouetteFromAngles(angles);
+  return { topPct: stack.topPct, heightPct: 1 - stack.topPct };
+}
+
+function foldOpening(foldProgress) {
+  const t = clamp(foldProgress, 0, 1);
+  if (t === 0) return { topPct: 1, heightPct: 0 };
+  return hatchOpeningFromAngles(panelAngles(t));
+}
+
+/** Opening slot behind the card — reveal line, cover slide, full card width. */
+export function surfacePeel(foldProgress) {
+  const t = clamp(foldProgress, 0, 1);
+  if (t === 0) {
+    return { shiftPct: 0, rotateX: 0, heightPct: 0, topPct: 1 };
+  }
+  const { heightPct, topPct } = foldOpening(t);
+  const s = sequential(t, 0, 0.68);
+  return {
+    shiftPct: SURFACE_PEEL.shiftPct * s,
+    rotateX: 0,
+    heightPct,
+    topPct,
+  };
+}
+
+function extendOpeningDown(topPct, heightPct, extendBottomPct) {
+  const maxH = 1 - topPct;
+  return Math.min(maxH, heightPct + Math.max(0, extendBottomPct));
+}
+
+function applyHatchOpening(computed, hatch = HATCH_OPENING) {
+  const topPct = Math.max(0, computed.topPct - hatch.topPullPct);
+  let heightPct = Math.min(
+    1 - topPct,
+    computed.heightPct * hatch.heightScale,
+  );
+  heightPct = extendOpeningDown(topPct, heightPct, hatch.extendBottomPct);
+  return { ...computed, topPct, heightPct };
+}
+
+/** Fold progress → opening geometry with locked visitor tune applied. */
+export function resolveOpeningPeel(foldProgress) {
+  return applyHatchOpening(surfacePeel(foldProgress));
 }

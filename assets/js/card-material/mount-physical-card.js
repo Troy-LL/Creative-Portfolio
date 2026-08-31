@@ -4,6 +4,10 @@
  */
 import { buildPaperMaps } from "./paper-grain.js";
 import {
+  CARD_BACK_FONT_DEFAULT,
+  getCardBackFont,
+} from "./card-back-fonts.js";
+import {
   FLAT_INK,
   LOCKED_INK,
   LOCKED_STOCK,
@@ -251,9 +255,10 @@ function buildReliefFilter(id, relief) {
 
 /**
  * @param {HTMLElement} host
- * @param {{ seed?: number, ink?: object, stock?: object, filterId?: string, hideContactShadow?: boolean }} [opts]
+ * @param {{ seed?: number, ink?: object, stock?: object, filterId?: string, hideContactShadow?: boolean, showPrint?: boolean }} [opts]
  */
 export function mountPhysicalCard(host, opts = {}) {
+  const showPrint = opts.showPrint !== false;
   let stock = { ...LOCKED_STOCK, ...opts.stock };
   let ink = { ...FLAT_INK, ...opts.ink };
   let typeScale = opts.typeScale ?? 1;
@@ -268,7 +273,7 @@ export function mountPhysicalCard(host, opts = {}) {
 
   const card = el("article", "physical-card physical-card--lab", {
     "data-card-material": "uncoated-stock",
-    "data-print": "on",
+    "data-print": showPrint ? "on" : "off",
   });
   card.style.setProperty("--paper-base", stock.paperBase);
   card.style.setProperty("--paper-lit-opacity", String(stock.litOpacity));
@@ -289,6 +294,28 @@ export function mountPhysicalCard(host, opts = {}) {
   surface.appendChild(texture);
 
   let paperGrainOn = true;
+  const backInitials = opts.backInitials ?? "TL";
+  let backFontId = opts.backFont ?? CARD_BACK_FONT_DEFAULT;
+  /** @type {HTMLElement | null} */
+  let backMark = null;
+
+  function applyBackFont(id = backFontId) {
+    if (!backMark) return;
+    backFontId = id || CARD_BACK_FONT_DEFAULT;
+    const font = getCardBackFont(backFontId);
+    card.style.setProperty("--back-font-family", font.family);
+    card.style.setProperty("--back-font-style", font.style);
+    card.style.setProperty("--back-font-weight", font.weight);
+  }
+
+  if (!showPrint) {
+    backMark = el("div", "physical-card__back-mark", {
+      text: backInitials,
+      "aria-hidden": "true",
+    });
+    surface.appendChild(backMark);
+    applyBackFont(backFontId);
+  }
 
   function applyPaperGrain(on) {
     paperGrainOn = on;
@@ -424,10 +451,10 @@ export function mountPhysicalCard(host, opts = {}) {
     });
   }
 
-  surface.appendChild(inkRoot);
   surface.appendChild(
     el("div", "physical-card__edge", { "aria-hidden": "true" }),
   );
+  if (showPrint) surface.appendChild(inkRoot);
   body.appendChild(surface);
   card.appendChild(body);
 
@@ -441,10 +468,10 @@ export function mountPhysicalCard(host, opts = {}) {
     title: "",
     lines: [],
   };
-  rebuildInk(content);
+  if (showPrint) rebuildInk(content);
 
   const ro = new ResizeObserver(() => alignInkMaps());
-  ro.observe(inkRoot);
+  if (showPrint) ro.observe(inkRoot);
 
   return {
     el: card,
@@ -456,9 +483,11 @@ export function mountPhysicalCard(host, opts = {}) {
         typeScale,
         paperGrain: paperGrainOn,
         inkColor: card.style.getPropertyValue("--ink-color") || "#1a1814",
+        backFont: backFontId,
       };
     },
     setContent(next) {
+      if (!showPrint) return;
       content = { ...content, ...next };
       rebuildInk(content);
     },
@@ -476,6 +505,9 @@ export function mountPhysicalCard(host, opts = {}) {
     },
     setInkColor(color) {
       if (color) card.style.setProperty("--ink-color", color);
+    },
+    setBackFont(id) {
+      applyBackFont(id);
     },
     /** true = locked print effects; false = flat digital ink on same paper */
     setTextEffects(on) {

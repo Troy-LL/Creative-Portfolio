@@ -2,11 +2,16 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   SNAP_OPEN_THRESHOLD,
+  SURFACE_PEEL,
+  applyHatchDebug,
+  HATCH_DEBUG_DEFAULTS,
   applyLag,
   dampFoldDelta,
   foldProgressFromDelta,
   creaseAmount,
   panelAngles,
+  panelAnglesAtEnd,
+  surfacePeel,
   shouldSnapOpen,
   alignPose,
   enterZoom,
@@ -78,5 +83,64 @@ describe("fold model", () => {
     assert.ok(Math.abs(enterZoom(0) - WORLD_SCALE_REST) < 0.02);
     assert.ok(enterZoom(0.5) < enterZoom(0.85));
     assert.ok(enterZoom(1) >= WORLD_SCALE_ENTER - 0.01);
+  });
+
+  it("slides the wall surface up in sync with fold (reveals inside)", () => {
+    const closed = surfacePeel(0);
+    assert.equal(closed.shiftPct, 0);
+    assert.equal(closed.rotateX, 0);
+    assert.equal(closed.heightPct, 0);
+    assert.equal(closed.topPct, 1);
+
+    const early = surfacePeel(0.2);
+    const mid = surfacePeel(0.5);
+    const open = surfacePeel(1);
+
+    assert.equal(early.rotateX, 0);
+    assert.ok(early.shiftPct > 0);
+    assert.ok(mid.shiftPct > early.shiftPct);
+    assert.ok(open.shiftPct > mid.shiftPct);
+    assert.equal(open.shiftPct, SURFACE_PEEL.shiftPct);
+    assert.ok(early.heightPct >= 0);
+    assert.ok(open.heightPct > 0);
+  });
+
+  it("opening uses full card slot — reveal line → bottom edge", () => {
+    const mid = surfacePeel(0.5);
+    assert.ok(mid.topPct < 1);
+    assert.ok(mid.heightPct > 0);
+    assert.ok(Math.abs(mid.topPct + mid.heightPct - 1) < 0.001);
+
+    const open = surfacePeel(1);
+    assert.ok(open.heightPct > 0.5);
+    assert.ok(Math.abs(open.topPct + open.heightPct - 1) < 0.001);
+  });
+
+  it("panelAnglesAtEnd scrubs from flat to end pose", () => {
+    assert.deepEqual(panelAnglesAtEnd(0, { top: 20, mid: 103, bot: -111 }), {
+      top: 0,
+      mid: 0,
+      bot: 0,
+    });
+    const mid = panelAnglesAtEnd(0.5, { top: 20, mid: 103, bot: -111 });
+    assert.ok(Math.abs(mid.bot) > Math.abs(mid.top));
+    const end = panelAnglesAtEnd(1, { top: 20, mid: 103, bot: -111 });
+    assert.equal(end.top, 20);
+    assert.equal(end.mid, 103);
+    assert.equal(end.bot, -111);
+  });
+
+  it("extend bottom and pull reveal enlarge opening", () => {
+    const base = surfacePeel(1);
+    const pulled = applyHatchDebug(base, {
+      ...HATCH_DEBUG_DEFAULTS,
+      autoSilhouette: true,
+      topPullPct: 0.15,
+      heightScale: 1.2,
+      extendBottomPct: 0.05,
+    });
+    assert.ok(pulled.topPct < base.topPct);
+    assert.ok(pulled.heightPct >= base.heightPct);
+    assert.ok(pulled.topPct + pulled.heightPct <= 1.001);
   });
 });

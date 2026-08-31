@@ -9,6 +9,7 @@
       content="Troy Lazaro — AI Engineer. Calling card."
     />
     <link rel="stylesheet" href="calling-card/src/components/Card/Card.css" />
+    <link rel="stylesheet" href="assets/css/card-back-fonts.css" />
     <link rel="stylesheet" href="assets/css/card-lab.css" />
   </head>
   <body data-surface="redesign-stub">
@@ -19,13 +20,20 @@
           scroll down
         </p>
         <div class="css-stage">
-          <div class="css-shadows" aria-hidden="true">
-            <div class="css-shadow css-shadow--soft"></div>
-            <div class="css-shadow css-shadow--contact"></div>
-          </div>
           <div class="css-world">
             <div class="css-rig">
-              <article class="css-card css-card--fold">
+              <div class="css-stack">
+                <div class="css-shadows" aria-hidden="true">
+                  <div class="css-shadow css-shadow--soft"></div>
+                  <div class="css-shadow css-shadow--contact"></div>
+                </div>
+                <div class="css-hatch-slot" aria-hidden="true">
+                  <div class="css-hatch-well"></div>
+                  <div class="css-hatch"></div>
+                </div>
+                <article class="css-card css-card--fold">
+                <div class="css-card__flip">
+                <div class="css-card__front">
                 <div class="fold-sheet">
                   <div class="fold-panel fold-panel--top" data-fold="top">
                     <div class="fold-panel__face">
@@ -41,7 +49,13 @@
                           ></div>
                         </div>
                       </div>
+                      <span
+                        class="fold-panel__shade fold-panel__shade--top"
+                        aria-hidden="true"
+                      ></span>
+                      <span class="fold-panel__edge" aria-hidden="true"></span>
                       <span class="fold-panel__crease fold-panel__crease--bottom"></span>
+                      <span class="fold-panel__thickness" aria-hidden="true"></span>
                     </div>
                     <div class="fold-panel fold-panel--mid" data-fold="mid">
                       <div class="fold-panel__face css-card__face">
@@ -57,6 +71,11 @@
                             ></div>
                           </div>
                         </div>
+                        <span
+                          class="fold-panel__shade fold-panel__shade--mid"
+                          aria-hidden="true"
+                        ></span>
+                        <span class="fold-panel__edge" aria-hidden="true"></span>
                         <span class="fold-panel__crease fold-panel__crease--top"></span>
                         <span class="fold-panel__crease fold-panel__crease--bottom"></span>
                       </div>
@@ -74,13 +93,29 @@
                               ></div>
                             </div>
                           </div>
+                          <span
+                            class="fold-panel__shade fold-panel__shade--bot"
+                            aria-hidden="true"
+                          ></span>
+                          <span class="fold-panel__edge" aria-hidden="true"></span>
                           <span class="fold-panel__crease fold-panel__crease--top"></span>
+                          <span class="fold-panel__thickness" aria-hidden="true"></span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
+                </div>
+                <div class="css-card__back" aria-hidden="true">
+                  <div
+                    class="css-card__back-stock"
+                    data-physical-host
+                    data-card-back
+                  ></div>
+                </div>
+                </div>
               </article>
+              </div>
             </div>
           </div>
         </div>
@@ -92,7 +127,7 @@
       <header class="lab-head">
         <div>
           <h1>Card lab</h1>
-          <p>Developer dial. Press <kbd>L</kbd> to hide · <kbd>Space</kbd> replay.</p>
+          <p>Developer dial. Press <kbd>L</kbd> to hide · <kbd>Space</kbd> replay · <code>?debug=1</code> skip fall.</p>
         </div>
         <div class="lab-actions">
           <button type="button" id="replay">Replay drop</button>
@@ -114,9 +149,7 @@
             Paper grain
           </button>
           <span class="lab-link"
-            ><a href="http://localhost:5174">React sandbox</a>
-            ·
-            <a href="/archive/desktop-os/">Archived desktop</a></span
+            ><a href="/archive/desktop-os/">Archived desktop</a></span
           >
         </div>
       </header>
@@ -139,7 +172,7 @@
 
       <details class="lab-debug" id="mat-debug">
         <summary>
-          Material <span class="lab-debug__hint">paper · ink · type</span>
+          Material <span class="lab-debug__hint">paper · ink · type · back</span>
         </summary>
         <div class="lab-debug__presets" data-stock-presets>
           <button type="button" data-stock="#f4f2ea" class="is-active">#F4F2EA</button>
@@ -235,6 +268,22 @@
               value="420"
           /></label>
         </div>
+        <div class="lab-debug__grid lab-debug__grid--back">
+          <p class="lab-debug__section-label">Back</p>
+          <label
+            >Initials font
+            <select data-mat="backFont">
+              <option value="dancing-script-regular">Dancing Script regular</option>
+              <option value="front-face">Front face (Copperplate)</option>
+              <option value="boska-italic">Boska italic</option>
+              <option value="boska-regular">Boska regular</option>
+              <option value="gambetta-italic">Gambetta italic</option>
+              <option value="gambetta-regular">Gambetta regular</option>
+              <option value="switzer-regular">Switzer regular</option>
+              <option value="switzer-light">Switzer light</option>
+            </select></label
+          >
+        </div>
         <div class="lab-debug__actions">
           <button type="button" data-mat-reset>Reset material</button>
         </div>
@@ -289,9 +338,29 @@
 
       <details class="lab-debug" id="fold-debug">
         <summary>
-          Fold end pose <span class="lab-debug__hint">degrees</span>
+          Fold + opening <span class="lab-debug__hint">same surface · degrees</span>
         </summary>
         <div class="lab-debug__grid">
+          <label
+            >Fold progress <strong data-open-val="fold">0.00</strong>
+            <input
+              data-open="fold"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0"
+          /></label>
+          <label
+            >Flip duration (ms) <strong data-flip-val="ms">900</strong>
+            <input
+              data-flip="ms"
+              type="range"
+              min="250"
+              max="2000"
+              step="50"
+              value="900"
+          /></label>
           <label
             >Top <strong data-fold-val="top">20</strong>
             <input data-fold="top" type="range" min="-180" max="180" step="1" value="20"
@@ -314,9 +383,60 @@
               step="1"
               value="-1"
           /></label>
+          <label
+            >Height scale <strong data-hatch-val="heightScale">1.50</strong>
+            <input
+              data-hatch="heightScale"
+              type="range"
+              min="0.5"
+              max="1.5"
+              step="0.01"
+              value="1.5"
+          /></label>
+          <label
+            >Extend bottom <strong data-hatch-val="extendBottomPct">0.40</strong>
+            <input
+              data-hatch="extendBottomPct"
+              type="range"
+              min="0"
+              max="0.5"
+              step="0.01"
+              value="0.4"
+          /></label>
+          <label
+            >Pull reveal <strong data-hatch-val="topPullPct">0.00</strong>
+            <input
+              data-hatch="topPullPct"
+              type="range"
+              min="0"
+              max="0.6"
+              step="0.01"
+              value="0"
+          /></label>
+          <label
+            >Card lift Z <strong data-hatch-val="layerZ">80</strong>
+            <input
+              data-hatch="layerZ"
+              type="range"
+              min="48"
+              max="120"
+              step="1"
+              value="80"
+          /></label>
+          <label
+            >Well opacity <strong data-hatch-val="wellOpacity">1.00</strong>
+            <input
+              data-hatch="wellOpacity"
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value="1"
+          /></label>
         </div>
         <div class="lab-debug__actions">
           <button type="button" data-fold-reset>Reset fold</button>
+          <button type="button" data-hatch-reset>Reset opening</button>
         </div>
       </details>
 

@@ -17,17 +17,33 @@ import {
   mountPhysicalCard,
   toPrintContent,
 } from "./card-material/mount-physical-card.js";
+import { CARD_BACK_FONT_DEFAULT } from "./card-material/card-back-fonts.js";
 import { LOCKED_INK, LOCKED_STOCK } from "./card-material/locked.js";
 import {
   FOLD_END,
   FOLD_END_DEFAULTS,
+  FLIP,
+  HATCH_OPENING,
+  HATCH_OPENING_DEFAULTS,
   SCROLL_GAIN,
   SCROLL_IDLE_MS,
   applyLag,
   creaseAmount,
+  cursorCardWeight,
+  flipLagAlpha,
+  flipMotion,
+  flipShadowFootprint,
   panelAngles,
+  panelShade,
+  panelShadeFromAngles,
   resetFoldEnd,
+  resetHatchOpening,
+  resolveOpeningPeel,
+  resolveScrollOnCard,
+  setFlip,
   setFoldEnd,
+  setHatchOpening,
+  shouldEnableCursorLean,
   shouldSnapOpen,
 } from "./card-fold.js";
 
@@ -39,29 +55,29 @@ const CARD = {
   lines: ["troylazaro.dev"],
 };
 
-/** Locked physicality — dialed flat-table curved fall (2026-03-31). */
+/** Locked physicality — dialed on :4173 (2026-09-01). */
 const PHYS_DEFAULTS = {
   mode: "curved", // straight | organic | curved
   curveAmount: 1.6,
-  fallMs: 1400,
+  fallMs: 1700,
   settleMs: 520,
   lateralDrift: 0.86,
   rotationResponse: 0.7,
   rotationInertia: 0.95,
-  cursorInfluence: 0.88,
+  cursorInfluence: 1.06,
   gravity: 2,
   airResistance: 0.3,
   // Fall cast (in air / dropping)
-  fallShadowStrength: 0.48,
-  fallShadowSoftness: 1.85,
+  fallShadowStrength: 0.7,
+  fallShadowSoftness: 2,
   fallShadowScale: 1.12,
-  fallShadowReach: 1.25,
+  fallShadowReach: 0.71,
   // Flat table cast (resting)
-  flatShadowStrength: 0.34,
-  flatShadowSoftness: 1.55,
-  flatShadowScale: 0.96,
-  flatShadowReach: 0.85,
-  perspective: 590,
+  flatShadowStrength: 1.2,
+  flatShadowSoftness: 2,
+  flatShadowScale: 1.1,
+  flatShadowReach: 1.13,
+  perspective: 1400,
   // CSS mapping from normalized pose → px
   cssY: 0.5,
   cssX: 150,
@@ -78,6 +94,7 @@ const MAT_DEFAULTS = {
   relief: 0,
   typeScale: 1,
   cardWidth: 420,
+  backFont: CARD_BACK_FONT_DEFAULT,
 };
 
 const CURSOR_DEFAULTS = {
@@ -89,7 +106,7 @@ const CURSOR_DEFAULTS = {
   xyY: 5.5,
 };
 
-const PHYS_STORAGE_KEY = "card-lab-phys-v5";
+const PHYS_STORAGE_KEY = "card-lab-phys-v6";
 
 const phys = { ...PHYS_DEFAULTS };
 const mat = { ...MAT_DEFAULTS };
@@ -97,7 +114,9 @@ const cursorFeel = { ...CURSOR_DEFAULTS };
 
 function loadPhysPrefs() {
   try {
-    const raw = localStorage.getItem(PHYS_STORAGE_KEY);
+    const raw =
+      localStorage.getItem(PHYS_STORAGE_KEY) ||
+      localStorage.getItem("card-lab-phys-v5");
     if (!raw) return null;
     const saved = JSON.parse(raw);
     if (!saved || typeof saved !== "object") return null;
@@ -114,8 +133,8 @@ function savePhysPrefs(extra = {}) {
       mat: { ...mat },
       cursorFeel: { ...cursorFeel },
       fold: { ...FOLD_END },
-      debugOpen: !!document.getElementById("phys-debug")?.open,
-      matOpen: !!document.getElementById("mat-debug")?.open,
+      hatch: { ...HATCH_OPENING },
+      flip: { ...FLIP },
       textEffects: false,
       paperGrain: true,
       ...extra,
@@ -169,7 +188,7 @@ function applyMatPrefs(saved) {
   if (!saved?.mat || typeof saved.mat !== "object") return;
   for (const [key, value] of Object.entries(saved.mat)) {
     if (!(key in MAT_DEFAULTS)) continue;
-    if (key === "paperBase" || key === "inkColor") {
+    if (key === "paperBase" || key === "inkColor" || key === "backFont") {
       if (typeof value === "string") mat[key] = value;
       continue;
     }
@@ -195,6 +214,22 @@ function applyFoldPrefs(saved) {
     if (Number.isFinite(n)) next[key] = n;
   }
   if (Object.keys(next).length) setFoldEnd(next);
+}
+
+function applyHatchPrefs(saved) {
+  if (!saved?.hatch || typeof saved.hatch !== "object") return;
+  const next = {};
+  for (const key of Object.keys(HATCH_OPENING_DEFAULTS)) {
+    const n = Number(saved.hatch[key]);
+    if (Number.isFinite(n)) next[key] = n;
+  }
+  if (Object.keys(next).length) setHatchOpening(next);
+}
+
+function applyFlipPrefs(saved) {
+  if (!saved?.flip || typeof saved.flip !== "object") return;
+  const n = Number(saved.flip.ms);
+  if (Number.isFinite(n)) setFlip({ ms: n });
 }
 
 function clamp(v, a, b) {
@@ -403,11 +438,49 @@ function createCssEngine(root, materials) {
   const panelTop = root.querySelector('[data-fold="top"]');
   const panelMid = root.querySelector('[data-fold="mid"]');
   const panelBot = root.querySelector('[data-fold="bot"]');
+  const cssStack = root.querySelector(".css-stack");
+  const hatchWell = root.querySelector(".css-hatch-well");
+  const hatchCover = root.querySelector(".css-hatch");
+  const hatchSlot = root.querySelector(".css-hatch-slot");
+  const shadowsWrap = root.querySelector(".css-shadows");
+  const cardFlip = root.querySelector(".css-card__flip");
+  const cardFront = root.querySelector(".css-card__front");
+  const cardBack = root.querySelector(".css-card__back");
   const fps = createFps(pane.querySelector(".pane-fps"));
+
+  function applyLayerZ() {
+    if (cssStack) {
+      cssStack.style.setProperty("--layer-z", String(HATCH_OPENING.layerZ));
+    }
+  }
+
+  applyLayerZ();
+  applyOpening(0);
+
+  function applyOpening(fold) {
+    if (!hatchWell || !hatchCover) return;
+    const f = clamp(fold, 0, 1);
+    if (f <= 0.001) {
+      hatchWell.style.opacity = "0";
+      hatchWell.style.clipPath = "inset(100% 0 0 0)";
+      hatchCover.style.transform = "none";
+      hatchCover.style.setProperty("--hatch-open", "0");
+      return;
+    }
+    const peel = resolveOpeningPeel(f);
+    hatchWell.style.opacity = String(HATCH_OPENING.wellOpacity * peel.shiftPct);
+    hatchWell.style.clipPath = `inset(${peel.topPct * 100}% 0 0 0)`;
+    hatchCover.style.transform = `translate3d(0, ${-peel.shiftPct * 100}%, 0)`;
+    hatchCover.style.setProperty("--hatch-open", String(peel.shiftPct));
+  }
 
   // Cursor: shifts position + face lean + matte lighting (ticket-style, not drag)
   let cursor = { x: 0, y: 0 };
   let cursorTarget = { x: 0, y: 0 };
+  let cardLocal = { x: 0, y: 0 };
+  let cardLocalTarget = { x: 0, y: 0 };
+  let onCardWeight = 0.24;
+  let onCardTarget = 0.24;
   let force = { x: 0, y: 0, rotX: 0, rotY: 0, faceX: 0, faceY: 0, lift: 0 };
   let forceTarget = { x: 0, y: 0, rotX: 0, rotY: 0, faceX: 0, faceY: 0, lift: 0 };
 
@@ -422,6 +495,7 @@ function createCssEngine(root, materials) {
   let cursorScaleTarget = 1;
   let foldDisplay = 0;
   let foldViewTip = 0;
+  let flipDisplay = 0;
 
   function setPaperGrainLit(on) {
     paperGrainLit = on;
@@ -478,6 +552,14 @@ function createCssEngine(root, materials) {
 
     // Single rigid transform — face stays glued to the stock (no separate face slide)
     rig.style.transform = `translate3d(${tx}px, ${ty}px, ${tz}px) scale(${depthScale}) rotateX(${shown.rotX + shown.fRotX + tip}deg) rotateY(${shown.rotY + shown.fRotY}deg) rotateZ(${shown.rotZ}deg)`;
+    const flipFx = flipMotion(flipDisplay);
+    card.style.transform = `translate3d(0, 0, calc(var(--layer-z, 80) * 1px + ${flipFx.liftZ.toFixed(1)}px)) scale(${flipFx.scale.toFixed(4)})`;
+    if (cardFlip) {
+      cardFlip.style.transform = `rotateY(${flipFx.rotateY.toFixed(2)}deg)`;
+    }
+    const flipHide = flipFx.lift;
+    if (shadowsWrap) shadowsWrap.style.opacity = String(1 - flipHide * 0.95);
+    if (hatchSlot) hatchSlot.style.opacity = String(1 - flipHide * 0.95);
 
     if (face) {
       face.style.transform = "none";
@@ -488,9 +570,17 @@ function createCssEngine(root, materials) {
     if (panelMid) panelMid.style.transform = `rotateX(${angles.mid}deg)`;
     if (panelBot) panelBot.style.transform = `rotateX(${angles.bot}deg)`;
     const crease = creaseAmount(foldDisplay);
+    const shade = panelShade(foldDisplay);
     card.style.setProperty("--crease", String(crease));
     const sheet = root.querySelector(".fold-sheet");
-    if (sheet) sheet.dataset.creased = crease > 0.06 ? "true" : "false";
+    if (sheet) {
+      sheet.dataset.creased = crease > 0.06 ? "true" : "false";
+      sheet.style.setProperty("--shade-top", String(shade.top));
+      sheet.style.setProperty("--shade-mid", String(shade.mid));
+      sheet.style.setProperty("--shade-bot", String(shade.bot));
+      // React parity: fixed 4px — preserve-3d panels depth-test in front of hatch.
+      sheet.style.transform = "translateZ(4px)";
+    }
 
     const tex = root.querySelector(".physical-card__texture");
     if (tex && paperGrainLit && tex.style.display !== "none") {
@@ -565,58 +655,73 @@ function createCssEngine(root, materials) {
     );
     const footH = (cardH * (1 - foldAmt) + foldedH * foldAmt) * shScale;
     const footW = cardW * (1 - foldAmt * 0.06) * shScale;
+    const flipFoot = flipShadowFootprint(flipDisplay);
+    const castFootW = footW * flipFoot.width;
+    const castFootH = footH * flipFoot.height;
     const foldShiftY =
       Math.sin(midRad) * third * -0.22 * foldAmt + tip * 0.4 * foldAmt;
 
     const tiltX = Math.sin(ry);
     const tiltY = Math.sin(rx);
+    // Shadows already live inside the rig, so they inherit the card's 3D pose.
+    // Extra spin/skew/cast is for the table rest. In air, glue the silhouette.
+    const table = 1 - clamp(heightNorm, 0, 1);
     // Fixed SE bias + tilt — cast lives on one side, not under the whole plate
     const castX =
-      (5 + air * 8 + liftAmt * 0.12 + tiltX * (9 + air * 14) + heightNorm * 6) *
+      (5 +
+        air * 8 * table +
+        liftAmt * 0.12 +
+        tiltX * (9 + air * 14 * table) +
+        heightNorm * 6 * table) *
       shReach;
     const castY =
       (6 +
-        air * 9 +
+        air * 9 * table +
         liftAmt * 0.16 +
-        tiltY * (7 + air * 12) +
-        heightNorm * 8 +
+        tiltY * (7 + air * 12 * table) +
+        heightNorm * 8 * table +
         foldShiftY) *
       shReach;
-    const skew = clamp(tiltX * -10 + tiltY * 2.5, -12, 12);
+    const skew = clamp(tiltX * -10 + tiltY * 2.5, -12, 12) * table;
+    const extraZ = rz * table;
     const foreX = clamp(0.94 - Math.abs(tiltX) * 0.05 - foldAmt * 0.03, 0.78, 0.98);
     const foreY = clamp(0.94 - Math.abs(tiltY) * 0.05 - foldAmt * 0.08, 0.55, 0.98);
-    const contactNudge = 0.55 + air * 0.25;
-    const softNudge = 0.95 + air * 0.2;
+    // One shared plate. Contact is only a tight umbra at rest — gone in air
+    // so the fall never reads as a second card.
+    const plateScale = 0.96 + heightNorm * 0.02;
+    const plateX = foreX * plateScale;
+    const plateY = foreY * plateScale;
+    const castNudge = 0.52 + air * 0.12 * table;
+    const castTx = castX * castNudge;
+    const castTy = castY * castNudge;
 
-    const base = `translate(-50%, -50%) rotate(${rz.toFixed(2)}deg) skewX(${skew.toFixed(2)}deg)`;
+    const base = `translate(-50%, -50%) rotate(${extraZ.toFixed(2)}deg) skewX(${skew.toFixed(2)}deg)`;
 
     if (shadowContact) {
       const cBlur =
-        (2.2 + heightNorm * 6 * softAmt + liftAmt * 0.1 + foldAmt * 1.5) *
-        (0.85 + softAmt * 0.12) *
-        (0.85 + shScale * 0.15);
-      const cScale = 0.94 + heightNorm * 0.02;
-      shadowContact.style.width = `${footW}px`;
-      shadowContact.style.height = `${footH}px`;
-      shadowContact.style.transform = `translate(${(tx + castX * contactNudge).toFixed(1)}px, ${(ty + castY * contactNudge).toFixed(1)}px) ${base} scale(${(foreX * cScale).toFixed(3)}, ${(foreY * cScale).toFixed(3)})`;
+        (4.5 + heightNorm * 2 * softAmt + liftAmt * 0.08 + foldAmt * 1.2) *
+        (0.85 + softAmt * 0.1) *
+        (0.85 + shScale * 0.12);
+      shadowContact.style.width = `${castFootW}px`;
+      shadowContact.style.height = `${castFootH}px`;
+      shadowContact.style.transform = `translate(${castTx.toFixed(1)}px, ${castTy.toFixed(1)}px) ${base} scale(${plateX.toFixed(3)}, ${plateY.toFixed(3)})`;
       shadowContact.style.filter = `blur(${cBlur.toFixed(1)}px)`;
       shadowContact.style.opacity = String(
-        (0.16 + onTable * 0.22 + air * 0.14) * str * (1 - foldAmt * 0.15),
+        (0.1 + onTable * 0.14) * str * (1 - foldAmt * 0.15) * table * flipFoot.opacity,
       );
     }
 
     if (shadowSoft) {
       const sBlur =
-        (11 + heightNorm * 14 * softAmt + liftAmt * 0.14 + foldAmt * 3) *
-        (0.75 + softAmt * 0.22) *
-        (0.85 + shScale * 0.15);
-      const sScale = 1.02 + heightNorm * 0.05 + foldAmt * 0.04;
-      shadowSoft.style.width = `${footW}px`;
-      shadowSoft.style.height = `${footH}px`;
-      shadowSoft.style.transform = `translate(${(tx + castX * softNudge).toFixed(1)}px, ${(ty + castY * softNudge).toFixed(1)}px) ${base} scale(${(foreX * sScale).toFixed(3)}, ${(foreY * sScale * 0.96).toFixed(3)})`;
+        (11 + heightNorm * 10 * softAmt + liftAmt * 0.12 + foldAmt * 2) *
+        (0.75 + softAmt * 0.18) *
+        (0.85 + shScale * 0.12);
+      shadowSoft.style.width = `${castFootW}px`;
+      shadowSoft.style.height = `${castFootH}px`;
+      shadowSoft.style.transform = `translate(${castTx.toFixed(1)}px, ${castTy.toFixed(1)}px) ${base} scale(${(plateX * 1.03).toFixed(3)}, ${(plateY * 1.02).toFixed(3)})`;
       shadowSoft.style.filter = `blur(${sBlur.toFixed(1)}px)`;
       shadowSoft.style.opacity = String(
-        (0.1 + onTable * 0.16 + air * 0.18) * str * (1 - foldAmt * 0.2),
+        (0.08 + onTable * 0.12 + air * 0.1) * str * (1 - foldAmt * 0.2) * flipFoot.opacity,
       );
     }
 
@@ -630,51 +735,57 @@ function createCssEngine(root, materials) {
     cursorTarget.y = ((e.clientY - paneR.top) / paneR.height) * 2 - 1;
 
     const r = rig.getBoundingClientRect();
-    let nx = cursorTarget.x;
-    let ny = cursorTarget.y;
-    // Middle weight — between the heavy lab default and the too-light pass
-    let onCard = 0.28;
-
     if (r.width > 1 && r.height > 1) {
-      nx = ((e.clientX - r.left) / r.width) * 2 - 1;
-      ny = ((e.clientY - r.top) / r.height) * 2 - 1;
-      const dist = Math.max(Math.abs(nx), Math.abs(ny));
-      onCard = dist < 1.02 ? 1 : dist < 1.6 ? 0.42 : 0.16;
-      nx = clamp(nx, -1.12, 1.12);
-      ny = clamp(ny, -1.12, 1.12);
+      cardLocalTarget.x = clamp(
+        ((e.clientX - r.left) / r.width) * 2 - 1,
+        -1.12,
+        1.12,
+      );
+      cardLocalTarget.y = clamp(
+        ((e.clientY - r.top) / r.height) * 2 - 1,
+        -1.12,
+        1.12,
+      );
+      onCardTarget = cursorCardWeight(
+        cardLocalTarget.x,
+        cardLocalTarget.y,
+      );
+    } else {
+      cardLocalTarget.x = cursorTarget.x;
+      cardLocalTarget.y = cursorTarget.y;
+      onCardTarget = 0.24;
     }
+  }
 
+  function syncCursorForces() {
     if (cursorScaleTarget < 0.05) {
       forceTarget.rotY = 0;
       forceTarget.rotX = 0;
       forceTarget.lift = 0;
       forceTarget.x = 0;
       forceTarget.y = 0;
-    } else {
-      forceTarget.rotY = nx * cursorFeel.rotY * onCard;
-      forceTarget.rotX = -ny * cursorFeel.rotX * onCard;
-      forceTarget.lift =
-        (cursorFeel.liftBase +
-          (1 - Math.min(1, Math.hypot(nx, ny))) * cursorFeel.liftPeak) *
-        onCard;
-      forceTarget.x = cursorTarget.x * cursorFeel.xyX * onCard;
-      forceTarget.y = cursorTarget.y * cursorFeel.xyY * onCard;
+      return;
     }
-    forceTarget.faceX = 0;
-    forceTarget.faceY = 0;
+    const w = onCardWeight;
+    const nx = cardLocal.x;
+    const ny = cardLocal.y;
+    forceTarget.rotY = nx * cursorFeel.rotY * w;
+    forceTarget.rotX = -ny * cursorFeel.rotX * w;
+    forceTarget.lift =
+      (cursorFeel.liftBase +
+        (1 - Math.min(1, Math.hypot(nx, ny))) * cursorFeel.liftPeak) *
+      w;
+    forceTarget.x = nx * cursorFeel.xyX * w;
+    forceTarget.y = ny * cursorFeel.xyY * w;
   }
 
   pane.addEventListener("pointermove", onPointerMove);
   pane.addEventListener("pointerleave", () => {
     cursorTarget.x = 0;
     cursorTarget.y = 0;
-    forceTarget.x = 0;
-    forceTarget.y = 0;
-    forceTarget.faceX = 0;
-    forceTarget.faceY = 0;
-    forceTarget.rotX = 0;
-    forceTarget.rotY = 0;
-    forceTarget.lift = 0;
+    cardLocalTarget.x = 0;
+    cardLocalTarget.y = 0;
+    onCardTarget = 0.24;
   });
 
   return {
@@ -699,6 +810,21 @@ function createCssEngine(root, materials) {
     setFoldDisplay(fold, viewTip) {
       foldDisplay = clamp(fold, 0, 1);
       foldViewTip = viewTip;
+      applyOpening(foldDisplay);
+    },
+    setFlipDisplay(flip) {
+      flipDisplay = clamp(flip, 0, 1);
+      const onBack = flipDisplay > 0.5;
+      card.dataset.face = onBack ? "back" : "front";
+      card.setAttribute(
+        "aria-label",
+        onBack ? "Calling card back. Click to show front." : "Calling card. Click to show back.",
+      );
+      if (cardFront) cardFront.setAttribute("aria-hidden", onBack ? "true" : "false");
+      if (cardBack) cardBack.setAttribute("aria-hidden", onBack ? "false" : "true");
+    },
+    setHatchLayer() {
+      applyLayerZ();
     },
     getCursorFlatness() {
       return (
@@ -713,6 +839,12 @@ function createCssEngine(root, materials) {
       cursorScale += (cursorScaleTarget - cursorScale) * 0.14;
       cursor.x += (cursorTarget.x - cursor.x) * 0.18;
       cursor.y += (cursorTarget.y - cursor.y) * 0.18;
+      cardLocal.x += (cardLocalTarget.x - cardLocal.x) * 0.2;
+      cardLocal.y += (cardLocalTarget.y - cardLocal.y) * 0.2;
+      onCardWeight += (onCardTarget - onCardWeight) * 0.22;
+      syncCursorForces();
+      forceTarget.faceX = 0;
+      forceTarget.faceY = 0;
       force.x += (forceTarget.x - force.x) * 0.16;
       force.y += (forceTarget.y - force.y) * 0.16;
       force.faceX += (forceTarget.faceX - force.faceX) * 0.18;
@@ -741,30 +873,41 @@ function boot() {
   applyMatPrefs(savedPrefs);
   applyCursorPrefs(savedPrefs);
   applyFoldPrefs(savedPrefs);
+  applyHatchPrefs(savedPrefs);
+  applyFlipPrefs(savedPrefs);
 
   const materials = hosts.map((host, i) =>
     mountPhysicalCard(host, {
       hideContactShadow: true,
+      showPrint: !host.hasAttribute("data-card-back"),
       filterId: `lab-css-ink-${i}`,
       mapSize: 512,
+      stock: {
+        paperBase: mat.paperBase,
+        litOpacity: mat.litOpacity,
+        seed: host.hasAttribute("data-card-back")
+          ? LOCKED_STOCK.seed + 31
+          : LOCKED_STOCK.seed,
+      },
       ink: {
         density: mat.density,
         grain: mat.grain,
         absorption: mat.absorption,
         relief: mat.relief,
       },
-      stock: {
-        paperBase: mat.paperBase,
-        litOpacity: mat.litOpacity,
-      },
       typeScale: mat.typeScale,
       inkColor: mat.inkColor,
+      backFont: host.hasAttribute("data-card-back") ? mat.backFont : undefined,
+      backInitials: "TL",
     }),
   );
 
   const css = createCssEngine(cssRoot, materials);
   css.setLitBase(mat.litOpacity);
-  if (cssRoot) cssRoot.style.setProperty("--lab-card-w", `${mat.cardWidth}px`);
+  if (cssRoot) {
+    cssRoot.style.setProperty("--lab-card-w", `${mat.cardWidth}px`);
+    cssRoot.style.setProperty("--paper-base", mat.paperBase);
+  }
 
   let phase = "falling";
   let phaseStart = performance.now();
@@ -777,6 +920,9 @@ function boot() {
   let foldTarget = 0;
   let foldDisplay = 0;
   let foldPhase = "idle"; // idle | dragging | returning | opening | open
+  let flipTarget = 0;
+  let flipDisplay = 0;
+  let pendingFoldDelta = 0;
   let scrollIdle = 0;
   let hintShown = false;
   let hintTimer = 0;
@@ -790,17 +936,28 @@ function boot() {
     savePhysPrefs({ textEffects, paperGrain, ...extra });
   }
 
+  function collapseLabSections() {
+    document.querySelectorAll("#lab-devtools details.lab-debug").forEach((el) => {
+      el.open = false;
+    });
+  }
+
   function setLab(on) {
     document.body.classList.toggle("is-lab", on);
     if (labRoot) labRoot.hidden = !on;
+    if (on) collapseLabSections();
     const url = new URL(location.href);
     if (on) url.searchParams.set("lab", "1");
     else url.searchParams.delete("lab");
+    if (startDebug) url.searchParams.set("debug", "1");
     history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
   }
 
-  // Visitor surface by default; ?lab=1 or key L opens the dial
-  const startLab = new URLSearchParams(location.search).has("lab");
+  // Visitor surface by default; ?lab=1 or key L opens the dial (sections collapsed).
+  // ?debug=1 opens the same dial on this surface (no second localhost).
+  const params = new URLSearchParams(location.search);
+  const startDebug = params.has("debug");
+  const startLab = params.has("lab") || startDebug;
   setLab(startLab);
 
   function drop() {
@@ -809,7 +966,11 @@ function boot() {
     foldTarget = 0;
     foldDisplay = 0;
     foldPhase = "idle";
+    flipTarget = 0;
+    flipDisplay = 0;
+    pendingFoldDelta = 0;
     css.setFoldDisplay(0, 0);
+    css.setFlipDisplay(0);
     css.setCursorScaleTarget(1);
     css.setInteractive(false);
     css.resetShown();
@@ -852,7 +1013,7 @@ function boot() {
   }
 
   function applyMaterialToCards() {
-    materials.forEach((m) => {
+    materials.forEach((m, i) => {
       m.setStock({
         paperBase: mat.paperBase,
         litOpacity: mat.litOpacity,
@@ -866,9 +1027,15 @@ function boot() {
       m.setTypeScale(mat.typeScale);
       m.setInkColor(mat.inkColor);
       m.setPaperGrain(paperGrain);
+      if (hosts[i]?.hasAttribute("data-card-back")) {
+        m.setBackFont?.(mat.backFont);
+      }
     });
     css.setLitBase(mat.litOpacity);
-    if (cssRoot) cssRoot.style.setProperty("--lab-card-w", `${mat.cardWidth}px`);
+    if (cssRoot) {
+      cssRoot.style.setProperty("--lab-card-w", `${mat.cardWidth}px`);
+      cssRoot.style.setProperty("--paper-base", mat.paperBase);
+    }
     textEffects =
       mat.grain > 0.02 || mat.absorption > 0.02 || mat.relief > 0.02;
     const btn = document.getElementById("text-effects");
@@ -954,11 +1121,48 @@ function boot() {
     });
   }
 
+  function syncHatchInputs() {
+    const root = document.getElementById("fold-debug");
+    if (!root) return;
+    root.querySelectorAll("[data-hatch]").forEach((input) => {
+      const key = input.dataset.hatch;
+      if (!(key in HATCH_OPENING)) return;
+      input.value = String(HATCH_OPENING[key]);
+      const out = root.querySelector(`[data-hatch-val="${key}"]`);
+      if (out) {
+        out.textContent =
+          key === "layerZ"
+            ? String(Math.round(HATCH_OPENING[key]))
+            : Number(HATCH_OPENING[key]).toFixed(2);
+      }
+    });
+  }
+
+  function syncOpenFoldInput() {
+    const root = document.getElementById("fold-debug");
+    if (!root) return;
+    const input = root.querySelector('[data-open="fold"]');
+    const out = root.querySelector('[data-open-val="fold"]');
+    if (input) input.value = String(foldDisplay);
+    if (out) out.textContent = foldDisplay.toFixed(2);
+  }
+
+  function syncFlipInputs() {
+    const root = document.getElementById("fold-debug");
+    if (!root) return;
+    const input = root.querySelector('[data-flip="ms"]');
+    const out = root.querySelector('[data-flip-val="ms"]');
+    if (input) input.value = String(FLIP.ms);
+    if (out) out.textContent = String(Math.round(FLIP.ms));
+  }
+
   applyMaterialToCards();
   syncPaperGrainButton();
   syncMatInputs();
   syncCursorInputs();
   syncFoldInputs();
+  syncHatchInputs();
+  syncFlipInputs();
   const teBtn = document.getElementById("text-effects");
   if (teBtn) {
     teBtn.classList.toggle("is-active", textEffects);
@@ -990,7 +1194,23 @@ function boot() {
         : e.deltaMode === 2
           ? e.deltaY * 32
           : e.deltaY;
-    const delta = raw * SCROLL_GAIN;
+    let delta = raw * SCROLL_GAIN;
+
+    const scroll = resolveScrollOnCard({ flipTarget, flipDisplay, delta });
+    if (scroll.kind === "flip-to-front") {
+      flipTarget = scroll.flipTarget ?? 0;
+      pendingFoldDelta += scroll.stashDelta;
+      return;
+    }
+    if (scroll.kind === "defer-fold") {
+      pendingFoldDelta += scroll.stashDelta;
+      return;
+    }
+
+    if (Math.abs(pendingFoldDelta) > 0.001) {
+      delta += pendingFoldDelta;
+      pendingFoldDelta = 0;
+    }
 
     // Flatten cursor lean first so fold starts from a flat card
     css.setCursorScaleTarget(0);
@@ -1024,6 +1244,8 @@ function boot() {
   }
 
   window.addEventListener("wheel", onWheel, { passive: false });
+
+  let flipClock = performance.now();
 
   function frame(now) {
     css.fps.tick(now);
@@ -1077,7 +1299,21 @@ function boot() {
 
       const tip = FOLD_END.viewTip * foldDisplay;
       css.setFoldDisplay(foldDisplay, tip);
-      if (foldDisplay > 0.04) css.setCursorScaleTarget(0);
+      const dt = Math.min(48, now - flipClock);
+      flipClock = now;
+      flipDisplay = applyLag(flipDisplay, flipTarget, flipLagAlpha(FLIP.ms, dt));
+      css.setFlipDisplay(flipDisplay);
+      css.setCursorScaleTarget(
+        shouldEnableCursorLean({
+          foldDisplay,
+          flipTarget,
+          flipDisplay,
+          foldPhase,
+        })
+          ? 1
+          : 0,
+      );
+      if (startDebug) syncOpenFoldInput();
     }
 
     css.applyPose(pose, falling || phase === "settling");
@@ -1086,9 +1322,22 @@ function boot() {
 
   css.setCard(CARD);
   drop();
+  if (startDebug) {
+    phase = "settled";
+    css.setInteractive(true);
+    css.applyPose(settlePose(1), false);
+  }
   requestAnimationFrame(frame);
 
   replay?.addEventListener("click", freshDrop);
+
+  cssRoot?.querySelector(".css-card")?.addEventListener("click", () => {
+    if (phase !== "settled") return;
+    if (foldDisplay > 0.04 || foldPhase !== "idle") return;
+    flipTarget = flipTarget > 0.5 ? 0 : 1;
+    pendingFoldDelta = 0;
+    dismissHint();
+  });
 
   document.getElementById("text-effects")?.addEventListener("click", () => {
     textEffects = !textEffects;
@@ -1118,15 +1367,15 @@ function boot() {
   const matRoot = document.getElementById("mat-debug");
   const curRoot = document.getElementById("cursor-debug");
   const foldRoot = document.getElementById("fold-debug");
+  for (const el of [matRoot, curRoot, foldRoot, debugRoot]) {
+    if (el) el.open = false;
+  }
 
   if (matRoot) {
-    matRoot.open = !!(startLab && savedPrefs?.matOpen);
-    matRoot.addEventListener("toggle", () => persist());
-
     matRoot.querySelectorAll("[data-mat]").forEach((input) => {
       const key = input.dataset.mat;
       const sync = () => {
-        if (key === "paperBase" || key === "inkColor") {
+        if (key === "paperBase" || key === "inkColor" || key === "backFont") {
           mat[key] = input.value;
         } else {
           mat[key] = Number(input.value);
@@ -1201,12 +1450,59 @@ function boot() {
       syncFoldInputs();
       persist();
     });
+
+    foldRoot.querySelectorAll("[data-hatch]").forEach((input) => {
+      const key = input.dataset.hatch;
+      const sync = () => {
+        const v = Number(input.value);
+        setHatchOpening({ [key]: v });
+        const out = foldRoot.querySelector(`[data-hatch-val="${key}"]`);
+        if (out) {
+          out.textContent =
+            key === "layerZ" ? String(Math.round(v)) : v.toFixed(2);
+        }
+        css.setHatchLayer();
+        css.setFoldDisplay(foldDisplay, FOLD_END.viewTip * foldDisplay);
+        persist();
+      };
+      input.addEventListener("input", sync);
+    });
+    foldRoot.querySelector("[data-hatch-reset]")?.addEventListener("click", () => {
+      resetHatchOpening();
+      syncHatchInputs();
+      css.setHatchLayer();
+      css.setFoldDisplay(foldDisplay, FOLD_END.viewTip * foldDisplay);
+      persist();
+    });
+
+    foldRoot.querySelectorAll("[data-flip]").forEach((input) => {
+      const sync = () => {
+        const v = Number(input.value);
+        setFlip({ ms: v });
+        const out = foldRoot.querySelector('[data-flip-val="ms"]');
+        if (out) out.textContent = String(Math.round(v));
+        persist();
+      };
+      input.addEventListener("input", sync);
+    });
+
+    foldRoot.querySelector('[data-open="fold"]')?.addEventListener("input", (e) => {
+      const f = clamp(Number(e.target.value), 0, 1);
+      foldTarget = f;
+      foldDisplay = f;
+      foldPhase = f >= 0.98 ? "open" : f <= 0.001 ? "idle" : "dragging";
+      css.setCursorScaleTarget(f > 0.04 ? 0 : 1);
+      css.setFoldDisplay(f, FOLD_END.viewTip * f);
+      syncOpenFoldInput();
+      if (phase !== "settled") {
+        phase = "settled";
+        css.setInteractive(true);
+        css.applyPose(settlePose(1), false);
+      }
+    });
   }
 
   if (debugRoot) {
-    debugRoot.open = !!(startLab && savedPrefs?.debugOpen);
-    debugRoot.addEventListener("toggle", () => persist());
-
     debugRoot.querySelectorAll("[data-phys]").forEach((input) => {
       const key = input.dataset.phys;
       const out = debugRoot.querySelector(`[data-phys-val="${key}"]`);
@@ -1240,7 +1536,7 @@ function boot() {
         document.querySelectorAll('input[name="motion"]').forEach((input) => {
           input.checked = input.value === PHYS_DEFAULTS.mode;
         });
-        persist({ debugOpen: debugRoot.open });
+        persist();
         freshDrop();
       });
     }

@@ -188,7 +188,8 @@ button:focus-visible {
   flex: 1;
   background: var(--floor);
   min-height: 100%;
-  overflow: hidden;
+  /* Fold panels need a little bleed room in 3D — body still clips the page */
+  overflow: visible;
 }
 
 .pane-fps {
@@ -238,16 +239,58 @@ body.is-lab .pane-fps {
   will-change: transform;
 }
 
-.css-card {
+.css-stack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  /* Match React fold__stack — preserve panel depth; hatch slot stays flat */
+  transform-style: preserve-3d;
+}
+
+/* Opening slot — same footprint as card; locked tune in card-fold.js */
+.css-hatch-slot {
   position: absolute;
   inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* Same 2D footprint as the card — stay on the table plane (card sits at --layer-z) */
+  transform: none;
+  transform-style: flat;
+}
+
+.css-hatch-well {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  background: rgba(22, 18, 14, 0.48);
+  box-shadow: inset 0 10px 22px rgba(12, 10, 8, 0.35);
+}
+
+.css-hatch {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  will-change: transform;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 42%, #e4ddd2 0%, transparent 70%),
+    var(--floor);
+}
+
+.css-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
   background: transparent;
   border: 0;
   box-shadow: none;
   padding: 0;
+  transform: translate3d(0, 0, calc(var(--layer-z, 80) * 1px));
   transform-style: preserve-3d;
-  transform: rotateX(0deg) rotateY(0deg);
-  backface-visibility: hidden;
+  transform-origin: 50% 50%;
+  isolation: isolate;
   cursor: default;
   user-select: none;
   pointer-events: none;
@@ -255,12 +298,63 @@ body.is-lab .pane-fps {
 }
 
 .css-card.is-live {
-  cursor: grab;
+  cursor: pointer;
   pointer-events: auto;
 }
 
 .css-card.is-live:active {
-  cursor: grabbing;
+  cursor: pointer;
+}
+
+.css-card__flip {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.css-card__front,
+.css-card__back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.css-card__front {
+  transform: rotateY(0deg) translateZ(1px);
+  transform-style: preserve-3d;
+}
+
+.css-card__back {
+  transform: rotateY(180deg) translateZ(1px);
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.css-card[data-face="back"] .css-card__front {
+  visibility: hidden;
+}
+
+.css-card[data-face="front"] .css-card__back {
+  visibility: hidden;
+}
+
+.css-card__back-stock {
+  width: 100%;
+  height: 100%;
+}
+
+.css-card__back .physical-card {
+  --card-width: 100%;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: unset;
+}
+
+.css-card__back .physical-card__contact-shadow,
+.css-card__back .physical-card__print {
+  display: none;
 }
 
 .css-card__face {
@@ -298,7 +392,9 @@ body.is-lab .pane-fps {
 .fold-sheet {
   position: absolute;
   inset: 0;
+  z-index: 1;
   transform-style: preserve-3d;
+  transform: translateZ(4px);
 }
 
 .fold-panel {
@@ -307,25 +403,23 @@ body.is-lab .pane-fps {
   right: 0;
   height: 100%;
   transform-style: preserve-3d;
-  will-change: transform;
 }
 
 .fold-panel--top {
   top: 0;
-  height: calc(100% / 3 + 1px);
+  height: calc(100% / 3 + 2px);
   transform-origin: 50% 100%;
 }
 
 .fold-panel--mid {
-  /* 1px overlap kills the dark hairline seam when flat */
-  top: calc(100% - 1px);
-  height: calc(100% + 1px);
+  top: calc(100% - 2px);
+  height: calc(100% + 2px);
   transform-origin: 50% 0%;
 }
 
 .fold-panel--bot {
-  top: calc(100% - 1px);
-  height: calc(100% + 1px);
+  top: calc(100% - 2px);
+  height: calc(100% + 2px);
   transform-origin: 50% 0%;
 }
 
@@ -333,18 +427,41 @@ body.is-lab .pane-fps {
   position: relative;
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  /* Match paper — no separate panel fill that reads as a seam */
-  background: transparent;
+  overflow: visible;
+  background: var(--paper-base, #f4f2ea);
+  transform: translateZ(2px);
   transform-style: preserve-3d;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   box-shadow: none;
+  outline: none;
   border: 0;
+}
+
+.fold-sheet[data-creased="false"] .fold-panel__face {
+  /* Flat rest: clip print only; no stock rims visible anyway */
+  overflow: hidden;
+}
+
+.fold-panel__face.css-card__face {
+  position: relative;
+  inset: auto;
+  background: var(--paper-base, #f4f2ea);
 }
 
 .fold-panel__clip {
   position: absolute;
   inset: 0;
   overflow: hidden;
+  background: var(--paper-base, #f4f2ea);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.fold-panel__print .physical-card__texture-lit,
+.fold-panel__print .physical-card__ink-relief,
+.fold-panel__print .physical-card__ink-fill--pores {
+  mix-blend-mode: normal;
 }
 
 .fold-panel__print {
@@ -369,33 +486,103 @@ body.is-lab .pane-fps {
   display: none;
 }
 
+.fold-panel__shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  background: rgba(32, 26, 20, 0.22);
+}
+
+.fold-panel__shade--top {
+  opacity: var(--shade-top, 0);
+}
+
+.fold-panel__shade--mid {
+  opacity: var(--shade-mid, 0);
+  background: rgba(28, 22, 16, 0.32);
+}
+
+.fold-panel__shade--bot {
+  opacity: var(--shade-bot, 0);
+}
+
+.fold-panel__edge {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0;
+  box-shadow:
+    inset 0 0 0 0.35px rgba(255, 255, 252, 0.3),
+    0.35px 0.45px 0 rgba(32, 30, 26, 0.055);
+}
+
+.fold-sheet[data-creased="true"] .fold-panel__edge {
+  opacity: calc(var(--crease, 0) * 0.65);
+}
+
 .fold-panel__crease {
   position: absolute;
   left: 0;
   right: 0;
-  height: 8px;
+  height: 12px;
   pointer-events: none;
   z-index: 4;
   opacity: 0;
-  transition: opacity 120ms linear;
 }
 
 .fold-sheet[data-creased="true"] .fold-panel__crease {
-  opacity: calc(var(--crease, 0) * 0.55);
+  opacity: calc(var(--crease, 0) * 0.9);
 }
 
 .fold-panel__crease--top {
   top: 0;
   background: linear-gradient(
     to bottom,
-    rgba(20, 16, 12, 0.12),
+    rgba(20, 16, 12, 0.28),
+    rgba(20, 16, 12, 0.08) 50%,
     transparent
   );
 }
 
 .fold-panel__crease--bottom {
   bottom: 0;
-  background: linear-gradient(to top, rgba(20, 16, 12, 0.08), transparent);
+  background: linear-gradient(
+    to top,
+    rgba(20, 16, 12, 0.2),
+    transparent 75%
+  );
+  box-shadow: 0 1px 0 rgba(255, 252, 248, calc(var(--crease, 0) * 0.35));
+}
+
+/* Cardstock rim at hinges — only when creased */
+.fold-panel__thickness {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5px;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  transform: rotateX(90deg);
+  transform-origin: 50% 100%;
+  backface-visibility: visible;
+  background: linear-gradient(
+    to bottom,
+    #faf8f2 0%,
+    #ebe4d8 40%,
+    #c4b9a8 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 252, 248, 0.7),
+    inset 0 -1px 0 rgba(40, 34, 28, 0.22);
+}
+
+.fold-sheet[data-creased="true"] .fold-panel__thickness {
+  opacity: calc(0.45 + var(--crease, 0) * 0.55);
 }
 
 .css-card--fold {
@@ -431,8 +618,9 @@ body.is-lab .pane-fps {
 .css-shadows {
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: 1;
   pointer-events: none;
+  transform: translate3d(0, 0, calc(var(--layer-z, 80) * 1px));
 }
 
 .css-shadow {
@@ -440,10 +628,9 @@ body.is-lab .pane-fps {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: min(var(--lab-card-w, 420px), 78vw);
-  aspect-ratio: 1.75;
-  height: auto;
-  transform: translate(-48%, -46%);
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
   transform-origin: center center;
   border-radius: 1px;
   background: #1a1814;
@@ -522,6 +709,30 @@ body.is-lab .pane-fps {
   grid-template-columns: 1fr;
   gap: 0.45rem;
   margin-top: 0.5rem;
+}
+
+.lab-debug__section-label {
+  margin: 0;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.lab-debug__grid--back {
+  margin-top: 0.65rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid rgba(20, 18, 16, 0.08);
+}
+
+.lab-debug select {
+  width: 100%;
+  font: inherit;
+  font-size: 0.74rem;
+  padding: 0.28rem 0.35rem;
+  border: 1px solid rgba(20, 18, 16, 0.18);
+  background: rgba(244, 242, 234, 0.9);
+  color: var(--ink);
 }
 
 .lab-debug label {

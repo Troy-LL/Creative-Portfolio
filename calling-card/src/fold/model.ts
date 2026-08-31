@@ -97,29 +97,200 @@ export const FOLD_END = {
 } as const;
 
 /**
+ * Wall hatch behind the card — slides up with the bot-led fold.
+ * Sized to the folded card silhouette so the hole hugs the card
+ * (bottom tracks the bot panel), not the flat footprint void.
+ */
+export const SURFACE_PEEL = {
+  /** 1 = cover fully clears the well at fold = 1 */
+  shiftPct: 1,
+} as const;
+
+export type SurfacePeel = {
+  /** 0 covering well → 1 fully slid up */
+  shiftPct: number;
+  /** Always 0 — slide, not hinge */
+  rotateX: number;
+  /** Hatch height as fraction of flat card (1 flat → accordion silhouette) */
+  heightPct: number;
+  /** Hatch top edge in flat-card Y (0 = card top) */
+  topPct: number;
+};
+
+/**
  * Nested Z-fold — sequential upward (bot → mid → top).
  * 0 = flat closed; 1 = held end pose (FOLD_END).
  */
 export function panelAngles(foldProgress: number): PanelAngles {
+  return panelAnglesAtEnd(foldProgress, FOLD_END);
+}
+
+/** Same stagger, but peaks come from a custom end pose (debug / tuning). */
+export function panelAnglesAtEnd(
+  foldProgress: number,
+  end: PanelAngles,
+): PanelAngles {
   const t = Math.min(1, Math.max(0, foldProgress));
   if (t === 0) return { top: 0, mid: 0, bot: 0 };
 
-  // Stagger bottom → mid → top; span so all reach 1 at t=1
   const botS = sequential(t, 0, 0.68);
   const midS = sequential(t, 0.16, 0.68);
   const topS = sequential(t, 0.32, 0.68);
 
   return {
-    top: FOLD_END.top * topS,
-    mid: FOLD_END.mid * midS,
-    bot: FOLD_END.bot * botS,
+    top: end.top * topS,
+    mid: end.mid * midS,
+    bot: end.bot * botS,
+  };
+}
+
+const THIRD = 1 / 3;
+const DEG = Math.PI / 180;
+
+/** Visible folded stack bounds (accordion height + top). */
+export function hatchSilhouetteFromAngles(angles: PanelAngles): {
+  heightPct: number;
+  topPct: number;
+} {
+  const topSpan = THIRD * Math.abs(Math.cos(angles.top * DEG));
+  const midSpan = THIRD * Math.abs(Math.cos(angles.mid * DEG));
+  const botSpan = THIRD * Math.abs(Math.cos(angles.bot * DEG));
+  const heightPct = Math.min(
+    1,
+    Math.max(THIRD * 0.9, topSpan + midSpan + botSpan),
+  );
+
+  const botBottom = 2 * THIRD + THIRD * Math.cos(angles.bot * DEG);
+  const topPct = Math.max(0, Math.min(1 - heightPct, botBottom - heightPct));
+
+  return { heightPct, topPct };
+}
+
+/**
+ * Where the opening becomes visible — top edge in flat-card Y (0 = card top).
+ * Full card width always; slot is clipped from this line down to card bottom.
+ */
+export function hatchOpeningFromAngles(angles: PanelAngles): {
+  topPct: number;
+  heightPct: number;
+} {
+  const stack = hatchSilhouetteFromAngles(angles);
+  const topPct = stack.topPct;
+  const heightPct = 1 - topPct;
+  return { topPct, heightPct };
+}
+
+function foldOpening(foldProgress: number, end: PanelAngles = FOLD_END): {
+  topPct: number;
+  heightPct: number;
+} {
+  const t = Math.min(1, Math.max(0, foldProgress));
+  if (t === 0) return { topPct: 1, heightPct: 0 };
+  return hatchOpeningFromAngles(panelAnglesAtEnd(t, end));
+}
+
+/** Wall hatch — full card slot; cover slides up; well clipped from reveal line. */
+export function surfacePeel(foldProgress: number): SurfacePeel {
+  const t = Math.min(1, Math.max(0, foldProgress));
+  if (t === 0) {
+    return { shiftPct: 0, rotateX: 0, heightPct: 0, topPct: 1 };
+  }
+  const { heightPct, topPct } = foldOpening(t);
+  const s = sequential(t, 0, 0.68);
+  return {
+    shiftPct: SURFACE_PEEL.shiftPct * s,
+    rotateX: 0,
+    heightPct,
+    topPct,
+  };
+}
+
+/** Same as surfacePeel but uses explicit panel angles at this fold step. */
+export function surfacePeelFromAngles(
+  foldProgress: number,
+  angles: PanelAngles,
+): SurfacePeel {
+  const t = Math.min(1, Math.max(0, foldProgress));
+  if (t === 0) {
+    return { shiftPct: 0, rotateX: 0, heightPct: 0, topPct: 1 };
+  }
+  const { heightPct, topPct } = hatchOpeningFromAngles(angles);
+  const s = sequential(t, 0, 0.68);
+  return {
+    shiftPct: SURFACE_PEEL.shiftPct * s,
+    rotateX: 0,
+    heightPct,
+    topPct,
+  };
+}
+
+export type HatchDebugState = {
+  autoSilhouette: boolean;
+  topPct: number;
+  heightPct: number;
+  shiftPct: number;
+  /** Pull reveal line upward — enlarges opening (↓ only for extend) */
+  topPullPct: number;
+  /** Scale visible opening height */
+  heightScale: number;
+  extendBottomPct: number;
+  depthPx: number;
+  wellOpacity: number;
+};
+
+export const HATCH_DEBUG_DEFAULTS: HatchDebugState = {
+  autoSilhouette: true,
+  topPct: 0.2,
+  heightPct: 0.8,
+  shiftPct: 1,
+  topPullPct: 0,
+  heightScale: 1.5,
+  extendBottomPct: 0.4,
+  depthPx: 80,
+  wellOpacity: 1,
+};
+
+function extendOpeningDown(
+  topPct: number,
+  heightPct: number,
+  extendBottomPct: number,
+): number {
+  const maxH = 1 - topPct;
+  return Math.min(maxH, heightPct + Math.max(0, extendBottomPct));
+}
+
+/** Apply manual hatch overrides + enlarge tweaks from the debug panel. */
+export function applyHatchDebug(
+  computed: SurfacePeel,
+  hatch: HatchDebugState,
+): SurfacePeel {
+  const base = hatch.autoSilhouette
+    ? computed
+    : {
+        shiftPct: hatch.shiftPct,
+        rotateX: 0,
+        heightPct: hatch.heightPct,
+        topPct: hatch.topPct,
+      };
+
+  const topPct = Math.max(0, base.topPct - hatch.topPullPct);
+  let heightPct = Math.min(1 - topPct, base.heightPct * hatch.heightScale);
+  heightPct = extendOpeningDown(topPct, heightPct, hatch.extendBottomPct);
+
+  return {
+    ...base,
+    topPct,
+    heightPct,
   };
 }
 
 /** Crease ink from real fold geometry — 0 flat, 1 at full Z. */
 export function creaseAmount(foldProgress: number): number {
-  const a = panelAngles(foldProgress);
-  const mag = Math.abs(a.top) + Math.abs(a.mid) + Math.abs(a.bot);
+  return creaseAmountFromAngles(panelAngles(foldProgress));
+}
+
+export function creaseAmountFromAngles(angles: PanelAngles): number {
+  const mag = Math.abs(angles.top) + Math.abs(angles.mid) + Math.abs(angles.bot);
   return Math.min(1, mag / 200);
 }
 
@@ -128,11 +299,14 @@ export function creaseAmount(foldProgress: number): number {
  * on 3D ancestors (those flatten nested preserve-3d).
  */
 export function panelShade(foldProgress: number): PanelAngles {
-  const a = panelAngles(foldProgress);
+  return panelShadeFromAngles(panelAngles(foldProgress));
+}
+
+export function panelShadeFromAngles(angles: PanelAngles): PanelAngles {
   return {
-    top: Math.min(0.08, Math.abs(a.top) / 500),
-    mid: Math.min(0.2, Math.abs(a.mid) / 400),
-    bot: Math.min(0.1, Math.abs(a.bot) / 480),
+    top: Math.min(0.08, Math.abs(angles.top) / 500),
+    mid: Math.min(0.2, Math.abs(angles.mid) / 400),
+    bot: Math.min(0.1, Math.abs(angles.bot) / 480),
   };
 }
 
