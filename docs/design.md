@@ -1,6 +1,6 @@
 # Design — portfolio entry (card-lab)
 
-Visitor UI on the static root surface (`npm run serve` → http://localhost:4173).
+First surface of the redesign. Visitor UI on the static root (`npm start` → http://localhost:4173). Not the Vite calling-card lab.
 
 ## Intent
 

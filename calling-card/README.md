@@ -1,6 +1,6 @@
-# Physical calling card
+# Physical calling card (React lab)
 
-React + TypeScript material study for uncoated stationery (American Psycho reference stock feel). Typography and real credentials are out of scope here.
+React + TypeScript material study for uncoated stationery. **Not the visitor entry** — that is root card-lab on http://localhost:4173 (`npm start`). This Vite app is the optional fold / material lab.
 
 ## Run
 

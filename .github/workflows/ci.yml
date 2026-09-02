@@ -17,10 +17,10 @@ jobs:
           cache: npm
       - name: Install
         run: npm ci
-      - name: Assert redesign stub + archived desktop
+      - name: Assert redesign root + archived desktop
         run: |
           test -f index.html
-          grep -q 'data-surface="redesign-stub"' index.html
+          grep -q 'data-surface="redesign"' index.html
           test -f vercel.json
           node -e "JSON.parse(require('fs').readFileSync('vercel.json','utf8'))"
           test -f archive/desktop-os/index.html

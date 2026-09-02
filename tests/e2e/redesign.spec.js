@@ -1,12 +1,12 @@
 // @ts-check
 import { test, expect } from "@playwright/test";
 
-test.describe("redesign stub at root", () => {
-  test("root is the redesign stub, not the Mac desktop OS", async ({
+test.describe("redesign at root", () => {
+  test("root is the redesign, not the Mac desktop OS", async ({
     page,
   }) => {
     await page.goto("/");
-    await expect(page.locator("[data-surface='redesign-stub']")).toHaveCount(1);
+    await expect(page.locator("[data-surface='redesign']")).toHaveCount(1);
     await expect(page.locator("#replay")).toBeVisible();
     await expect(page.locator("[data-engine='css']")).toHaveCount(1);
     await expect(page.locator("[data-engine='three']")).toHaveCount(0);

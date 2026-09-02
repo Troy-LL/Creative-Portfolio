@@ -4,9 +4,11 @@
 
   "private": true,
 
-  "description": "Portfolio redesign stub; archived Desktop TL lives in archive/desktop-os.",
+  "description": "Portfolio redesign in progress. Live visitor surface is card-lab on :4173; archived Desktop TL lives in archive/desktop-os.",
 
   "scripts": {
+
+    "start": "npx --yes serve -l 4173 .",
 
     "build": "node archive/desktop-os/scripts/build-founders-cafe.cjs",
 

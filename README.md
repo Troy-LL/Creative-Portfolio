@@ -1,17 +1,27 @@
 # Creative Portfolio
 
-Redesign in progress. Visitor entry is a fold-open calling card that reveals an inside, then zooms into a portfolio placeholder on explicit press (see `docs/design.md`). The old Mac desktop OS is archived as past work.
+Redesign in progress on **`dev/redesign`**. `master` is the last shipped stub only.
+
+The live visitor surface is a fold-open calling card (**card-lab**): fall onto the table, cursor lean, click to flip, scroll to fold and raise the hatch. That is the first room of the new site, not a prototype parked behind Vite. See `docs/design.md`.
+
+The old Mac desktop OS is archived as past work.
 
 ## Run
 
+Local steps, ports, and how to free a stuck port: **`start.md`**.
+
 ```bash
-npm run dev:card    # fold-open entry + material lab — http://localhost:5174
-npm run serve       # static tree — http://localhost:4173 (stub / archive)
+git checkout dev/redesign
+npm start    # same as npm run serve — http://localhost:4173
 ```
 
-- Entry (dev): http://localhost:5174
-- Material dial: http://localhost:5174/?lab=1
-- Static stub / archive: http://localhost:4173 and http://localhost:4173/archive/desktop-os/
+| URL | What |
+| --- | --- |
+| http://localhost:4173 | Visitor entry (card-lab) |
+| http://localhost:4173/?lab=1 | Same + dials (or press **L**) |
+| http://localhost:4173/?debug=1 | Skip fall, start settled |
+| http://localhost:5174 | Optional React material lab (`npm run dev:card`) |
+| http://localhost:4173/archive/desktop-os/ | Archived Desktop TL |
 
 ## Brand
 
