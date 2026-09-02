@@ -14,5 +14,5 @@ We enter the portfolio by folding the calling card open via a bottom pull tab (C
 
 - Visitor entry code lives at repo root (`index.html`, `assets/js/card-lab.js`, `assets/js/card-fold.js`). Fold math is also in `calling-card/src/fold/` for the React lab.
 - `calling-card/src/shutter/` is retired in favor of fold.
-- Existing `assets/js/paper-rip/` and `assets/js/card-tear/` stay unused by the visitor path unless a later ADR revives them.
+- Paper-rip / card-tear prototypes were removed from the live tree. Do not put them back without a new ADR.
 - Interaction ships in phases: fold proof → inside reveal → enter press → portfolio zoom.

@@ -105,7 +105,14 @@ export async function withScenario(page, meta, fn) {
   } catch (err) {
     const durationMs = Date.now() - started;
     const safeName = `${meta.scenario}-${meta.app}`.replace(/[^\w.-]+/g, "_");
-    screenshot = path.join("docs", "testing", "proof", `${safeName}-fail.png`);
+    screenshot = path.join(
+      "archive",
+      "desktop-os",
+      "docs",
+      "testing",
+      "proof",
+      `${safeName}-fail.png`,
+    );
     try {
       await page.screenshot({ path: screenshot, fullPage: true });
     } catch {

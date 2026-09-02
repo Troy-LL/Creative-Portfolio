@@ -4,7 +4,7 @@ Snapshot of the interactive desktop-OS portfolio (Finder, dock, windows, mobile 
 
 Parked here so the root site can be redesigned. Keep this folder runnable as selected past work.
 
-Agent notes for this snapshot: `CLAUDE.md`, `GEMINI.md`, `mobile-context.md` in this folder. Greybox QA from the OS era stays at repo `docs/testing/` and `docs/superpowers/` (paths the archive e2e helpers still write).
+Agent notes for this snapshot: `CLAUDE.md`, `GEMINI.md`, `mobile-context.md` in this folder. Greybox QA from the OS era lives in `docs/testing/` and `docs/superpowers/` here.
 
 ## Run from repo root
 

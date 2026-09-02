@@ -1,6 +1,6 @@
 /**
  * One-off deeper sanity probe (2026-07-17).
- * Writes docs/testing/sanity-probe-deeper-2026-07-17.json — not part of CI suite.
+ * Writes archive/desktop-os/docs/testing/sanity-probe-deeper-2026-07-17.json — not part of CI suite.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -8,11 +8,19 @@ import { test } from "@playwright/test";
 import { bootDesktop, openDockApp, assertInFrame } from "./helpers/desktop.js";
 
 const OUT_JSON = path.join(
+  "archive",
+  "desktop-os",
   "docs",
   "testing",
   "sanity-probe-deeper-2026-07-17.json",
 );
-const PROOF_DIR = path.join("docs", "testing", "proof");
+const PROOF_DIR = path.join(
+  "archive",
+  "desktop-os",
+  "docs",
+  "testing",
+  "proof",
+);
 
 const APPS = [
   {

@@ -16,8 +16,6 @@ Styles: `assets/css/card-lab.css`, `assets/css/card-back-fonts.css`, plus `calli
 
 Back initials font kit is copied into `assets/fonts/back/`; source of truth is `Troy-LL/personal` → `fonts/`.
 
-`assets/js/paper-rip/` and `assets/js/card-tear/` stay unused on this path (see `docs/decisions/002-fold-open-entry-not-paper-tear.md`).
-
 ## Tests
 
 - Fold / flip / hatch: `tests/unit/card-fold-opening.test.js`, `tests/unit/fold-model.test.ts`

@@ -1,7 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const LOG_PATH = path.resolve("docs/testing/greybox-log.jsonl");
+const LOG_PATH = path.resolve(
+  "archive/desktop-os/docs/testing/greybox-log.jsonl",
+);
 
 /**
  * @param {{
