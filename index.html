@@ -28,7 +28,19 @@
                   <div class="css-shadow css-shadow--contact"></div>
                 </div>
                 <div class="css-hatch-slot" aria-hidden="true">
-                  <div class="css-hatch-well"></div>
+                  <div class="css-hatch-well">
+                    <video
+                      class="css-hatch-video"
+                      muted
+                      loop
+                      playsinline
+                      autoplay
+                      preload="auto"
+                    >
+                      <source src="assets/hatch/IMG_6909.webm" type="video/webm" />
+                    </video>
+                    <div class="css-hatch-vignette"></div>
+                  </div>
                   <div class="css-hatch"></div>
                 </div>
                 <article class="css-card css-card--fold">
@@ -437,6 +449,83 @@
         <div class="lab-debug__actions">
           <button type="button" data-fold-reset>Reset fold</button>
           <button type="button" data-hatch-reset>Reset opening</button>
+        </div>
+      </details>
+
+      <details class="lab-debug" id="hatch-video-debug">
+        <summary>
+          Opening video <span class="lab-debug__hint">crop · vignette · format</span>
+        </summary>
+        <div class="lab-debug__grid">
+          <label
+            >Video Y <strong data-hatch-video-val="offsetY">50</strong>
+            <input
+              data-hatch-video="offsetY"
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value="50"
+          /></label>
+          <label
+            >Video zoom <strong data-hatch-video-val="zoom">1.00</strong>
+            <input
+              data-hatch-video="zoom"
+              type="range"
+              min="0.5"
+              max="4"
+              step="0.05"
+              value="1"
+          /></label>
+          <label
+            >Vignette <strong data-hatch-video-val="vignette">0.55</strong>
+            <input
+              data-hatch-video="vignette"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.55"
+          /></label>
+          <label
+            >Vignette soft <strong data-hatch-video-val="vignetteSoft">32</strong>
+            <input
+              data-hatch-video="vignetteSoft"
+              type="range"
+              min="0"
+              max="70"
+              step="1"
+              value="32"
+          /></label>
+          <label
+            >Vignette size <strong data-hatch-video-val="vignetteSize">1.00</strong>
+            <input
+              data-hatch-video="vignetteSize"
+              type="range"
+              min="0.4"
+              max="2.5"
+              step="0.05"
+              value="1"
+          /></label>
+        </div>
+        <p class="lab-debug__section-label">Format</p>
+        <div class="lab-debug__presets" data-hatch-video-formats></div>
+        <table class="lab-hatch-video-stats">
+          <caption>
+            Uncached fetch + decode (no HTTP cache)
+          </caption>
+          <thead>
+            <tr>
+              <th>Format</th>
+              <th>Payload</th>
+              <th>Ready</th>
+            </tr>
+          </thead>
+          <tbody data-hatch-video-stats></tbody>
+        </table>
+        <div class="lab-debug__actions">
+          <button type="button" data-hatch-video-measure>Measure uncached</button>
+          <button type="button" data-hatch-video-reset>Reset video</button>
         </div>
       </details>
 

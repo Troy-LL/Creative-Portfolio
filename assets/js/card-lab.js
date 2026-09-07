@@ -25,6 +25,9 @@ import {
   FLIP,
   HATCH_OPENING,
   HATCH_OPENING_DEFAULTS,
+  HATCH_VIDEO,
+  HATCH_VIDEO_DEFAULTS,
+  HATCH_VIDEO_FORMATS,
   SCROLL_GAIN,
   SCROLL_IDLE_MS,
   applyLag,
@@ -33,16 +36,22 @@ import {
   flipLagAlpha,
   flipMotion,
   flipShadowFootprint,
+  formatByteSize,
+  hatchApertureVars,
+  hatchVideoSource,
+  hatchVideoVars,
   panelAngles,
   panelShade,
   panelShadeFromAngles,
   resetFoldEnd,
   resetHatchOpening,
+  resetHatchVideo,
   resolveOpeningPeel,
   resolveScrollOnCard,
   setFlip,
   setFoldEnd,
   setHatchOpening,
+  setHatchVideo,
   shouldEnableCursorLean,
   shouldSnapOpen,
 } from "./card-fold.js";
@@ -134,6 +143,7 @@ function savePhysPrefs(extra = {}) {
       cursorFeel: { ...cursorFeel },
       fold: { ...FOLD_END },
       hatch: { ...HATCH_OPENING },
+      hatchVideo: { ...HATCH_VIDEO },
       flip: { ...FLIP },
       textEffects: false,
       paperGrain: true,
@@ -224,6 +234,23 @@ function applyHatchPrefs(saved) {
     if (Number.isFinite(n)) next[key] = n;
   }
   if (Object.keys(next).length) setHatchOpening(next);
+}
+
+function applyHatchVideoPrefs(saved) {
+  if (!saved?.hatchVideo || typeof saved.hatchVideo !== "object") return;
+  const next = {};
+  for (const key of Object.keys(HATCH_VIDEO_DEFAULTS)) {
+    if (key === "format") {
+      const format = saved.hatchVideo.format;
+      if (typeof format === "string" && format in HATCH_VIDEO_FORMATS) {
+        next.format = format;
+      }
+      continue;
+    }
+    const n = Number(saved.hatchVideo[key]);
+    if (Number.isFinite(n)) next[key] = n;
+  }
+  if (Object.keys(next).length) setHatchVideo(next);
 }
 
 function applyFlipPrefs(saved) {
@@ -454,12 +481,40 @@ function createCssEngine(root, materials) {
     }
   }
 
+  function applyHatchVideo() {
+    if (!hatchWell) return;
+    const vars = hatchVideoVars();
+    for (const [key, value] of Object.entries(vars)) {
+      hatchWell.style.setProperty(key, value);
+    }
+    const video = hatchWell.querySelector(".css-hatch-video");
+    if (!video) return;
+    const source = hatchVideoSource();
+    const tag = video.querySelector("source");
+    const currentSrc = tag?.getAttribute("src") || "";
+    if (currentSrc !== source.src) {
+      video.pause();
+      if (tag) {
+        tag.src = source.src;
+        tag.type = source.type;
+      }
+      video.load();
+    }
+    video.play?.()?.catch(() => {});
+  }
+
   applyLayerZ();
+  applyHatchVideo();
   applyOpening(0);
 
   function applyOpening(fold) {
     if (!hatchWell || !hatchCover) return;
     const f = clamp(fold, 0, 1);
+    const peel = resolveOpeningPeel(f);
+    const aperture = hatchApertureVars(peel);
+    for (const [key, value] of Object.entries(aperture)) {
+      hatchWell.style.setProperty(key, value);
+    }
     if (f <= 0.001) {
       hatchWell.style.opacity = "0";
       hatchWell.style.clipPath = "inset(100% 0 0 0)";
@@ -467,7 +522,6 @@ function createCssEngine(root, materials) {
       hatchCover.style.setProperty("--hatch-open", "0");
       return;
     }
-    const peel = resolveOpeningPeel(f);
     hatchWell.style.opacity = String(HATCH_OPENING.wellOpacity * peel.shiftPct);
     hatchWell.style.clipPath = `inset(${peel.topPct * 100}% 0 0 0)`;
     hatchCover.style.transform = `translate3d(0, ${-peel.shiftPct * 100}%, 0)`;
@@ -826,6 +880,9 @@ function createCssEngine(root, materials) {
     setHatchLayer() {
       applyLayerZ();
     },
+    setHatchVideo() {
+      applyHatchVideo();
+    },
     getCursorFlatness() {
       return (
         Math.abs(force.rotX) +
@@ -874,6 +931,7 @@ function boot() {
   applyCursorPrefs(savedPrefs);
   applyFoldPrefs(savedPrefs);
   applyHatchPrefs(savedPrefs);
+  applyHatchVideoPrefs(savedPrefs);
   applyFlipPrefs(savedPrefs);
 
   const materials = hosts.map((host, i) =>
@@ -1138,6 +1196,30 @@ function boot() {
     });
   }
 
+  function syncHatchVideoInputs() {
+    const root = document.getElementById("hatch-video-debug");
+    if (!root) return;
+    root.querySelectorAll("[data-hatch-video]").forEach((input) => {
+      const key = input.dataset.hatchVideo;
+      if (!(key in HATCH_VIDEO)) return;
+      if (typeof HATCH_VIDEO[key] !== "number") return;
+      input.value = String(HATCH_VIDEO[key]);
+      const out = root.querySelector(`[data-hatch-video-val="${key}"]`);
+      if (out) {
+        out.textContent =
+          key === "offsetY" || key === "vignetteSoft"
+            ? String(Math.round(HATCH_VIDEO[key]))
+            : Number(HATCH_VIDEO[key]).toFixed(2);
+      }
+    });
+    root.querySelectorAll("[data-hatch-video-format]").forEach((btn) => {
+      btn.classList.toggle(
+        "is-active",
+        btn.dataset.hatchVideoFormat === HATCH_VIDEO.format,
+      );
+    });
+  }
+
   function syncOpenFoldInput() {
     const root = document.getElementById("fold-debug");
     if (!root) return;
@@ -1162,6 +1244,7 @@ function boot() {
   syncCursorInputs();
   syncFoldInputs();
   syncHatchInputs();
+  syncHatchVideoInputs();
   syncFlipInputs();
   const teBtn = document.getElementById("text-effects");
   if (teBtn) {
@@ -1367,7 +1450,8 @@ function boot() {
   const matRoot = document.getElementById("mat-debug");
   const curRoot = document.getElementById("cursor-debug");
   const foldRoot = document.getElementById("fold-debug");
-  for (const el of [matRoot, curRoot, foldRoot, debugRoot]) {
+  const videoRoot = document.getElementById("hatch-video-debug");
+  for (const el of [matRoot, curRoot, foldRoot, videoRoot, debugRoot]) {
     if (el) el.open = false;
   }
 
@@ -1500,6 +1584,120 @@ function boot() {
         css.applyPose(settlePose(1), false);
       }
     });
+  }
+
+  if (videoRoot) {
+    videoRoot.querySelectorAll("[data-hatch-video]").forEach((input) => {
+      const key = input.dataset.hatchVideo;
+      if (typeof HATCH_VIDEO_DEFAULTS[key] !== "number") return;
+      const sync = () => {
+        const v = Number(input.value);
+        setHatchVideo({ [key]: v });
+        const out = videoRoot.querySelector(`[data-hatch-video-val="${key}"]`);
+        if (out) {
+          out.textContent =
+            key === "offsetY" || key === "vignetteSoft"
+              ? String(Math.round(v))
+              : v.toFixed(2);
+        }
+        css.setHatchVideo();
+        persist();
+      };
+      input.addEventListener("input", sync);
+    });
+    videoRoot.querySelector("[data-hatch-video-reset]")?.addEventListener("click", () => {
+      resetHatchVideo();
+      syncHatchVideoInputs();
+      css.setHatchVideo();
+      persist();
+    });
+
+    const formatMount = videoRoot.querySelector("[data-hatch-video-formats]");
+    const statsBody = videoRoot.querySelector("[data-hatch-video-stats]");
+    if (formatMount && !formatMount.childElementCount) {
+      for (const fmt of Object.values(HATCH_VIDEO_FORMATS)) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.dataset.hatchVideoFormat = fmt.id;
+        btn.textContent = fmt.id.toUpperCase();
+        btn.title = fmt.label;
+        formatMount.append(btn);
+      }
+    }
+    if (statsBody && !statsBody.childElementCount) {
+      for (const fmt of Object.values(HATCH_VIDEO_FORMATS)) {
+        const row = document.createElement("tr");
+        row.dataset.hatchVideoStat = fmt.id;
+        row.innerHTML = `<th scope="row">${fmt.label}</th><td>—</td><td>—</td>`;
+        statsBody.append(row);
+      }
+    }
+    formatMount?.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-hatch-video-format]");
+      if (!btn) return;
+      const format = btn.dataset.hatchVideoFormat;
+      if (!(format in HATCH_VIDEO_FORMATS)) return;
+      setHatchVideo({ format });
+      syncHatchVideoInputs();
+      css.setHatchVideo();
+      persist();
+    });
+
+    let measuringUncached = false;
+    async function measureHatchVideoUncached() {
+      if (!statsBody || measuringUncached) return;
+      measuringUncached = true;
+      const measureBtn = videoRoot.querySelector("[data-hatch-video-measure]");
+      if (measureBtn) measureBtn.disabled = true;
+      for (const fmt of Object.values(HATCH_VIDEO_FORMATS)) {
+        const row = statsBody.querySelector(`[data-hatch-video-stat="${fmt.id}"]`);
+        const cells = row?.querySelectorAll("td");
+        if (cells?.[0]) cells[0].textContent = "…";
+        if (cells?.[1]) cells[1].textContent = "…";
+        try {
+          const url = `${fmt.src}?uncached=${Date.now()}`;
+          const t0 = performance.now();
+          const res = await fetch(url, { cache: "no-store" });
+          if (!res.ok) throw new Error(String(res.status));
+          const buf = await res.arrayBuffer();
+          const fetchMs = performance.now() - t0;
+          const blobUrl = URL.createObjectURL(new Blob([buf], { type: fmt.type }));
+          const t1 = performance.now();
+          await new Promise((resolve, reject) => {
+            const probe = document.createElement("video");
+            probe.muted = true;
+            probe.preload = "auto";
+            probe.onloadeddata = () => resolve();
+            probe.onerror = () => reject(new Error("decode"));
+            probe.src = blobUrl;
+          });
+          const readyMs = fetchMs + (performance.now() - t1);
+          URL.revokeObjectURL(blobUrl);
+          if (cells?.[0]) {
+            cells[0].textContent = `${formatByteSize(buf.byteLength)} · ${Math.round(fetchMs)} ms`;
+          }
+          if (cells?.[1]) cells[1].textContent = `${Math.round(readyMs)} ms`;
+        } catch {
+          if (cells?.[0]) cells[0].textContent = "missing";
+          if (cells?.[1]) cells[1].textContent = "—";
+        }
+      }
+      measuringUncached = false;
+      if (measureBtn) measureBtn.disabled = false;
+    }
+    let hatchVideoMeasured = false;
+    videoRoot.querySelector("[data-hatch-video-measure]")?.addEventListener(
+      "click",
+      () => {
+        measureHatchVideoUncached();
+      },
+    );
+    videoRoot.addEventListener("toggle", () => {
+      if (!videoRoot.open || hatchVideoMeasured) return;
+      hatchVideoMeasured = true;
+      measureHatchVideoUncached();
+    });
+    syncHatchVideoInputs();
   }
 
   if (debugRoot) {

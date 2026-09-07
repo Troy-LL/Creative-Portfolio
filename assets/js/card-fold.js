@@ -208,6 +208,93 @@ export function resetHatchOpening() {
   Object.assign(HATCH_OPENING, HATCH_OPENING_DEFAULTS);
 }
 
+/** Crop of the looping clip inside the hatch well (lab: Y + zoom + format). */
+export const HATCH_VIDEO_FORMATS = {
+  mov: {
+    id: "mov",
+    label: "MOV · H.264",
+    src: "assets/IMG_6909.MOV",
+    type: "video/mp4",
+  },
+  mp4: {
+    id: "mp4",
+    label: "MP4 · H.264",
+    src: "assets/hatch/IMG_6909.mp4",
+    type: "video/mp4",
+  },
+  webm: {
+    id: "webm",
+    label: "WebM · VP9",
+    src: "assets/hatch/IMG_6909.webm",
+    type: "video/webm",
+  },
+};
+
+export const HATCH_VIDEO = {
+  offsetY: 50,
+  zoom: 1,
+  format: "webm",
+  vignette: 0.55,
+  vignetteSoft: 32,
+  vignetteSize: 1,
+};
+
+export const HATCH_VIDEO_DEFAULTS = { ...HATCH_VIDEO };
+
+export function setHatchVideo(partial) {
+  Object.assign(HATCH_VIDEO, partial);
+}
+
+export function resetHatchVideo() {
+  Object.assign(HATCH_VIDEO, HATCH_VIDEO_DEFAULTS);
+}
+
+export function hatchVideoSource(format = HATCH_VIDEO.format) {
+  return HATCH_VIDEO_FORMATS[format] ?? HATCH_VIDEO_FORMATS[HATCH_VIDEO_DEFAULTS.format];
+}
+
+export function formatByteSize(bytes) {
+  const n = Number(bytes);
+  if (!Number.isFinite(n) || n < 0) return "—";
+  const mb = n / (1024 * 1024);
+  if (mb >= 0.1) return `${mb.toFixed(2)} MB`;
+  const kb = n / 1024;
+  if (kb >= 1) return `${kb.toFixed(1)} KB`;
+  return `${Math.round(n)} B`;
+}
+
+export function hatchVideoVars(video = HATCH_VIDEO) {
+  const offsetY = clamp(Number(video.offsetY) || 0, 0, 100);
+  const zoom = clamp(Number(video.zoom) || 1, 0.5, 4);
+  const vignette = clamp(Number(video.vignette) || 0, 0, 1);
+  const vignetteSoft = clamp(Number(video.vignetteSoft) || 0, 0, 80);
+  const sizeRaw = Number(video.vignetteSize);
+  const vignetteSize = clamp(Number.isFinite(sizeRaw) ? sizeRaw : 1, 0.4, 2.5);
+  return {
+    "--hatch-video-y": `${offsetY}%`,
+    "--hatch-video-zoom": String(zoom),
+    "--hatch-vignette": String(vignette),
+    "--hatch-vignette-soft": `${vignetteSoft}%`,
+    "--hatch-vignette-size": String(vignetteSize),
+  };
+}
+
+/** Vignette box = the uncovered slit below the folded card, not the full well. */
+export function hatchApertureVars(peel = { topPct: 0, shiftPct: 1 }) {
+  const topPct = clamp(Number(peel.topPct) || 0, 0, 1);
+  const shiftRaw = Number(peel.shiftPct);
+  const shiftPct = clamp(Number.isFinite(shiftRaw) ? shiftRaw : 1, 0, 1);
+  const stackTop = clamp(Number(peel.stackTopPct) || 0, 0, 1);
+  const stackHRaw = Number(peel.stackHeightPct);
+  const stackH = clamp(Number.isFinite(stackHRaw) ? stackHRaw : 1, 0, 1);
+  const cardBottom = Math.min(1, stackTop + stackH);
+  const apertureTop = Math.max(topPct, 1 - shiftPct, cardBottom);
+  return {
+    "--hatch-aperture-top": `${+(apertureTop * 100).toFixed(4)}%`,
+    "--hatch-aperture-height": `${+((1 - apertureTop) * 100).toFixed(4)}%`,
+  };
+}
+
 export const SURFACE_PEEL = { shiftPct: 1 };
 
 const THIRD = 1 / 3;
@@ -228,12 +315,19 @@ function hatchSilhouetteFromAngles(angles) {
 
 function hatchOpeningFromAngles(angles) {
   const stack = hatchSilhouetteFromAngles(angles);
-  return { topPct: stack.topPct, heightPct: 1 - stack.topPct };
+  return {
+    topPct: stack.topPct,
+    heightPct: 1 - stack.topPct,
+    stackTopPct: stack.topPct,
+    stackHeightPct: stack.heightPct,
+  };
 }
 
 function foldOpening(foldProgress) {
   const t = clamp(foldProgress, 0, 1);
-  if (t === 0) return { topPct: 1, heightPct: 0 };
+  if (t === 0) {
+    return { topPct: 1, heightPct: 0, stackTopPct: 0, stackHeightPct: 1 };
+  }
   return hatchOpeningFromAngles(panelAngles(t));
 }
 
@@ -241,15 +335,24 @@ function foldOpening(foldProgress) {
 export function surfacePeel(foldProgress) {
   const t = clamp(foldProgress, 0, 1);
   if (t === 0) {
-    return { shiftPct: 0, rotateX: 0, heightPct: 0, topPct: 1 };
+    return {
+      shiftPct: 0,
+      rotateX: 0,
+      heightPct: 0,
+      topPct: 1,
+      stackTopPct: 0,
+      stackHeightPct: 1,
+    };
   }
-  const { heightPct, topPct } = foldOpening(t);
+  const { heightPct, topPct, stackTopPct, stackHeightPct } = foldOpening(t);
   const s = sequential(t, 0, 0.68);
   return {
     shiftPct: SURFACE_PEEL.shiftPct * s,
     rotateX: 0,
     heightPct,
     topPct,
+    stackTopPct,
+    stackHeightPct,
   };
 }
 

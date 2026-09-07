@@ -10,7 +10,7 @@ Done when: fall → settle → cursor OK → click flips to back → scroll flat
 
 ## Stack
 
-Vanilla HTML/CSS/JS: `index.html`, `assets/js/card-lab.js`, `assets/js/card-fold.js`, `assets/css/card-lab.css`. Physical print via `mountPhysicalCard`. Lab dial on the same surface (`?lab=1` or press **L**): material, type, cursor lean, fold, opening, flip duration, physicality — autosaved. All lab `<details>` start collapsed. Fold/opening debug on this surface too (`?debug=1` skips the fall; does not auto-expand a section). Do not use a second localhost for this.
+Vanilla HTML/CSS/JS: `index.html`, `assets/js/card-lab.js`, `assets/js/card-fold.js`, `assets/css/card-lab.css`. Physical print via `mountPhysicalCard`. Lab dial on the same surface (`?lab=1` or press **L**): material, type, cursor lean, fold, opening, **Opening video** (Y + zoom + vignette + size + MOV/MP4/WebM + uncached payload), flip duration, physicality — autosaved. All lab `<details>` start collapsed. Fold/opening debug on this surface too (`?debug=1` skips the fall; does not auto-expand a section). Do not use a second localhost for this.
 
 ## Layers (front → back)
 
@@ -29,7 +29,7 @@ Vanilla HTML/CSS/JS: `index.html`, `assets/js/card-lab.js`, `assets/js/card-fold
 | Scroll | Front: cursor scale → 0 (flatten) then fold 0→1; wall hatch slides up with fold; scroll-up closes both. Back: first scroll flips to front, then fold runs on continued scroll. |
 | Fold end | `{ top: 20, mid: 103, bot: -111 }`, viewTip −1 |
 | Fold hinges | preserve-3d stack; sheet +4px; hatch on table plane (card at `--layer-z`); 2px hinge overlap |
-| Surface hatch | Card width; top tracks fold; bottom anchored at card edge (persistent shadow slot); placeholder content later |
+| Surface hatch | Card width; top tracks fold; bottom anchored at card edge (persistent shadow slot). Grey well plays looping hatch clip (`assets/hatch/IMG_6909.webm`; lab can swap MP4 / MOV). Lab **Video Y** / **Video zoom** crop it; **Vignette** / **Vignette soft** / **Vignette size** shade the **visible slit below the folded card** (size scales the overlay on that slit); **Measure uncached** reports payload + time to first frame with `cache: no-store` |
 | Affordance | Subtle “scroll down” once per session after settle |
 | Debug | `?debug=1` on :4173 — skip fall, same lab (sections stay collapsed), scrub fold 0→1 |
 
@@ -40,7 +40,7 @@ Full portfolio room, paper tear, React FoldStage as the visitor entry (dial only
 ## Code
 
 - Fall + cursor: `assets/js/card-lab.js`
-- Fold math: `assets/js/card-fold.js` (`resolveOpeningPeel`, `HATCH_OPENING`) + `calling-card/src/fold/model.ts`
+- Fold math: `assets/js/card-fold.js` (`resolveOpeningPeel`, `hatchApertureVars`, `HATCH_OPENING`, `HATCH_VIDEO`, `HATCH_VIDEO_FORMATS`) + `calling-card/src/fold/model.ts`
 - Styles: `assets/css/card-lab.css` + `calling-card/src/fold/fold.css`
 - Markup: `index.html` + FoldStage hatch
 - Material / type / cursor / fold / opening / phys dial: `?lab=1` or **L** on :4173

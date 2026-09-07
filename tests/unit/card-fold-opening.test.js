@@ -14,10 +14,19 @@ import {
   panelShadeFromAngles,
   resetFlip,
   resetHatchOpening,
+  resetHatchVideo,
   resolveOpeningPeel,
   resolveScrollOnCard,
   setFlip,
   setHatchOpening,
+  setHatchVideo,
+  hatchVideoVars,
+  hatchApertureVars,
+  hatchVideoSource,
+  formatByteSize,
+  HATCH_VIDEO,
+  HATCH_VIDEO_DEFAULTS,
+  HATCH_VIDEO_FORMATS,
   shouldEnableCursorLean,
   surfacePeel,
 } from "../../assets/js/card-fold.js";
@@ -46,6 +55,89 @@ describe("card-fold opening", () => {
     resetHatchOpening();
     assert.equal(HATCH_OPENING.heightScale, HATCH_OPENING_DEFAULTS.heightScale);
     assert.equal(HATCH_OPENING.layerZ, HATCH_OPENING_DEFAULTS.layerZ);
+  });
+
+  it("maps hatch video offset and zoom to css vars then reset", () => {
+    setHatchVideo({ offsetY: 28, zoom: 1.8 });
+    assert.deepEqual(hatchVideoVars(), {
+      "--hatch-video-y": "28%",
+      "--hatch-video-zoom": "1.8",
+      "--hatch-vignette": "0.55",
+      "--hatch-vignette-soft": "32%",
+      "--hatch-vignette-size": "1",
+    });
+    resetHatchVideo();
+    assert.equal(HATCH_VIDEO.offsetY, HATCH_VIDEO_DEFAULTS.offsetY);
+    assert.equal(HATCH_VIDEO.zoom, HATCH_VIDEO_DEFAULTS.zoom);
+    assert.deepEqual(hatchVideoVars(), {
+      "--hatch-video-y": "50%",
+      "--hatch-video-zoom": "1",
+      "--hatch-vignette": "0.55",
+      "--hatch-vignette-soft": "32%",
+      "--hatch-vignette-size": "1",
+    });
+  });
+
+  it("maps hatch video vignette amount and softness to css vars", () => {
+    setHatchVideo({ vignette: 0.8, vignetteSoft: 18 });
+    assert.deepEqual(hatchVideoVars(), {
+      "--hatch-video-y": "50%",
+      "--hatch-video-zoom": "1",
+      "--hatch-vignette": "0.8",
+      "--hatch-vignette-soft": "18%",
+      "--hatch-vignette-size": "1",
+    });
+    resetHatchVideo();
+    assert.equal(HATCH_VIDEO.vignette, HATCH_VIDEO_DEFAULTS.vignette);
+    assert.equal(HATCH_VIDEO.vignetteSoft, HATCH_VIDEO_DEFAULTS.vignetteSoft);
+  });
+
+  it("maps hatch video vignette size to a css scale", () => {
+    setHatchVideo({ vignetteSize: 0.4 });
+    assert.equal(hatchVideoVars()["--hatch-vignette-size"], "0.4");
+    resetHatchVideo();
+    assert.equal(HATCH_VIDEO.vignetteSize, HATCH_VIDEO_DEFAULTS.vignetteSize);
+    assert.equal(hatchVideoVars()["--hatch-vignette-size"], "1");
+  });
+
+  it("sizes hatch vignette to the visible opening, not the full well", () => {
+    const rest = hatchApertureVars(resolveOpeningPeel(0));
+    assert.equal(rest["--hatch-aperture-top"], "100%");
+    assert.equal(rest["--hatch-aperture-height"], "0%");
+
+    const peel = resolveOpeningPeel(1);
+    const vars = hatchApertureVars(peel);
+    const top = Number.parseFloat(vars["--hatch-aperture-top"]);
+    const height = Number.parseFloat(vars["--hatch-aperture-height"]);
+    assert.ok(
+      height < 70 && height > 20,
+      "vignette hugs the video slit below the folded card",
+    );
+    assert.ok(top > 25);
+    assert.ok(Math.abs(top + height - 100) < 0.05);
+
+    const cardBottom =
+      (Number(peel.stackTopPct) || 0) +
+      (Number.isFinite(Number(peel.stackHeightPct))
+        ? Number(peel.stackHeightPct)
+        : 1);
+    const expectedTop =
+      Math.max(peel.topPct, 1 - peel.shiftPct, cardBottom) * 100;
+    assert.ok(Math.abs(top - expectedTop) < 0.1);
+  });
+
+  it("resolves hatch video formats and uncached byte labels", () => {
+    assert.equal(hatchVideoSource("webm").type, "video/webm");
+    assert.equal(hatchVideoSource("webm").src.endsWith(".webm"), true);
+    assert.equal(hatchVideoSource("mp4").type, "video/mp4");
+    assert.equal(hatchVideoSource("nope").id, HATCH_VIDEO_DEFAULTS.format);
+    setHatchVideo({ format: "webm" });
+    assert.equal(hatchVideoSource().id, "webm");
+    resetHatchVideo();
+    assert.equal(HATCH_VIDEO.format, HATCH_VIDEO_DEFAULTS.format);
+    assert.equal(hatchVideoSource().id, "webm");
+    assert.equal(formatByteSize(8951863), "8.54 MB");
+    assert.equal(formatByteSize(-1), "—");
   });
 
   it("cursorCardWeight stays smooth across the card edge", () => {
