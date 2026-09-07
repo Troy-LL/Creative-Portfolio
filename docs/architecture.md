@@ -10,7 +10,7 @@ Three trees. Do not collapse them into one app.
 
 ## Visitor path (card-lab)
 
-`index.html` → `assets/js/card-lab.js` (fall, cursor, flip, scroll) → `assets/js/card-fold.js` (fold / hatch / flip motion) → `assets/js/card-material/mount-physical-card.js` (stock + ink + back mark).
+`index.html` → `assets/js/card-lab.js` (fall, cursor, flip, scroll) → `assets/js/card-fold.js` (fold / hatch / flip motion) → `assets/js/portfolio-horizon.js` (hold then horizontal table after fold) → `assets/js/card-material/mount-physical-card.js` (stock + ink + back mark).
 
 Styles: `assets/css/card-lab.css`, `assets/css/card-back-fonts.css`, plus `calling-card/src/components/Card/Card.css` for the print face.
 
@@ -19,5 +19,6 @@ Back initials font kit is copied into `assets/fonts/back/`; source of truth is `
 ## Tests
 
 - Fold / flip / hatch: `tests/unit/card-fold-opening.test.js`, `tests/unit/fold-model.test.ts`
+- After-fold horizontal table: `tests/unit/portfolio-horizon.test.js`
 - Root is redesign, not the OS: `tests/e2e/redesign.spec.js`
 - Desktop OS e2e: `tests/e2e/archive/` (ignored by default Playwright config)

@@ -16,7 +16,7 @@
 
 - Front door / how to run: `README.md` (local cheat sheet: `start.md`)
 - Three trees (root card-lab, calling-card lab, archived OS): `docs/architecture.md`
-- Entry fold-open UI (tab / fold / inside / press / zoom): `docs/design.md`
+- Entry fold-open UI (fall, tooth, flip, fold, hatch, motion): `docs/design.md`
 - Fold-open entry, not paper tear: `docs/decisions/002-fold-open-entry-not-paper-tear.md`
 - Superseded shutter ADR: `docs/decisions/001-shutter-entry-not-paper-tear.md`
 

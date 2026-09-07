@@ -55,6 +55,13 @@ import {
   shouldEnableCursorLean,
   shouldSnapOpen,
 } from "./card-fold.js";
+import {
+  HORIZON,
+  advanceHorizon,
+  overflowPx,
+  trackTranslatePx,
+  wheelPixels,
+} from "./portfolio-horizon.js";
 
 const CARD = {
   phone: "0975 644 6519",
@@ -469,6 +476,7 @@ function createCssEngine(root, materials) {
   const hatchWell = root.querySelector(".css-hatch-well");
   const hatchCover = root.querySelector(".css-hatch");
   const hatchSlot = root.querySelector(".css-hatch-slot");
+  const world = root.querySelector(".css-world");
   const shadowsWrap = root.querySelector(".css-shadows");
   const cardFlip = root.querySelector(".css-card__flip");
   const cardFront = root.querySelector(".css-card__front");
@@ -779,7 +787,7 @@ function createCssEngine(root, materials) {
       );
     }
 
-    root.style.perspective = `${phys.perspective}px`;
+    (world || root).style.perspective = `${phys.perspective}px`;
     lastPose = pose;
   }
 
@@ -965,6 +973,7 @@ function boot() {
   if (cssRoot) {
     cssRoot.style.setProperty("--lab-card-w", `${mat.cardWidth}px`);
     cssRoot.style.setProperty("--paper-base", mat.paperBase);
+    cssRoot.style.setProperty("--horizon-travel", String(HORIZON.travelVw));
   }
 
   let phase = "falling";
@@ -978,9 +987,31 @@ function boot() {
   let foldTarget = 0;
   let foldDisplay = 0;
   let foldPhase = "idle"; // idle | dragging | returning | opening | open
+  let holdTarget = 0;
+  let holdDisplay = 0;
+  let travelTarget = 0;
+  let travelDisplay = 0;
   let flipTarget = 0;
   let flipDisplay = 0;
   let pendingFoldDelta = 0;
+  const horizonTrack = cssRoot?.querySelector(".horizon-track");
+
+  function applyHorizon() {
+    if (!horizonTrack || !cssRoot) return;
+    const x = trackTranslatePx(
+      travelDisplay,
+      overflowPx(cssRoot.clientWidth, HORIZON.travelVw),
+    );
+    horizonTrack.style.transform = `translate3d(${x}px, 0, 0)`;
+  }
+
+  function resetHorizon() {
+    holdTarget = 0;
+    holdDisplay = 0;
+    travelTarget = 0;
+    travelDisplay = 0;
+    applyHorizon();
+  }
   let scrollIdle = 0;
   let hintShown = false;
   let hintTimer = 0;
@@ -1024,6 +1055,7 @@ function boot() {
     foldTarget = 0;
     foldDisplay = 0;
     foldPhase = "idle";
+    resetHorizon();
     flipTarget = 0;
     flipDisplay = 0;
     pendingFoldDelta = 0;
@@ -1271,12 +1303,7 @@ function boot() {
     e.preventDefault();
     dismissHint();
 
-    const raw =
-      e.deltaMode === 1
-        ? e.deltaY * 16
-        : e.deltaMode === 2
-          ? e.deltaY * 32
-          : e.deltaY;
+    const raw = wheelPixels(e);
     let delta = raw * SCROLL_GAIN;
 
     const scroll = resolveScrollOnCard({ flipTarget, flipDisplay, delta });
@@ -1298,17 +1325,39 @@ function boot() {
     // Flatten cursor lean first so fold starts from a flat card
     css.setCursorScaleTarget(0);
 
-    if (foldPhase === "open" || foldPhase === "opening") {
+    if (foldPhase === "opening") {
       if (delta >= 0) {
         foldTarget = 1;
-        foldDisplay = 1;
-        foldPhase = "open";
         return;
       }
       foldPhase = "dragging";
       foldTarget = clamp(foldDisplay + delta, 0, 1);
       window.clearTimeout(scrollIdle);
       scrollIdle = window.setTimeout(settleFoldScroll, SCROLL_IDLE_MS);
+      return;
+    }
+
+    if (foldPhase === "open") {
+      const next = advanceHorizon({
+        fold: 1,
+        hold: holdTarget,
+        travel: travelTarget,
+        deltaPx: raw,
+        viewportHeight: cssRoot.clientHeight,
+        viewportWidth: cssRoot.clientWidth,
+      });
+      if (next.kind === "fold") {
+        resetHorizon();
+        foldPhase = "dragging";
+        foldTarget = clamp(foldDisplay + delta, 0, 1);
+        window.clearTimeout(scrollIdle);
+        scrollIdle = window.setTimeout(settleFoldScroll, SCROLL_IDLE_MS);
+        return;
+      }
+      holdTarget = next.hold;
+      travelTarget = next.travel;
+      foldTarget = 1;
+      foldDisplay = 1;
       return;
     }
 
@@ -1397,6 +1446,10 @@ function boot() {
           : 0,
       );
       if (startDebug) syncOpenFoldInput();
+
+      holdDisplay = applyLag(holdDisplay, holdTarget, HORIZON.lag);
+      travelDisplay = applyLag(travelDisplay, travelTarget, HORIZON.lag);
+      applyHorizon();
     }
 
     css.applyPose(pose, falling || phase === "settling");
@@ -1575,6 +1628,7 @@ function boot() {
       foldTarget = f;
       foldDisplay = f;
       foldPhase = f >= 0.98 ? "open" : f <= 0.001 ? "idle" : "dragging";
+      if (f < 0.98) resetHorizon();
       css.setCursorScaleTarget(f > 0.04 ? 0 : 1);
       css.setFoldDisplay(f, FOLD_END.viewTip * f);
       syncOpenFoldInput();
@@ -1712,7 +1766,8 @@ function boot() {
         phys[key] = v;
         if (out) out.textContent = v.toFixed(2);
         if (key === "perspective") {
-          cssRoot.style.perspective = `${phys.perspective}px`;
+          const world = cssRoot.querySelector(".css-world");
+          (world || cssRoot).style.perspective = `${phys.perspective}px`;
         }
         persist();
       };

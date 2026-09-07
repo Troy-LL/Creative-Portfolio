@@ -210,14 +210,58 @@ body.is-lab .pane-fps {
 
 .css-stage {
   --lab-card-w: 420px;
+  --horizon-travel: 1;
   position: absolute;
   inset: 0;
-  perspective: 590px;
-  perspective-origin: 50% 42%;
+  overflow: hidden;
 }
 
-.css-stage.is-settled {
-  perspective: 590px;
+.horizon-track {
+  display: flex;
+  height: 100%;
+  width: calc(100% * (1 + var(--horizon-travel, 1)));
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+.horizon-station {
+  position: relative;
+  height: 100%;
+  flex: 0 0 auto;
+}
+
+.horizon-station--card {
+  width: calc(100% / (1 + var(--horizon-travel, 1)));
+}
+
+.horizon-station--intro {
+  display: flex;
+  align-items: center;
+  width: calc(100% * var(--horizon-travel, 1) / (1 + var(--horizon-travel, 1)));
+  padding-left: 18vw;
+  background: var(--floor);
+}
+
+.horizon-mark {
+  position: absolute;
+  left: 1.75rem;
+  bottom: 1.6rem;
+  z-index: 3;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  font-variant-numeric: tabular-nums;
+  color: rgba(26, 24, 20, 0.38);
+  pointer-events: none;
+}
+
+.horizon-welcome {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: clamp(2.4rem, 6vw, 5rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--ink);
 }
 
 .css-world {
@@ -227,6 +271,8 @@ body.is-lab .pane-fps {
   transform-style: preserve-3d;
   display: grid;
   place-items: center;
+  perspective: 590px;
+  perspective-origin: 50% 42%;
   /* no isolation — it flattens nested fold preserve-3d */
 }
 
