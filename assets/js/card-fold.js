@@ -234,9 +234,9 @@ export const HATCH_VIDEO = {
   offsetY: 50,
   zoom: 1,
   format: "webm",
-  vignette: 0.55,
+  vignette: 0.85,
   vignetteSoft: 32,
-  vignetteSize: 1,
+  vignetteSize: 1.3,
 };
 
 export const HATCH_VIDEO_DEFAULTS = { ...HATCH_VIDEO };

@@ -34,7 +34,7 @@ Vanilla HTML/CSS/JS: `index.html`, `assets/js/card-lab.js`, `assets/js/card-fold
 | Fold hinges | preserve-3d stack; sheet +4px; hatch on table plane (card at `--layer-z`); 2px hinge overlap |
 | Surface hatch | Card width; cover slides up with fold (`shiftPct`); well clipped from the reveal line down. Locked opening `{ heightScale: 1.5, extendBottomPct: 0.4, layerZ: 80, wellOpacity: 1 }`. |
 | Hatch clip | Visitor: looping `assets/hatch/IMG_6909.webm` (muted, `playsinline`). Lab **Video Y** / **Video zoom** crop it; format buttons can swap local MP4 / MOV. **Measure uncached** reports payload + time to first frame with `cache: no-store`. |
-| Hatch vignette | Overlay is sized to the **visible slit below the folded card** (`hatchApertureVars`), not the full well. Lab **Vignette** (amount) / **Vignette soft** / **Vignette size** (scales the overlay on that slit; default `{ vignette: 0.55, vignetteSoft: 32, vignetteSize: 1 }`). |
+| Hatch vignette | Overlay is sized to the **visible slit below the folded card** (`hatchApertureVars`), not the full well. Lab **Vignette** (amount) / **Vignette soft** / **Vignette size** (scales the overlay on that slit; default `{ vignette: 0.85, vignetteSoft: 32, vignetteSize: 1.3 }`). |
 | Affordance | Subtle “scroll down” once per session after settle |
 | Debug | `?debug=1` on :4173 — skip fall, same lab (sections stay collapsed), scrub fold 0→1 |
 

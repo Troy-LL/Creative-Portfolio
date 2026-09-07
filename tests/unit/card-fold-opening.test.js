@@ -42,6 +42,20 @@ describe("card-fold opening", () => {
     assert.ok(Math.abs(peel.topPct + peel.heightPct - 1) < 0.001);
   });
 
+  it("locks visitor hatch vignette at 0.85 / 32 / 1.3", () => {
+    resetHatchVideo();
+    assert.equal(HATCH_VIDEO.vignette, 0.85);
+    assert.equal(HATCH_VIDEO.vignetteSoft, 32);
+    assert.equal(HATCH_VIDEO.vignetteSize, 1.3);
+    assert.deepEqual(hatchVideoVars(), {
+      "--hatch-video-y": "50%",
+      "--hatch-video-zoom": "1",
+      "--hatch-vignette": "0.85",
+      "--hatch-vignette-soft": "32%",
+      "--hatch-vignette-size": "1.3",
+    });
+  });
+
   it("hides opening at rest", () => {
     const peel = resolveOpeningPeel(0);
     assert.equal(peel.shiftPct, 0);
@@ -62,9 +76,9 @@ describe("card-fold opening", () => {
     assert.deepEqual(hatchVideoVars(), {
       "--hatch-video-y": "28%",
       "--hatch-video-zoom": "1.8",
-      "--hatch-vignette": "0.55",
+      "--hatch-vignette": "0.85",
       "--hatch-vignette-soft": "32%",
-      "--hatch-vignette-size": "1",
+      "--hatch-vignette-size": "1.3",
     });
     resetHatchVideo();
     assert.equal(HATCH_VIDEO.offsetY, HATCH_VIDEO_DEFAULTS.offsetY);
@@ -72,9 +86,9 @@ describe("card-fold opening", () => {
     assert.deepEqual(hatchVideoVars(), {
       "--hatch-video-y": "50%",
       "--hatch-video-zoom": "1",
-      "--hatch-vignette": "0.55",
+      "--hatch-vignette": "0.85",
       "--hatch-vignette-soft": "32%",
-      "--hatch-vignette-size": "1",
+      "--hatch-vignette-size": "1.3",
     });
   });
 
@@ -85,7 +99,7 @@ describe("card-fold opening", () => {
       "--hatch-video-zoom": "1",
       "--hatch-vignette": "0.8",
       "--hatch-vignette-soft": "18%",
-      "--hatch-vignette-size": "1",
+      "--hatch-vignette-size": "1.3",
     });
     resetHatchVideo();
     assert.equal(HATCH_VIDEO.vignette, HATCH_VIDEO_DEFAULTS.vignette);
@@ -97,7 +111,7 @@ describe("card-fold opening", () => {
     assert.equal(hatchVideoVars()["--hatch-vignette-size"], "0.4");
     resetHatchVideo();
     assert.equal(HATCH_VIDEO.vignetteSize, HATCH_VIDEO_DEFAULTS.vignetteSize);
-    assert.equal(hatchVideoVars()["--hatch-vignette-size"], "1");
+    assert.equal(hatchVideoVars()["--hatch-vignette-size"], "1.3");
   });
 
   it("sizes hatch vignette to the visible opening, not the full well", () => {
