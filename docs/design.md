@@ -46,6 +46,8 @@ Full portfolio (work grid, color-per-section, later stations), paper tear, React
 
 Same `--floor`. Two stations this pass, each one viewport: `01` card/hatch, `02` + `Welcome.` Quiet corner index on each station, not a HUD. Each page has a wall before the next; `01`'s wall is short. Future stations may change floor color and will declare their own wall; this pass does not add a page after `02`.
 
+`02` is the workbench; feel is in [02-FEEL.md](02-FEEL.md).
+
 ## Code
 
 - Fall + cursor: `assets/js/card-lab.js`
