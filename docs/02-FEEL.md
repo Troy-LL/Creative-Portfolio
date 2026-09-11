@@ -10,7 +10,7 @@ Paper `#F2EEE8` + light grain. Warm black ink. Bone floor continues from the doo
 
 ## Frames
 
-3 pads max. Tinig · EditLayer · third empty (intentional).
+3 pads max, stacked top to bottom: Tinig · EditLayer · third empty (intentional).
 
 Furniture trays/bezels. Live or sandbox UI inside only when peek is earned.
 
@@ -21,7 +21,13 @@ Never fake demo, store tile, or twin MacBooks.
 
 ## Axis (do not drift)
 
-Seats in a **horizontal row**. **Input** = vertical scroll (wheel/trackpad down), same as `01`→`02`. **Visual** = horizontal pan (`translateX` only). Neighbor frames peek at edges. Not Abelarde’s vertical page. Not sideways-scroll as the input.
+**Room** (`01` → `02` → `03`): horizontal table. Main visual is still sideways pan (`translateX`). Vertical wheel can still pan between stations after `02`’s stack is done — same door language.
+
+**Inside `02`:** work objects **stack vertically**. Tinig on top, EditLayer under it, third empty under that. Wheel down = next project (down the stack), not left along a row.
+
+Each seat is a framed landscape plate (horizontal image) sitting in that vertical list. Neighbor peek is above/below, not left/right pads in a carousel.
+
+Not Abelarde’s vertical page as the room. Not seats in a horizontal row. Not sideways-scroll as the input.
 
 ## Peek / leave
 
@@ -31,11 +37,11 @@ Enter = nested in-frame. Leave = pull back to desk. External link only if explic
 
 Third pad empty until something earns it. If it looks busy, cut.
 
-Refuse: grid, Mac OS revival, Brittany, Bruno toybox, badge walls, skills chips, awards receipts, `Welcome.` as the `02` product.
+Refuse: grid, Mac OS revival, Brittany, Bruno toybox, badge walls, skills chips, awards receipts, `Welcome.` as the `02` product, seats in a horizontal row, left/right carousel pads.
 
 ## Chrome
 
-Same stock as the calling card. Plaque/edge at most (`Work` / none). Motion: pan + soft settle; honor reduced-motion.
+Same stock as the calling card. Plaque/edge at most (`Work` / none). Motion: room pan + stack settle; honor reduced-motion.
 
 ## Implement
 
