@@ -29,7 +29,7 @@ Vanilla HTML/CSS/JS: `index.html`, `assets/js/card-lab.js`, `assets/js/card-fold
 | Settled | Cursor pick-up lean / lift on front **and** back |
 | Click | Flip to back: plain paper + **TL** in **Dancing Script** (lab **Back → Initials font**; kit in `personal/fonts/DancingScript`). Flip **900 ms** (lab **Flip duration**). Back face: no fold on scroll. |
 | Scroll | Front: cursor scale → 0 (flatten) then fold 0→1; wall hatch slides up with fold; scroll-up closes both. Back: first scroll flips to front, then fold runs on continued scroll. |
-| After fold | Fold locked: a short wall (~0.22 vh) on `01` before pan. Then vertical wheel maps to one viewport of horizontal travel (`travelVw` 1). Viewport stays pinned; track `translate3d(x,0,0)` only — no scale. `02` has no next page yet, so further down clamps there (a wall). Scroll-up reverses the pan, then the `01` wall, then fold. |
+| After fold | Fold locked: a short wall (~0.22 vh) on `01` before pan. Then vertical wheel maps to one viewport of horizontal travel (`travelVw` 1). Viewport stays pinned; track `translate3d(x,0,0)` only — no scale. Inside `02`, wheel travels the vertical project stack first; after that stack is done, `03` is parked so further down still clamps (a wall). Scroll-up reverses the stack, then the pan, then the `01` wall, then fold. |
 | Fold end | `{ top: 20, mid: 103, bot: -111 }`, viewTip −1 |
 | Fold hinges | preserve-3d stack; sheet +4px; hatch on table plane (card at `--layer-z`); 2px hinge overlap |
 | Surface hatch | Card width; cover slides up with fold (`shiftPct`); well clipped from the reveal line down. Locked opening `{ heightScale: 1.5, extendBottomPct: 0.4, layerZ: 80, wellOpacity: 1 }`. |
@@ -46,7 +46,7 @@ Full portfolio (work grid, color-per-section, later stations), paper tear, React
 
 Same `--floor`. Two stations this pass, each one viewport: `01` card/hatch, `02` + `Welcome.` Quiet corner index on each station, not a HUD. Each page has a wall before the next; `01`'s wall is short. Future stations may change floor color and will declare their own wall; this pass does not add a page after `02`.
 
-`02` is the workbench; feel is in [02-FEEL.md](02-FEEL.md).
+`02` is the workbench: work objects stack vertically (Tinig / EditLayer / empty); room pan stays horizontal. Feel is in [02-FEEL.md](02-FEEL.md).
 
 ## Code
 
