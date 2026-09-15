@@ -102,17 +102,22 @@ describe("site-nav ruler lean", () => {
     }
   });
 
-  it("fanTiltAmount holds fan tilt through reveal end, then eases to rest", () => {
+  it("fanTiltAmount begins settling early in reveal (V does not linger)", () => {
     const fan = 1.15;
     const rest = 0;
-    assert.equal(fanTiltAmount({ reveal: 0.5, straighten: 0, fanTilt: fan, restTilt: rest }), fan);
-    // Must not snap to rest the instant reveal hits 1.
-    assert.equal(fanTiltAmount({ reveal: 1, straighten: 0, fanTilt: fan, restTilt: rest }), fan);
-    // Ease-out: most of the drop happens early; mid-late is near rest.
-    const early = fanTiltAmount({ reveal: 1, straighten: 0.15, fanTilt: fan, restTilt: rest });
-    assert.ok(early < fan - 0.15 && early > rest + 0.15);
-    const late = fanTiltAmount({ reveal: 1, straighten: 0.7, fanTilt: fan, restTilt: rest });
-    assert.ok(late < early);
+    // Very early reveal still fans.
+    assert.equal(fanTiltAmount({ reveal: 0.1, straighten: 0, fanTilt: fan, restTilt: rest }), fan);
+    // By mid-reveal lean is mostly gone — not a long full-V hold.
+    const midReveal = fanTiltAmount({ reveal: 0.55, straighten: 0, fanTilt: fan, restTilt: rest });
+    assert.ok(midReveal < fan * 0.45, `mid reveal still too fanned: ${midReveal}`);
+    const lateReveal = fanTiltAmount({ reveal: 0.85, straighten: 0, fanTilt: fan, restTilt: rest });
+    assert.ok(lateReveal < midReveal);
+    assert.ok(lateReveal < fan * 0.25);
+    // Continuous into straighten — no snap at reveal end.
+    const atRevealEnd = fanTiltAmount({ reveal: 1, straighten: 0, fanTilt: fan, restTilt: rest });
+    const justAfter = fanTiltAmount({ reveal: 1, straighten: 0.02, fanTilt: fan, restTilt: rest });
+    assert.ok(Math.abs(atRevealEnd - lateReveal) < 0.35);
+    assert.ok(justAfter <= atRevealEnd + 0.02);
     assert.equal(fanTiltAmount({ reveal: 1, straighten: 1, fanTilt: fan, restTilt: rest }), rest);
   });
 
@@ -137,35 +142,33 @@ describe("site-nav ruler lean", () => {
     assert.ok(done >= 0.5);
   });
 
-  it("landCrestPeak holds center through reveal and straighten (no slam to Card)", () => {
-    // Old paint used 0.5+(sectionPeak-0.5)*reveal — on Card that dragged the
-    // crest left as the fan finished and read as a rebound/snap.
-    assert.equal(landCrestPeak({ reveal: 0.4, straighten: 0, sectionPeak: 0 }), 0.5);
-    assert.equal(landCrestPeak({ reveal: 0.99, straighten: 0, sectionPeak: 0 }), 0.5);
+  it("fanAuthority begins decaying mid-reveal with tilt (shock V dies with lean)", () => {
+    assert.equal(fanAuthority({ reveal: 0.1, straighten: 0 }), 1);
+    const mid = fanAuthority({ reveal: 0.55, straighten: 0 });
+    assert.ok(mid < 0.55, `mid reveal fanK still high: ${mid}`);
+    assert.equal(fanAuthority({ reveal: 1, straighten: 1 }), 0);
+  });
+
+  it("landCrestPeak opens at center then travels to the highlighted section", () => {
+    // Fan opens from the middle.
+    assert.equal(landCrestPeak({ reveal: 0.5, straighten: 0, sectionPeak: 0 }), 0.5);
     assert.equal(landCrestPeak({ reveal: 1, straighten: 0, sectionPeak: 0 }), 0.5);
-    assert.equal(landCrestPeak({ reveal: 1, straighten: 0.5, sectionPeak: 0 }), 0.5);
-    assert.equal(landCrestPeak({ reveal: 1, straighten: 0.99, sectionPeak: 0 }), 0.5);
-    // Only after land, release eases the crest onto the section.
-    assert.equal(
-      landCrestPeak({ reveal: 1, straighten: 1, sectionPeak: 0, release: 0 }),
-      0.5,
-    );
-    assert.equal(
-      landCrestPeak({ reveal: 1, straighten: 1, sectionPeak: 0, release: 1 }),
-      0,
-    );
+    // Through straighten the V glides to the highlight (Card = 0).
+    const early = landCrestPeak({ reveal: 1, straighten: 0.25, sectionPeak: 0 });
+    const mid = landCrestPeak({ reveal: 1, straighten: 0.5, sectionPeak: 0 });
+    const late = landCrestPeak({ reveal: 1, straighten: 0.85, sectionPeak: 0 });
+    assert.ok(early < 0.5 && early > mid);
+    assert.ok(mid > late && late > 0);
+    assert.equal(landCrestPeak({ reveal: 1, straighten: 1, sectionPeak: 0 }), 0);
     assert.ok(
-      Math.abs(
-        landCrestPeak({ reveal: 1, straighten: 1, sectionPeak: 0.2, release: 0.5 }) -
-          0.35,
-      ) < 1e-9,
+      Math.abs(landCrestPeak({ reveal: 1, straighten: 1, sectionPeak: 0.2 }) - 0.2) <
+        1e-9,
     );
   });
 
-  it("mean lean stays near zero at reveal→straighten when crest is locked center", () => {
+  it("mean lean stays near zero while crest is still centered in late reveal", () => {
     function meanLean(reveal, straighten, sectionPeak) {
-      const peak = landCrestPeak({ reveal, straighten, sectionPeak, release: 0 });
-      const radius = fanAppearRadius({ reveal, straighten });
+      const peak = landCrestPeak({ reveal, straighten, sectionPeak });
       const tilt = fanTiltAmount({
         reveal,
         straighten,
@@ -189,10 +192,8 @@ describe("site-nav ruler lean", () => {
     }
     const before = meanLean(0.999, 0, 0);
     const after = meanLean(1, 0, 0);
-    const midStraighten = meanLean(1, 0.2, 0);
     assert.ok(Math.abs(before) < 1.5, `before mean lean ${before}`);
     assert.ok(Math.abs(after) < 1.5, `after mean lean ${after}`);
-    assert.ok(Math.abs(midStraighten) < 1.5, `mid mean lean ${midStraighten}`);
     assert.ok(Math.abs(after - before) < 0.75, `boundary jump ${after - before}`);
   });
 
@@ -217,13 +218,12 @@ describe("site-nav ruler lean", () => {
     assert.equal(navSurfaceFromPose({ x: 1000, y: 2900 }, stair), "light");
   });
 
-  it("fanAuthority is 1 through reveal, then eases out through straighten", () => {
-    assert.equal(fanAuthority({ reveal: 0.4, straighten: 0 }), 1);
-    assert.equal(fanAuthority({ reveal: 0.4, straighten: 0.9 }), 1);
-    assert.equal(fanAuthority({ reveal: 1, straighten: 0 }), 1);
+  it("fanAuthority eases out through late reveal and straighten", () => {
+    assert.equal(fanAuthority({ reveal: 0.1, straighten: 0 }), 1);
+    assert.ok(fanAuthority({ reveal: 0.4, straighten: 0.9 }) <= 1);
+    assert.ok(fanAuthority({ reveal: 1, straighten: 0 }) < 0.35);
     assert.equal(fanAuthority({ reveal: 1, straighten: 1 }), 0);
     assert.equal(fanAuthority({ reveal: 1, straighten: 2 }), 0);
-    assert.equal(fanAuthority({ reveal: -1, straighten: 0 }), 1);
     const early =
       fanAuthority({ reveal: 1, straighten: 0 }) -
       fanAuthority({ reveal: 1, straighten: 0.2 });

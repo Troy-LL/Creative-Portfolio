@@ -1094,8 +1094,6 @@ function boot() {
   let siteNavRevealDone = false;
   let siteNavStraighten = 0;
   let siteNavStraightenStart = 0;
-  /** 0…1 eases crest from land-center onto the live section peak after straighten. */
-  let siteNavCrestRelease = 0;
   let rulerAlive = false;
   let rulerFrozen = false;
   let rulerClock = 0;
@@ -1173,7 +1171,6 @@ function boot() {
     siteNavRevealDone = false;
     siteNavStraighten = 0;
     siteNavStraightenStart = 0;
-    siteNavCrestRelease = 0;
     rulerFrozen = false;
     applyLabelReveal(0);
     if (siteNavEl) siteNavEl.dataset.revealed = "false";
@@ -1287,17 +1284,11 @@ function boot() {
     }
 
     siteNavPeak += (siteNavPeakTarget - siteNavPeak) * ease;
-    if (siteNavReveal >= 1 && siteNavStraighten >= 1) {
-      siteNavCrestRelease += (1 - siteNavCrestRelease) * (reduce ? 1 : 0.07);
-    } else {
-      siteNavCrestRelease = 0;
-    }
-    // Hold crest at center through fan → straighten; then ease onto the section.
+    // Fan opens at center, then the V travels to the highlighted section.
     const peak = landCrestPeak({
       reveal: siteNavReveal,
       straighten: siteNavStraighten,
       sectionPeak: siteNavPeak,
-      release: siteNavCrestRelease,
     });
     const t = now * 0.001;
     const radius = fanAppearRadius({

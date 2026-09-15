@@ -28,8 +28,8 @@ export function fanAppearRadius({ reveal = 0, straighten = 0 } = {}) {
 
 /**
  * Tilt multiplier for ruler lean during land reveal → rest.
- * Reveal uses the fan tilt; straighten 0→1 eases that down to rest (often 0)
- * so ticks don't snap upright when the fan-out finishes.
+ * Brief full fan, then settles hard during reveal so the V does not linger.
+ * Straighten finishes the last bit to restTilt.
  */
 export function fanTiltAmount({
   reveal = 0,
@@ -40,9 +40,21 @@ export function fanTiltAmount({
   const fan = Math.max(Number(fanTilt) || 0, Number(restTilt) || 0);
   const rest = Math.max(0, Number(restTilt) || 0);
   const r = clamp(Number(reveal) || 0, 0, 1);
-  if (r < 1) return fan;
-  const e = easeOutQuint(straighten);
-  return fan + (rest - fan) * e;
+  const s = clamp(Number(straighten) || 0, 0, 1);
+  /** Reveal progress where lean starts easing upright. */
+  const settleAt = 0.15;
+  /** Fraction of the fan→rest drop completed by reveal end. */
+  const revealShare = 0.92;
+
+  let settle = 0;
+  if (r < 1) {
+    if (r > settleAt) {
+      settle = easeOutQuint((r - settleAt) / (1 - settleAt)) * revealShare;
+    }
+  } else {
+    settle = revealShare + easeOutQuint(s) * (1 - revealShare);
+  }
+  return fan + (rest - fan) * settle;
 }
 
 /** Stations whose field needs light nav ink (black / dark grounds). */
@@ -78,34 +90,44 @@ export function navSurfaceFromPose(pose, staircase) {
 }
 
 /**
- * Fan authority 1 during reveal, then 1→0 through straighten (ease-out quint).
- * Phase A: 1. Phase B: ease down. Phase C idle: 0.
+ * Fan authority during land: 1 early, then decays with tilt mid-reveal,
+ * finishes through straighten so the shock crest dies with the V.
  */
 export function fanAuthority({ reveal = 0, straighten = 0 } = {}) {
   const r = clamp(Number(reveal) || 0, 0, 1);
   const s = clamp(Number(straighten) || 0, 0, 1);
-  if (r < 1) return 1;
-  return 1 - easeOutQuint(s);
+  const settleAt = 0.15;
+  const revealShare = 0.92;
+  let settle = 0;
+  if (r < 1) {
+    if (r > settleAt) {
+      settle = easeOutQuint((r - settleAt) / (1 - settleAt)) * revealShare;
+    }
+  } else {
+    settle = revealShare + easeOutQuint(s) * (1 - revealShare);
+  }
+  return 1 - settle;
 }
 
 /**
- * Epicenter x (0…1) for the land fan → idle crest.
- * Hold center through reveal + straighten so the shockwave does not slam
- * toward the active section (Card = left) and read as a rebound/snap.
- * After land, `release` 0…1 eases the crest onto `sectionPeak`.
+ * Epicenter x (0…1) for the land fan → highlighted section.
+ * Opens from center during reveal, then travels to `sectionPeak` through
+ * straighten so the V glides to the active label instead of snapping or
+ * parking in the middle.
  */
 export function landCrestPeak({
   reveal = 0,
   straighten = 0,
   sectionPeak = 0.5,
-  release = 0,
 } = {}) {
   const r = clamp(Number(reveal) || 0, 0, 1);
   const s = clamp(Number(straighten) || 0, 0, 1);
-  if (r < 1 || s < 1) return 0.5;
   const target = clamp(Number(sectionPeak) || 0, 0, 1);
-  const free = clamp(Number(release) || 0, 0, 1);
-  return 0.5 + (target - 0.5) * free;
+  if (r < 1) return 0.5;
+  // Ease-in-out: soft leave from center, soft arrive on the highlight.
+  const u = s;
+  const travel = u < 0.5 ? 4 * u * u * u : 1 - (-2 * u + 2) ** 3 / 2;
+  return 0.5 + (target - 0.5) * travel;
 }
 
 /**
