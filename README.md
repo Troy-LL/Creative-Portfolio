@@ -20,6 +20,7 @@ npm start    # same as npm run serve — http://localhost:4173
 | http://localhost:4173 | Visitor entry (card-lab) |
 | http://localhost:4173/?lab=1 | Same + dials (or press **L**) |
 | http://localhost:4173/?debug=1 | Skip fall, start settled |
+| http://localhost:4173/book | Dummy call booking |
 | http://localhost:5174 | Optional React material lab (`npm run dev:card`) |
 | http://localhost:4173/archive/desktop-os/ | Archived Desktop TL |
 

@@ -23,6 +23,7 @@ Open **http://localhost:4173**
 | http://localhost:4173 | Fall → settle → scroll fold → click flip |
 | http://localhost:4173/?lab=1 | Same + material / cursor / fold dials (or press **L**) |
 | http://localhost:4173/?debug=1 | Skip fall; start settled (fold debug on same surface) |
+| http://localhost:4173/book | Dummy call booking (linked from card URL) |
 
 Stop: **Ctrl+C** in the terminal.
 

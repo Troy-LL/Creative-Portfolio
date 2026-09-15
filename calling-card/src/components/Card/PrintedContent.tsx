@@ -32,12 +32,33 @@ export function PrintedContent({ content, inkRole = "solid" }: Props) {
       {hasTop ? (
         <div className="physical-card__print-top">
           {content.phone ? (
-            <span
-              className={`${ink} physical-card__ink--small`}
-              data-ink-align={align || undefined}
-            >
-              {content.phone}
-            </span>
+            inkRole === "solid" ? (
+              <button
+                type="button"
+                className={`${ink} physical-card__ink--small physical-card__ink--phone`}
+                data-copy-phone={content.phone}
+                data-ink-align={align || undefined}
+                aria-label={`Copy phone number ${content.phone}`}
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  const value = content.phone ?? "";
+                  try {
+                    await navigator.clipboard.writeText(value);
+                  } catch {
+                    /* ignore — host may block clipboard */
+                  }
+                }}
+              >
+                {content.phone}
+              </button>
+            ) : (
+              <span
+                className={`${ink} physical-card__ink--small physical-card__ink--phone`}
+                data-ink-align={align || undefined}
+              >
+                {content.phone}
+              </span>
+            )
           ) : (
             <span />
           )}
@@ -80,15 +101,31 @@ export function PrintedContent({ content, inkRole = "solid" }: Props) {
       </div>
 
       <div className="physical-card__print-bottom">
-        {lines.map((line) => (
-          <span
-            key={line}
-            className={`${ink} physical-card__ink--url`}
-            data-ink-align={align || undefined}
-          >
-            {line}
-          </span>
-        ))}
+        {lines.map((line) => {
+          const className = `${ink} physical-card__ink--url`;
+          const inkAlign = align || undefined;
+          if (inkRole === "solid" && content.urlHref) {
+            return (
+              <a
+                key={line}
+                className={className}
+                href={content.urlHref}
+                data-ink-align={inkAlign}
+              >
+                {line}
+              </a>
+            );
+          }
+          return (
+            <span
+              key={line}
+              className={className}
+              data-ink-align={inkAlign}
+            >
+              {line}
+            </span>
+          );
+        })}
       </div>
     </div>
   );

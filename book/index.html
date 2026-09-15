@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book a call — Troy Lazaro</title>
+    <meta
+      name="description"
+      content="Dummy booking page — pick a slot to request a call with Troy Lazaro."
+    />
+    <link rel="stylesheet" href="/book/book.css" />
+  </head>
+  <body data-surface="book">
+    <header class="book-top">
+      <a class="book-back" href="/">← Calling card</a>
+      <p class="book-brand">Troy Lazaro</p>
+    </header>
+
+    <main class="book-main">
+      <section class="book-hero" aria-labelledby="book-heading">
+        <h1 id="book-heading">Book a call</h1>
+        <p class="book-lede">
+          Dummy calendar for now — pick any slot. Nothing is sent yet.
+        </p>
+      </section>
+
+      <section class="book-panel" aria-label="Available times">
+        <div class="book-days" role="tablist" aria-label="Day">
+          <button type="button" class="book-day is-active" data-book-day="tue" role="tab" aria-selected="true">
+            Tue <span>23</span>
+          </button>
+          <button type="button" class="book-day" data-book-day="wed" role="tab" aria-selected="false">
+            Wed <span>24</span>
+          </button>
+          <button type="button" class="book-day" data-book-day="thu" role="tab" aria-selected="false">
+            Thu <span>25</span>
+          </button>
+          <button type="button" class="book-day" data-book-day="fri" role="tab" aria-selected="false">
+            Fri <span>26</span>
+          </button>
+        </div>
+
+        <ul class="book-slots" data-book-slots>
+          <li>
+            <button type="button" class="book-slot" data-book-slot data-time="9:30 AM">
+              9:30 AM
+            </button>
+          </li>
+          <li>
+            <button type="button" class="book-slot" data-book-slot data-time="11:00 AM">
+              11:00 AM
+            </button>
+          </li>
+          <li>
+            <button type="button" class="book-slot" data-book-slot data-time="1:15 PM">
+              1:15 PM
+            </button>
+          </li>
+          <li>
+            <button type="button" class="book-slot" data-book-slot data-time="3:45 PM">
+              3:45 PM
+            </button>
+          </li>
+          <li>
+            <button type="button" class="book-slot" data-book-slot data-time="5:00 PM">
+              5:00 PM
+            </button>
+          </li>
+        </ul>
+
+        <p class="book-status" data-book-status aria-live="polite"></p>
+      </section>
+    </main>
+
+    <script>
+      (() => {
+        const days = document.querySelectorAll("[data-book-day]");
+        const slots = document.querySelectorAll("[data-book-slot]");
+        const status = document.querySelector("[data-book-status]");
+        let dayLabel = "Tue 23";
+
+        days.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            days.forEach((d) => {
+              d.classList.toggle("is-active", d === btn);
+              d.setAttribute("aria-selected", d === btn ? "true" : "false");
+            });
+            dayLabel = btn.textContent.replace(/\s+/g, " ").trim();
+            status.textContent = "";
+            slots.forEach((s) => s.classList.remove("is-picked"));
+          });
+        });
+
+        slots.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            slots.forEach((s) => s.classList.toggle("is-picked", s === btn));
+            const time = btn.getAttribute("data-time") || btn.textContent.trim();
+            status.textContent = `Held ${dayLabel} · ${time} (dummy — not booked).`;
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

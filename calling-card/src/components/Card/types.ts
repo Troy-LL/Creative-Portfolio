@@ -7,6 +7,8 @@ export type CardContent = {
   name: string;
   title?: string;
   lines?: string[];
+  /** When set, `physical-card__ink--url` lines render as links (solid ink only). */
+  urlHref?: string;
 };
 
 /** Three independent print systems — not one mushy “texture” knob. */
@@ -47,5 +49,6 @@ export const defaultCardContent: CardContent = {
   company: "Next Decade",
   name: "Troy Lazaro",
   title: "AI Engineer",
-  lines: ["troylazaro.dev"],
+  lines: ["troylazaro.dev/book"],
+  urlHref: "/book",
 };

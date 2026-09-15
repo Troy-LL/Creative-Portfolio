@@ -49,9 +49,17 @@ function buildPrintMarkup(content, inkRole = "solid") {
   if (hasTop) {
     const top = el("div", "physical-card__print-top");
     if (content.phone) {
-      const phone = el("span", `${ink} physical-card__ink--small`, {
-        text: content.phone,
-      });
+      const phone =
+        inkRole === "solid"
+          ? el("button", `${ink} physical-card__ink--small physical-card__ink--phone`, {
+              type: "button",
+              text: content.phone,
+              "data-copy-phone": content.phone,
+              "aria-label": `Copy phone number ${content.phone}`,
+            })
+          : el("span", `${ink} physical-card__ink--small physical-card__ink--phone`, {
+              text: content.phone,
+            });
       if (align) phone.dataset.inkAlign = "";
       top.appendChild(phone);
     } else {
@@ -92,8 +100,14 @@ function buildPrintMarkup(content, inkRole = "solid") {
   print.appendChild(center);
 
   const bottom = el("div", "physical-card__print-bottom");
+  const urlHref = inkRole === "solid" ? content.urlHref : undefined;
   for (const line of content.lines ?? []) {
-    const row = el("span", `${ink} physical-card__ink--url`, { text: line });
+    const row = urlHref
+      ? el("a", `${ink} physical-card__ink--url`, {
+          text: line,
+          href: urlHref,
+        })
+      : el("span", `${ink} physical-card__ink--url`, { text: line });
     if (align) row.dataset.inkAlign = "";
     bottom.appendChild(row);
   }
@@ -545,6 +559,7 @@ export function toPrintContent(data) {
       name: data.name ?? "",
       title: data.title ?? data.role ?? "",
       lines: data.lines ?? [],
+      urlHref: data.urlHref,
     };
   }
   return {
@@ -554,5 +569,6 @@ export function toPrintContent(data) {
     name: data.name ?? "",
     title: data.role ?? "",
     lines: data.left ? [data.left] : [],
+    urlHref: data.urlHref,
   };
 }

@@ -5,12 +5,15 @@ Three trees. Do not collapse them into one app.
 | Tree | Command / URL | Role |
 | --- | --- | --- |
 | Root `index.html` + `assets/js/card-*.js` | `npm start` → http://localhost:4173 | **Live redesign.** First surface is card-lab (fall, cursor, flip, fold, hatch). |
+| `book/` | http://localhost:4173/book | Dummy call-booking page. Linked from the card URL (`troylazaro.dev/book` → `/book`). |
 | `calling-card/` | `npm run dev:card` → http://localhost:5174 | React + TypeScript material / fold lab. Shares print CSS and fold math. Not the visitor entry. |
 | `archive/desktop-os/` | http://localhost:4173/archive/desktop-os/ | Former Mac desktop OS + Founders Cafe. Not live. |
 
 ## Visitor path (card-lab)
 
-`index.html` → `assets/js/card-lab.js` (fall, cursor, flip, scroll) → `assets/js/card-fold.js` (fold / hatch / flip motion) → `assets/js/portfolio-horizon.js` (hold then horizontal table after fold) → `assets/js/card-material/mount-physical-card.js` (stock + ink + back mark).
+`index.html` → `assets/js/card-lab.js` (fall, cursor, flip, scroll) → `assets/js/card-fold.js` (fold / hatch / flip motion) → `assets/js/portfolio-horizon.js` (hold then table travel after fold) → `assets/js/card-material/mount-physical-card.js` (stock + ink + back mark).
+
+After entry, navigation is a **staircase** (horizontal chapter changes, vertical legs inside a chapter): `docs/decisions/003-staircase-scroll-not-pure-horizontal.md`. Horizon builds staggered columns (`buildStaircase` / `trackPose`); placeholder legs `02`–`04` are in `index.html`. See `docs/design.md`.
 
 Styles: `assets/css/card-lab.css`, `assets/css/card-back-fonts.css`, plus `calling-card/src/components/Card/Card.css` for the print face.
 

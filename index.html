@@ -21,7 +21,7 @@
         </p>
         <div class="css-stage">
           <div class="horizon-track">
-            <div class="horizon-station horizon-station--card">
+            <div class="horizon-station horizon-station--card" data-station="01">
               <span class="horizon-mark" aria-hidden="true">01</span>
               <div class="css-world">
             <div class="css-rig">
@@ -134,14 +134,253 @@
             </div>
           </div>
             </div>
-            <div class="horizon-station horizon-station--intro">
+            <div
+              class="horizon-station horizon-station--leg"
+              data-station="02"
+              aria-label="Flagship"
+            >
               <span class="horizon-mark" aria-hidden="true">02</span>
-              <p class="horizon-welcome">Welcome.</p>
+              <div class="horizon-leg horizon-leg--flagship">
+                <header class="horizon-leg__head">
+                  <p class="horizon-leg__kicker">Flagship</p>
+                  <h2 class="horizon-leg__title">The thing behind the hatch.</h2>
+                </header>
+                <figure class="flagship-media" data-flagship-media>
+                  <video
+                    class="flagship-media__video"
+                    muted
+                    loop
+                    playsinline
+                    autoplay
+                    preload="metadata"
+                  >
+                    <source
+                      src="assets/hatch/IMG_6909.webm"
+                      type="video/webm"
+                    />
+                  </video>
+                  <div class="flagship-media__veil" aria-hidden="true"></div>
+                </figure>
+                <div class="horizon-leg__copy">
+                  <p class="horizon-leg__line">
+                    One project, built end to end — the one the card was hiding.
+                  </p>
+                  <p class="horizon-leg__line">
+                    An AI system that does real work for real people. Placeholder
+                    until it ships.
+                  </p>
+                </div>
+                <footer class="horizon-leg__foot">
+                  <p class="horizon-leg__proof">Built at Next Decade · 2026</p>
+                  <button type="button" class="horizon-leg__cta">
+                    Open the case file
+                  </button>
+                </footer>
+              </div>
+            </div>
+            <div
+              class="horizon-station horizon-station--leg"
+              data-station="03"
+              aria-label="Shelf"
+            >
+              <span class="horizon-mark" aria-hidden="true">03</span>
+              <div class="horizon-leg horizon-leg--shelf">
+                <header class="horizon-leg__head">
+                  <p class="horizon-leg__kicker">Shelf</p>
+                  <h2 class="horizon-leg__title">Kept work.</h2>
+                  <p class="horizon-leg__line">
+                    Not everything I've made — just the pieces worth shelf space.
+                  </p>
+                </header>
+                <div class="shelf-row" role="list">
+                  <button
+                    type="button"
+                    class="shelf-card"
+                    role="listitem"
+                  >
+                    <span class="shelf-card__label">Untitled tool · 2025</span>
+                    <span class="shelf-card__caption"
+                      >Details when it earns them.</span
+                    >
+                  </button>
+                  <button
+                    type="button"
+                    class="shelf-card"
+                    role="listitem"
+                  >
+                    <span class="shelf-card__label"
+                      >Untitled experiment · 2025</span
+                    >
+                    <span class="shelf-card__caption"
+                      >Details when it earns them.</span
+                    >
+                  </button>
+                  <button
+                    type="button"
+                    class="shelf-card"
+                    role="listitem"
+                  >
+                    <span class="shelf-card__label"
+                      >Untitled client piece · 2024</span
+                    >
+                    <span class="shelf-card__caption"
+                      >Details when it earns them.</span
+                    >
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div
+              class="horizon-station horizon-station--leg"
+              data-station="04"
+              aria-label="Archive"
+            >
+              <span class="horizon-mark" aria-hidden="true">04</span>
+              <div class="horizon-leg horizon-leg--archive">
+                <header class="horizon-leg__head">
+                  <p class="horizon-leg__kicker">Archive</p>
+                  <h2 class="horizon-leg__title">The site this one replaced.</h2>
+                </header>
+                <figure class="archive-artifact" data-archive-artifact>
+                  <div class="archive-artifact__frame">
+                    <div class="archive-artifact__desktop" aria-hidden="true">
+                      <div class="archive-artifact__wallpaper"></div>
+                      <div class="archive-artifact__window"></div>
+                      <div class="archive-artifact__dock"></div>
+                    </div>
+                    <span
+                      class="archive-artifact__cursor"
+                      data-archive-cursor
+                      aria-hidden="true"
+                    ></span>
+                  </div>
+                  <figcaption class="archive-artifact__placard">
+                    Desktop OS portfolio · 2024–2025 · retired
+                  </figcaption>
+                </figure>
+                <div class="horizon-leg__copy horizon-leg__copy--archive">
+                  <p class="horizon-leg__line">
+                    Before the card, there was a desktop — windows, icons, a cafe
+                    for founders.
+                  </p>
+                  <p class="horizon-leg__line">
+                    Retired, not erased. It still boots.
+                  </p>
+                </div>
+                <a href="/archive/desktop-os/" class="archive-link"
+                  >Visit the old desk</a
+                >
+              </div>
+            </div>
+            <div
+              class="horizon-station horizon-station--leg"
+              data-station="05"
+              aria-label="Person"
+            >
+              <span class="horizon-mark" aria-hidden="true">05</span>
+              <div class="horizon-leg horizon-leg--person">
+                <header class="horizon-leg__head">
+                  <p class="horizon-leg__kicker">Person</p>
+                  <h2 class="horizon-leg__title">The hand that made the card.</h2>
+                </header>
+                <div class="person-body">
+                  <p class="horizon-leg__line">
+                    Troy Lazaro. AI engineer at Next Decade.
+                  </p>
+                  <div class="person-signature" data-tl-signature aria-hidden="true">
+                    <svg
+                      class="person-signature__svg"
+                      viewBox="0 0 96 56"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <text
+                        class="person-signature__stroke"
+                        x="48"
+                        y="42"
+                        text-anchor="middle"
+                      >
+                        TL
+                      </text>
+                    </svg>
+                  </div>
+                  <p class="horizon-leg__line">
+                    I build systems the way this card was made — by hand, then
+                    checked twice.
+                  </p>
+                </div>
+                <p class="horizon-leg__line horizon-leg__line--closing">
+                  Everything on this wall is one person's work.
+                </p>
+              </div>
+            </div>
+            <div
+              class="horizon-station horizon-station--leg horizon-station--end"
+              data-station="06"
+              aria-label="Exit"
+            >
+              <span class="horizon-mark" aria-hidden="true">06</span>
+              <div class="horizon-leg horizon-leg--exit">
+                <header class="horizon-leg__head">
+                  <p class="horizon-leg__kicker">Exit</p>
+                  <h2 class="horizon-leg__title">
+                    The card has a back. So does this.
+                  </h2>
+                </header>
+                <p class="horizon-leg__line horizon-leg__line--lead">
+                  You've seen the work. If any of it is useful to you, the next
+                  step is a conversation.
+                </p>
+                <footer class="horizon-leg__foot horizon-leg__foot--exit">
+                  <p class="horizon-leg__signoff">
+                    One link. No form. No newsletter.
+                  </p>
+                  <a href="/book" class="exit-cta-card" data-exit-cta>
+                    <span class="exit-cta-card__label">Book a conversation</span>
+                  </a>
+                  <p class="horizon-leg__whisper">troylazaro.dev</p>
+                </footer>
+              </div>
             </div>
           </div>
         </div>
       </section>
     </main>
+
+    <nav
+      class="site-nav"
+      data-site-nav
+      aria-label="Portfolio sections"
+      hidden
+    >
+      <div class="site-nav__labels" data-site-nav-labels></div>
+      <div class="site-nav__ruler" data-site-nav-ruler aria-hidden="true"></div>
+    </nav>
+
+    <div
+      class="card-toast"
+      data-card-toast
+      hidden
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      <svg
+        class="card-toast__icon"
+        xmlns="http://www.w3.org/2000/svg"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+      </svg>
+      <span data-card-toast-label></span>
+    </div>
 
     <!-- Dev / dial chrome — off by default. Toggle with L or ?lab=1 -->
     <aside class="lab-devtools" id="lab-devtools" hidden>
@@ -354,6 +593,83 @@
         </div>
         <div class="lab-debug__actions">
           <button type="button" data-cur-reset>Reset cursor</button>
+        </div>
+      </details>
+
+      <details class="lab-debug" id="ruler-debug">
+        <summary>
+          Nav waveform <span class="lab-debug__hint">ruler ticks · live</span>
+        </summary>
+        <div class="lab-debug__grid">
+          <label
+            >Baseline length <strong data-ruler-val="baseline">3.30</strong>
+            <input
+              data-ruler="baseline"
+              type="range"
+              min="1"
+              max="12"
+              step="0.1"
+              value="3.3"
+              title="Resting tick height before the wave"
+          /></label>
+          <label
+            >Tilt <strong data-ruler-val="tilt">0.00</strong>
+            <input
+              data-ruler="tilt"
+              type="range"
+              min="0"
+              max="2.5"
+              step="0.05"
+              value="0"
+              title="How hard ticks lean away from the peak"
+          /></label>
+          <label
+            >Lengthen <strong data-ruler-val="lengthen">1.65</strong>
+            <input
+              data-ruler="lengthen"
+              type="range"
+              min="0"
+              max="2.5"
+              step="0.05"
+              value="1.65"
+              title="How much the crest and ripples grow tick height"
+          /></label>
+          <label
+            >Strength <strong data-ruler-val="strength">0.55</strong>
+            <input
+              data-ruler="strength"
+              type="range"
+              min="0"
+              max="2.5"
+              step="0.05"
+              value="0.55"
+              title="Wave oscillation amplitude"
+          /></label>
+          <label
+            >Opacity <strong data-ruler-val="opacity">0.90</strong>
+            <input
+              data-ruler="opacity"
+              type="range"
+              min="0"
+              max="1.5"
+              step="0.05"
+              value="0.9"
+              title="Overall tick opacity"
+          /></label>
+          <label
+            >Epicenter span <strong data-ruler-val="epicenter">0.70</strong>
+            <input
+              data-ruler="epicenter"
+              type="range"
+              min="0.25"
+              max="3"
+              step="0.05"
+              value="0.7"
+              title="How wide the peak fan is (higher = wider)"
+          /></label>
+        </div>
+        <div class="lab-debug__actions">
+          <button type="button" data-ruler-reset>Reset waveform</button>
         </div>
       </details>
 

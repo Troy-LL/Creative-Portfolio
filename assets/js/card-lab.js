@@ -58,17 +58,23 @@ import {
 import {
   HORIZON,
   advanceHorizon,
-  overflowPx,
-  trackTranslatePx,
+  applyStaircaseLayout,
+  buildStaircase,
+  navProgress,
+  navStations,
+  pathAtStation,
+  trackPose,
   wheelPixels,
 } from "./portfolio-horizon.js";
+import { mountHorizonStations } from "./horizon-stations.js";
 
 const CARD = {
   phone: "0975 644 6519",
   company: "Next Decade",
   name: "Troy Lazaro",
   title: "AI Engineer",
-  lines: ["troylazaro.dev"],
+  lines: ["troylazaro.dev/book"],
+  urlHref: "/book",
 };
 
 /** Locked physicality — dialed on :4173 (2026-09-01). */
@@ -122,11 +128,22 @@ const CURSOR_DEFAULTS = {
   xyY: 5.5,
 };
 
+/** Site-nav ruler waveform — locked dial. */
+const RULER_DEFAULTS = {
+  baseline: 3.3,
+  tilt: 0,
+  lengthen: 1.65,
+  strength: 0.55,
+  opacity: 0.9,
+  epicenter: 0.7,
+};
+
 const PHYS_STORAGE_KEY = "card-lab-phys-v6";
 
 const phys = { ...PHYS_DEFAULTS };
 const mat = { ...MAT_DEFAULTS };
 const cursorFeel = { ...CURSOR_DEFAULTS };
+const rulerFeel = { ...RULER_DEFAULTS };
 
 function loadPhysPrefs() {
   try {
@@ -148,6 +165,7 @@ function savePhysPrefs(extra = {}) {
       phys: { ...phys },
       mat: { ...mat },
       cursorFeel: { ...cursorFeel },
+      rulerFeel: { ...rulerFeel },
       fold: { ...FOLD_END },
       hatch: { ...HATCH_OPENING },
       hatchVideo: { ...HATCH_VIDEO },
@@ -220,6 +238,15 @@ function applyCursorPrefs(saved) {
     if (!(key in CURSOR_DEFAULTS)) continue;
     const n = Number(value);
     if (Number.isFinite(n)) cursorFeel[key] = n;
+  }
+}
+
+function applyRulerPrefs(saved) {
+  if (!saved?.rulerFeel || typeof saved.rulerFeel !== "object") return;
+  for (const [key, value] of Object.entries(saved.rulerFeel)) {
+    if (!(key in RULER_DEFAULTS)) continue;
+    const n = Number(value);
+    if (Number.isFinite(n)) rulerFeel[key] = n;
   }
 }
 
@@ -555,6 +582,8 @@ function createCssEngine(root, materials) {
   /** 1 = full cursor response; 0 = flattened for fold */
   let cursorScale = 1;
   let cursorScaleTarget = 1;
+  /** True while pointer is on interactive ink (URL / phone) — mute lean. */
+  let inkHotMute = false;
   let foldDisplay = 0;
   let foldViewTip = 0;
   let flipDisplay = 0;
@@ -791,6 +820,23 @@ function createCssEngine(root, materials) {
     lastPose = pose;
   }
 
+  const INK_HOT_SEL = "a.physical-card__ink--url, [data-copy-phone]";
+  let inkHotEl = null;
+
+  function inkHotFromPointer(clientX, clientY, eventTarget) {
+    const fromTarget = eventTarget?.closest?.(INK_HOT_SEL);
+    if (fromTarget) return fromTarget;
+    return document.elementFromPoint(clientX, clientY)?.closest?.(INK_HOT_SEL) ?? null;
+  }
+
+  function setInkHot(el) {
+    inkHotMute = !!el;
+    if (inkHotEl && inkHotEl !== el) inkHotEl.classList.remove("is-ink-hot");
+    if (el) el.classList.add("is-ink-hot");
+    else if (inkHotEl) inkHotEl.classList.remove("is-ink-hot");
+    inkHotEl = el;
+  }
+
   function onPointerMove(e) {
     const paneR = pane.getBoundingClientRect();
     cursorTarget.x = ((e.clientX - paneR.left) / paneR.width) * 2 - 1;
@@ -817,10 +863,12 @@ function createCssEngine(root, materials) {
       cardLocalTarget.y = cursorTarget.y;
       onCardTarget = 0.24;
     }
+
+    setInkHot(inkHotFromPointer(e.clientX, e.clientY, e.target));
   }
 
   function syncCursorForces() {
-    if (cursorScaleTarget < 0.05) {
+    if (cursorScaleTarget < 0.05 || inkHotMute) {
       forceTarget.rotY = 0;
       forceTarget.rotX = 0;
       forceTarget.lift = 0;
@@ -848,6 +896,7 @@ function createCssEngine(root, materials) {
     cardLocalTarget.x = 0;
     cardLocalTarget.y = 0;
     onCardTarget = 0.24;
+    setInkHot(null);
   });
 
   return {
@@ -937,6 +986,7 @@ function boot() {
   applyPhysPrefs(savedPrefs);
   applyMatPrefs(savedPrefs);
   applyCursorPrefs(savedPrefs);
+  applyRulerPrefs(savedPrefs);
   applyFoldPrefs(savedPrefs);
   applyHatchPrefs(savedPrefs);
   applyHatchVideoPrefs(savedPrefs);
@@ -973,7 +1023,6 @@ function boot() {
   if (cssRoot) {
     cssRoot.style.setProperty("--lab-card-w", `${mat.cardWidth}px`);
     cssRoot.style.setProperty("--paper-base", mat.paperBase);
-    cssRoot.style.setProperty("--horizon-travel", String(HORIZON.travelVw));
   }
 
   let phase = "falling";
@@ -989,27 +1038,314 @@ function boot() {
   let foldPhase = "idle"; // idle | dragging | returning | opening | open
   let holdTarget = 0;
   let holdDisplay = 0;
-  let travelTarget = 0;
-  let travelDisplay = 0;
+  let pathTarget = 0;
+  let pathDisplay = 0;
   let flipTarget = 0;
   let flipDisplay = 0;
   let pendingFoldDelta = 0;
   const horizonTrack = cssRoot?.querySelector(".horizon-track");
+  let staircase = null;
+
+  // Visitor surface by default; ?lab=1 or key L opens the dial (sections collapsed).
+  // ?debug=1 opens the same dial on this surface (no second localhost).
+  const params = new URLSearchParams(location.search);
+  const startDebug = params.has("debug");
+  const startLab = params.has("lab") || startDebug;
+
+  function syncStaircase() {
+    if (!cssRoot) return null;
+    staircase = buildStaircase(cssRoot.clientWidth, cssRoot.clientHeight);
+    if (horizonTrack) applyStaircaseLayout(horizonTrack, staircase);
+    return staircase;
+  }
 
   function applyHorizon() {
     if (!horizonTrack || !cssRoot) return;
-    const x = trackTranslatePx(
-      travelDisplay,
-      overflowPx(cssRoot.clientWidth, HORIZON.travelVw),
+    const stair = staircase || syncStaircase();
+    if (!stair) return;
+    const pose = trackPose(pathDisplay, stair);
+    horizonTrack.style.transform = `translate3d(${-pose.x}px, ${-pose.y}px, 0)`;
+    updateSiteNav(pose.station);
+  }
+
+  const siteNavEl = document.querySelector("[data-site-nav]");
+  const siteNavLabels = document.querySelector("[data-site-nav-labels]");
+  const siteNavRuler = document.querySelector("[data-site-nav-ruler]");
+  const RULER_TICKS = 96;
+  const NAV_REVEAL_MS = 1500;
+  let siteNavActiveId = "01";
+  let siteNavPeak = 0;
+  let siteNavPeakTarget = 0;
+  let siteNavReveal = 0;
+  let siteNavRevealStart = 0;
+  let siteNavRevealDone = false;
+  let rulerAlive = false;
+  let rulerClock = 0;
+  /** @type {number[]} */
+  let rulerNoise = [];
+  /** @type {number[]} */
+  let rulerPhase = [];
+
+  function prefersReducedMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function easeOutCubic(t) {
+    const u = clamp(t, 0, 1);
+    return 1 - (1 - u) ** 3;
+  }
+
+  function buildSiteNav() {
+    if (!siteNavEl || !siteNavLabels || !siteNavRuler) return;
+    const items = navStations();
+    siteNavLabels.replaceChildren(
+      ...items.map((item) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "site-nav__item";
+        btn.dataset.station = item.id;
+        btn.setAttribute("aria-label", `Go to ${item.label}`);
+        btn.textContent = item.label;
+        btn.addEventListener("click", () => jumpToStation(item.id));
+        return btn;
+      }),
     );
-    horizonTrack.style.transform = `translate3d(${x}px, 0, 0)`;
+    siteNavRuler.replaceChildren(
+      ...Array.from({ length: RULER_TICKS }, (_, i) => {
+        const tick = document.createElement("span");
+        tick.className = "site-nav__tick";
+        tick.dataset.i = String(i);
+        tick.style.height = `${4 + ((i * 17) % 3) * 0.25}px`;
+        tick.style.opacity = "0";
+        return tick;
+      }),
+    );
+    rulerNoise = Array.from({ length: RULER_TICKS }, (_, i) => (i * 0.37) % 1);
+    rulerPhase = Array.from(
+      { length: RULER_TICKS },
+      (_, i) => ((i * 2.17) % 1) * Math.PI * 2,
+    );
+    applyLabelReveal(0);
+  }
+
+  function applyLabelReveal(progress) {
+    if (!siteNavLabels) return;
+    const buttons = [...siteNavLabels.querySelectorAll(".site-nav__item")];
+    const n = buttons.length || 1;
+    const done = progress >= 0.995;
+    buttons.forEach((btn, i) => {
+      const x = n <= 1 ? 0.5 : i / (n - 1);
+      const dist = Math.abs(x - 0.5) / 0.5;
+      // Reach the outer labels before progress hits 1 (0.7 span + soft ramp).
+      const local = done
+        ? 1
+        : clamp((progress - dist * 0.7) / 0.3, 0, 1);
+      const a = local * local * (3 - 2 * local);
+      const outward = (x - 0.5) * (1 - a) * 22;
+      btn.style.opacity = String(a);
+      btn.style.transform = `translate(${outward.toFixed(2)}px, ${((1 - a) * 7).toFixed(2)}px)`;
+      btn.tabIndex = a > 0.55 ? 0 : -1;
+    });
+    siteNavLabels.style.pointerEvents = progress > 0.4 ? "auto" : "none";
+    if (siteNavEl) {
+      siteNavEl.dataset.revealed = done ? "true" : "false";
+    }
+  }
+
+  function resetSiteNavReveal() {
+    siteNavReveal = 0;
+    siteNavRevealStart = 0;
+    siteNavRevealDone = false;
+    applyLabelReveal(0);
+    if (siteNavEl) siteNavEl.dataset.revealed = "false";
+  }
+
+  function beginSiteNavReveal(now = performance.now()) {
+    if (siteNavRevealDone && siteNavReveal >= 1) return;
+    if (startDebug || prefersReducedMotion()) {
+      siteNavReveal = 1;
+      siteNavRevealStart = now;
+      siteNavRevealDone = true;
+      applyLabelReveal(1);
+      return;
+    }
+    if (!siteNavRevealStart) siteNavRevealStart = now;
+  }
+
+  function activeStationId(stationId) {
+    if (foldPhase === "open" && pathDisplay > 0.0005) {
+      return stationId || "02";
+    }
+    return "01";
+  }
+
+  function updateSiteNav(stationId) {
+    if (!siteNavEl || !siteNavLabels) return;
+    const show = phase === "settled";
+    siteNavEl.hidden = !show;
+    if (!show) {
+      resetSiteNavReveal();
+      if (rulerAlive) stopRulerAlive();
+      return;
+    }
+
+    beginSiteNavReveal();
+    siteNavActiveId = activeStationId(stationId);
+    const stair = staircase || syncStaircase();
+    siteNavPeakTarget = navProgress(pathDisplay, stair);
+
+    const buttons = [...siteNavLabels.querySelectorAll(".site-nav__item")];
+    const n = buttons.length || 1;
+    const peakIdx = siteNavPeakTarget * (n - 1);
+    buttons.forEach((btn, i) => {
+      const dist = Math.abs(i - peakIdx);
+      const lit = Math.max(0, 1 - dist * 0.92);
+      btn.style.setProperty("--nav-lit", lit.toFixed(3));
+      const on = btn.dataset.station === siteNavActiveId;
+      btn.classList.toggle("is-active", on);
+      btn.setAttribute("aria-current", on ? "true" : "false");
+    });
+    if (!rulerAlive) startRulerAlive();
+  }
+
+  function paintRuler(now) {
+    if (!siteNavRuler || siteNavEl?.hidden) return;
+    const ticks = siteNavRuler.querySelectorAll(".site-nav__tick");
+    const n = ticks.length || 1;
+    const reduce = prefersReducedMotion();
+    const ease = reduce ? 1 : 0.14;
+
+    if (siteNavRevealStart && siteNavReveal < 1) {
+      const u = clamp((now - siteNavRevealStart) / NAV_REVEAL_MS, 0, 1);
+      siteNavReveal = easeOutCubic(u);
+      applyLabelReveal(siteNavReveal);
+      if (u >= 1) {
+        siteNavReveal = 1;
+        siteNavRevealDone = true;
+        applyLabelReveal(1);
+      }
+    }
+
+    siteNavPeak += (siteNavPeakTarget - siteNavPeak) * ease;
+    // During the opening shockwave the epicenter is the middle; then it follows progress.
+    const peak =
+      siteNavReveal < 1
+        ? 0.5 + (siteNavPeak - 0.5) * siteNavReveal
+        : siteNavPeak;
+    const t = now * 0.001;
+    // Overshoot past the edges so Card/Exit ticks fully land in the fan-out.
+    const radius = siteNavReveal * 0.58;
+
+    ticks.forEach((tick, i) => {
+      const x = n <= 1 ? 0.5 : i / (n - 1);
+      const distC = Math.abs(x - 0.5);
+      const appear =
+        siteNavReveal >= 1
+          ? 1
+          : clamp((radius - distC + 0.04) / 0.08, 0, 1);
+      if (appear <= 0) {
+        tick.style.opacity = "0";
+        tick.style.height = "0px";
+        tick.style.transform = "rotate(0deg)";
+        return;
+      }
+
+      const signed = x - peak;
+      const dist = Math.abs(signed);
+      const side = signed < 0 ? -1 : 1;
+      const span = Math.max(0.15, rulerFeel.epicenter);
+      const envelope = Math.exp(-dist * (4.2 / span));
+      const ripple =
+        (Math.sin(dist * 14 - t * 2.1 + (rulerPhase[i] ?? 0)) * 0.7 +
+          Math.sin(dist * 6.5 - t * 1.15 + i * 0.08) * 0.45) *
+        rulerFeel.strength;
+      // Shockwave front: tall V crest expanding outward while revealing.
+      const front = Math.exp(-Math.abs(distC - radius) * 26);
+      const shock =
+        siteNavReveal < 1 ? front * (1.15 - siteNavReveal * 0.55) : 0;
+      const lean =
+        side *
+        (6 +
+          envelope * 22 +
+          ripple * (10 + envelope * 18) +
+          shock * 28) *
+        rulerFeel.tilt;
+      rulerNoise[i] =
+        (rulerNoise[i] ?? 0.5) * 0.88 + Math.random() * 0.12;
+      const jitter = (rulerNoise[i] - 0.5) * (0.9 + envelope * 1.4);
+      const base = rulerFeel.baseline + ((i * 17) % 3) * 0.35;
+      const crest = envelope * envelope * 7.5 * rulerFeel.lengthen;
+      const waveLen = ripple * (1.4 + envelope * 3.2) * rulerFeel.lengthen;
+      const shockLen = shock * 11 * rulerFeel.lengthen;
+      const h = Math.max(2.8, base + crest + waveLen + shockLen + jitter);
+      tick.style.height = `${h.toFixed(2)}px`;
+      tick.style.transform = `rotate(${lean.toFixed(2)}deg)`;
+      const vis = siteNavReveal >= 1 ? 1 : appear;
+      tick.style.opacity = String(
+        (0.3 + envelope * 0.45) * vis * rulerFeel.opacity,
+      );
+    });
+  }
+
+  function startRulerAlive() {
+    if (rulerAlive) return;
+    if (prefersReducedMotion()) {
+      siteNavPeak = siteNavPeakTarget;
+      siteNavReveal = 1;
+      siteNavRevealDone = true;
+      applyLabelReveal(1);
+      paintRuler(performance.now());
+      return;
+    }
+    rulerAlive = true;
+    const loop = (now) => {
+      if (!rulerAlive) return;
+      paintRuler(now);
+      rulerClock = requestAnimationFrame(loop);
+    };
+    rulerClock = requestAnimationFrame(loop);
+  }
+
+  function stopRulerAlive() {
+    rulerAlive = false;
+    if (rulerClock) cancelAnimationFrame(rulerClock);
+    rulerClock = 0;
+  }
+
+  function jumpToStation(stationId) {
+    if (phase !== "settled") return;
+    const stair = staircase || syncStaircase();
+    if (!stair) return;
+    const id = String(stationId || "01");
+
+    foldPhase = "open";
+    foldTarget = 1;
+    foldDisplay = 1;
+    css.setFoldDisplay(1, 0);
+    css.setCursorScaleTarget(0);
+    dismissHint();
+
+    if (id === "01") {
+      holdTarget = 0;
+      holdDisplay = 0;
+      pathTarget = 0;
+      pathDisplay = 0;
+    } else {
+      holdTarget = 1;
+      holdDisplay = 1;
+      const p = pathAtStation(id, stair);
+      pathTarget = p;
+      pathDisplay = p;
+    }
+    applyHorizon();
   }
 
   function resetHorizon() {
     holdTarget = 0;
     holdDisplay = 0;
-    travelTarget = 0;
-    travelDisplay = 0;
+    pathTarget = 0;
+    pathDisplay = 0;
+    syncStaircase();
     applyHorizon();
   }
   let scrollIdle = 0;
@@ -1044,9 +1380,6 @@ function boot() {
 
   // Visitor surface by default; ?lab=1 or key L opens the dial (sections collapsed).
   // ?debug=1 opens the same dial on this surface (no second localhost).
-  const params = new URLSearchParams(location.search);
-  const startDebug = params.has("debug");
-  const startLab = params.has("lab") || startDebug;
   setLab(startLab);
 
   function drop() {
@@ -1070,6 +1403,7 @@ function boot() {
       hintShown = false;
     }
     window.clearTimeout(hintTimer);
+    updateSiteNav("01");
   }
 
   function freshDrop() {
@@ -1199,6 +1533,18 @@ function boot() {
     });
   }
 
+  function syncRulerInputs() {
+    const root = document.getElementById("ruler-debug");
+    if (!root) return;
+    root.querySelectorAll("[data-ruler]").forEach((input) => {
+      const key = input.dataset.ruler;
+      if (!(key in rulerFeel)) return;
+      input.value = String(rulerFeel[key]);
+      const out = root.querySelector(`[data-ruler-val="${key}"]`);
+      if (out) out.textContent = Number(rulerFeel[key]).toFixed(2);
+    });
+  }
+
   function syncFoldInputs() {
     const root = document.getElementById("fold-debug");
     if (!root) return;
@@ -1274,6 +1620,7 @@ function boot() {
   syncPaperGrainButton();
   syncMatInputs();
   syncCursorInputs();
+  syncRulerInputs();
   syncFoldInputs();
   syncHatchInputs();
   syncHatchVideoInputs();
@@ -1341,7 +1688,7 @@ function boot() {
       const next = advanceHorizon({
         fold: 1,
         hold: holdTarget,
-        travel: travelTarget,
+        path: pathTarget,
         deltaPx: raw,
         viewportHeight: cssRoot.clientHeight,
         viewportWidth: cssRoot.clientWidth,
@@ -1355,7 +1702,7 @@ function boot() {
         return;
       }
       holdTarget = next.hold;
-      travelTarget = next.travel;
+      pathTarget = next.path;
       foldTarget = 1;
       foldDisplay = 1;
       return;
@@ -1400,6 +1747,7 @@ function boot() {
         phase = "settled";
         css.setInteractive(true);
         showHintSoon();
+        updateSiteNav("01");
       }
     } else {
       pose = settlePose(1);
@@ -1448,7 +1796,8 @@ function boot() {
       if (startDebug) syncOpenFoldInput();
 
       holdDisplay = applyLag(holdDisplay, holdTarget, HORIZON.lag);
-      travelDisplay = applyLag(travelDisplay, travelTarget, HORIZON.lag);
+      pathDisplay = applyLag(pathDisplay, pathTarget, HORIZON.lag);
+      if (Math.abs(pathTarget - pathDisplay) < 0.002) pathDisplay = pathTarget;
       applyHorizon();
     }
 
@@ -1458,16 +1807,96 @@ function boot() {
 
   css.setCard(CARD);
   drop();
+  buildSiteNav();
+  syncStaircase();
+  applyHorizon();
+  window.addEventListener("resize", () => {
+    syncStaircase();
+    applyHorizon();
+  });
   if (startDebug) {
     phase = "settled";
     css.setInteractive(true);
     css.applyPose(settlePose(1), false);
+    updateSiteNav("01");
   }
   requestAnimationFrame(frame);
 
   replay?.addEventListener("click", freshDrop);
 
-  cssRoot?.querySelector(".css-card")?.addEventListener("click", () => {
+  let toastTimer = 0;
+  let toastHideTimer = 0;
+  let toastFollow = false;
+  const toastEl = document.querySelector("[data-card-toast]");
+  const toastLabel = toastEl?.querySelector("[data-card-toast-label]");
+
+  function placeCardToast(clientX, clientY) {
+    if (!toastEl) return;
+    const offsetX = 14;
+    const offsetY = 16;
+    const pad = 10;
+    const w = toastEl.offsetWidth || 72;
+    const h = toastEl.offsetHeight || 18;
+    const x = Math.min(
+      Math.max(pad, clientX + offsetX),
+      window.innerWidth - w - pad,
+    );
+    const y = Math.min(
+      Math.max(pad, clientY + offsetY),
+      window.innerHeight - h - pad,
+    );
+    toastEl.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+  }
+
+  function showCardToast(message, clientX, clientY) {
+    if (!toastEl || !toastLabel) return;
+    toastEl.hidden = false;
+    toastLabel.textContent = message;
+    placeCardToast(clientX ?? window.innerWidth / 2, clientY ?? window.innerHeight / 2);
+    toastEl.classList.add("is-on");
+    toastFollow = true;
+    window.clearTimeout(toastTimer);
+    window.clearTimeout(toastHideTimer);
+    toastTimer = window.setTimeout(() => {
+      toastFollow = false;
+      toastEl.classList.remove("is-on");
+      toastHideTimer = window.setTimeout(() => {
+        if (!toastEl.classList.contains("is-on")) toastEl.hidden = true;
+      }, 220);
+    }, 1400);
+  }
+
+  window.addEventListener(
+    "pointermove",
+    (e) => {
+      if (!toastFollow) return;
+      placeCardToast(e.clientX, e.clientY);
+    },
+    { passive: true },
+  );
+
+  async function copyPhoneFromButton(btn, clientX, clientY) {
+    const value =
+      btn.getAttribute("data-copy-phone") || btn.textContent.trim();
+    try {
+      await navigator.clipboard.writeText(value);
+      btn.classList.add("is-copied");
+      window.setTimeout(() => btn.classList.remove("is-copied"), 900);
+      showCardToast("Copied", clientX, clientY);
+    } catch {
+      showCardToast("Couldn’t copy", clientX, clientY);
+    }
+  }
+
+  cssRoot?.querySelector(".css-card")?.addEventListener("click", (e) => {
+    const phoneBtn = e.target?.closest?.("[data-copy-phone]");
+    if (phoneBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      void copyPhoneFromButton(phoneBtn, e.clientX, e.clientY);
+      return;
+    }
+    if (e.target?.closest?.("a[href]")) return;
     if (phase !== "settled") return;
     if (foldDisplay > 0.04 || foldPhase !== "idle") return;
     flipTarget = flipTarget > 0.5 ? 0 : 1;
@@ -1502,9 +1931,10 @@ function boot() {
   const debugRoot = document.getElementById("phys-debug");
   const matRoot = document.getElementById("mat-debug");
   const curRoot = document.getElementById("cursor-debug");
+  const rulerRoot = document.getElementById("ruler-debug");
   const foldRoot = document.getElementById("fold-debug");
   const videoRoot = document.getElementById("hatch-video-debug");
-  for (const el of [matRoot, curRoot, foldRoot, videoRoot, debugRoot]) {
+  for (const el of [matRoot, curRoot, rulerRoot, foldRoot, videoRoot, debugRoot]) {
     if (el) el.open = false;
   }
 
@@ -1566,6 +1996,24 @@ function boot() {
     curRoot.querySelector("[data-cur-reset]")?.addEventListener("click", () => {
       Object.assign(cursorFeel, CURSOR_DEFAULTS);
       syncCursorInputs();
+      persist();
+    });
+  }
+
+  if (rulerRoot) {
+    rulerRoot.querySelectorAll("[data-ruler]").forEach((input) => {
+      const key = input.dataset.ruler;
+      const sync = () => {
+        rulerFeel[key] = Number(input.value);
+        const out = rulerRoot.querySelector(`[data-ruler-val="${key}"]`);
+        if (out) out.textContent = rulerFeel[key].toFixed(2);
+        persist();
+      };
+      input.addEventListener("input", sync);
+    });
+    rulerRoot.querySelector("[data-ruler-reset]")?.addEventListener("click", () => {
+      Object.assign(rulerFeel, RULER_DEFAULTS);
+      syncRulerInputs();
       persist();
     });
   }
@@ -1812,4 +2260,5 @@ function boot() {
   });
 }
 
+mountHorizonStations();
 boot();
