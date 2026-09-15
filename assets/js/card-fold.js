@@ -1,8 +1,3 @@
-/**
- * Fold progress → nested Z panel angles.
- * End pose locked from ?debug=1 tune on the React stage.
- */
-
 export const FOLD_END = {
   top: 20,
   mid: 103,
@@ -58,7 +53,6 @@ export function creaseAmount(foldProgress) {
   return Math.min(1, mag / 200);
 }
 
-/** Face shade overlays (0..~0.22). Plain rgba — no blend on 3D ancestors. */
 export function panelShadeFromAngles(angles) {
   return {
     top: Math.min(0.08, Math.abs(angles.top) / 500),
@@ -80,7 +74,6 @@ export function applyLag(current, target, alpha) {
   return current + (target - current) * a;
 }
 
-/** Smooth cursor proximity — no step jumps at the card edge. */
 export function cursorCardWeight(nx, ny, opts = {}) {
   const inner = opts.inner ?? 0.9;
   const outer = opts.outer ?? 1.32;
@@ -93,14 +86,10 @@ export function cursorCardWeight(nx, ny, opts = {}) {
   return 1 + (floor - 1) * s;
 }
 
-/** Click-flip: lift toward viewer, scale up, then rotateY to back. */
 export const FLIP = {
   ms: 900,
-  /** Peak extra Z (px) at mid-flip — reads as picking the card up. */
   liftZ: 140,
-  /** Peak scale boost at mid-flip (1 + this). */
   scaleBoost: 0.14,
-  /** Rotation ease-in/out window on 0..1 progress. */
   rotateStart: 0.12,
   rotateEnd: 0.88,
 };
@@ -112,7 +101,6 @@ function smoothstep(edge0, edge1, x) {
   return t * t * (3 - 2 * t);
 }
 
-/** 0 = front flat, 1 = back flat. Lift peaks at 0.5. */
 export function flipMotion(progress) {
   const p = clamp(progress, 0, 1);
   const lift = Math.sin(Math.PI * p);
@@ -125,7 +113,6 @@ export function flipMotion(progress) {
   };
 }
 
-/** Table-shadow footprint while flipping — avoids flanking plates at edge-on. */
 export function flipShadowFootprint(progress) {
   const { lift, rotateY } = flipMotion(progress);
   const edge = Math.abs(Math.cos((rotateY * Math.PI) / 180));
@@ -149,14 +136,12 @@ export function resetFlip() {
   Object.assign(FLIP, FLIP_DEFAULTS);
 }
 
-/** Per-frame lag so a flip settles in `ms` (frame-rate independent). */
 export function flipLagAlpha(ms = FLIP.ms, dtMs = 1000 / 60) {
   const t = clamp(Number(ms) || FLIP_DEFAULTS.ms, 120, 2400);
   const dt = Math.max(8, Number(dtMs) || 1000 / 60);
   return 1 - Math.pow(0.05, dt / t);
 }
 
-/** Cursor lean on at rest (front or back); off while folding or mid-flip. */
 export function shouldEnableCursorLean(
   { foldDisplay, flipTarget, flipDisplay, foldPhase },
   opts = {},
@@ -170,7 +155,6 @@ export function shouldEnableCursorLean(
 }
 
 /**
- * Wheel on the back starts a return flip; fold waits until the front is settled.
  * @returns {{ kind: "flip-to-front" | "defer-fold" | "fold", flipTarget?: number, stashDelta: number }}
  */
 export function resolveScrollOnCard({ flipTarget, flipDisplay, delta }, opts = {}) {
@@ -189,7 +173,6 @@ export function resolveScrollOnCard({ flipTarget, flipDisplay, delta }, opts = {
   return { kind: "fold", stashDelta: 0 };
 }
 
-/** Locked opening tune from :4173 ?debug=1 (2026-09-01). */
 export const HATCH_OPENING = {
   topPullPct: 0,
   heightScale: 1.5,
@@ -208,7 +191,6 @@ export function resetHatchOpening() {
   Object.assign(HATCH_OPENING, HATCH_OPENING_DEFAULTS);
 }
 
-/** Crop of the looping clip inside the hatch well (lab: Y + zoom + format). */
 export const HATCH_VIDEO_FORMATS = {
   mov: {
     id: "mov",
@@ -279,7 +261,6 @@ export function hatchVideoVars(video = HATCH_VIDEO) {
   };
 }
 
-/** Vignette box = the uncovered slit below the folded card, not the full well. */
 export function hatchApertureVars(peel = { topPct: 0, shiftPct: 1 }) {
   const topPct = clamp(Number(peel.topPct) || 0, 0, 1);
   const shiftRaw = Number(peel.shiftPct);
@@ -331,7 +312,6 @@ function foldOpening(foldProgress) {
   return hatchOpeningFromAngles(panelAngles(t));
 }
 
-/** Opening slot behind the card — reveal line, cover slide, full card width. */
 export function surfacePeel(foldProgress) {
   const t = clamp(foldProgress, 0, 1);
   if (t === 0) {
@@ -371,7 +351,6 @@ function applyHatchOpening(computed, hatch = HATCH_OPENING) {
   return { ...computed, topPct, heightPct };
 }
 
-/** Fold progress → opening geometry with locked visitor tune applied. */
 export function resolveOpeningPeel(foldProgress) {
   return applyHatchOpening(surfacePeel(foldProgress));
 }

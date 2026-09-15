@@ -1,4 +1,3 @@
-/** Soft directional ambient + contact shadow — not a UI drop shadow stack. */
 export function Lighting() {
   return (
     <>

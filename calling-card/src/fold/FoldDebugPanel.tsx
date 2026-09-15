@@ -9,7 +9,6 @@ export type FoldDebugState = {
   hatch: HatchDebugState;
 };
 
-/** Defaults match current model peaks at fold = 1. */
 export const FOLD_DEBUG_DEFAULTS: FoldDebugState = {
   fold: 1,
   top: FOLD_END.top,

@@ -14,7 +14,6 @@ type Props = {
   onHoverChange: (hovering: boolean) => void;
 };
 
-/** Same stock as the card; shown on the mid panel as the accordion opens. */
 export function FoldInside({
   foldProgress,
   interactive,

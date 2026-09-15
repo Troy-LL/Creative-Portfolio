@@ -64,7 +64,6 @@ function poseAt({
 
 describe("site-nav ruler lean", () => {
   it("detects when a sharp lean spike crosses a neighbor", () => {
-    // Same-side spike: steeper tick swings through its neighbor (land fan-out bug).
     assert.equal(neighborTicksCross(0, 22, -22.5, 4.7, 22, -35), true);
   });
 
@@ -73,7 +72,6 @@ describe("site-nav ruler lean", () => {
     const spacing = 4.7;
     const xs = Array.from({ length: n }, (_, i) => i * spacing);
     const heights = Array.from({ length: n }, () => 22);
-    // Sharp V crest on the left edge — same shape that crossed in the screenshot.
     const leans = Array.from({ length: n }, (_, i) => {
       const x = i / (n - 1);
       const front = Math.exp(-Math.abs(x - 0.12) * 26);
@@ -105,15 +103,12 @@ describe("site-nav ruler lean", () => {
   it("fanTiltAmount begins settling early in reveal (V does not linger)", () => {
     const fan = 1.15;
     const rest = 0;
-    // Very early reveal still fans.
     assert.equal(fanTiltAmount({ reveal: 0.1, straighten: 0, fanTilt: fan, restTilt: rest }), fan);
-    // By mid-reveal lean is mostly gone — not a long full-V hold.
     const midReveal = fanTiltAmount({ reveal: 0.55, straighten: 0, fanTilt: fan, restTilt: rest });
     assert.ok(midReveal < fan * 0.45, `mid reveal still too fanned: ${midReveal}`);
     const lateReveal = fanTiltAmount({ reveal: 0.85, straighten: 0, fanTilt: fan, restTilt: rest });
     assert.ok(lateReveal < midReveal);
     assert.ok(lateReveal < fan * 0.25);
-    // Continuous into straighten — no snap at reveal end.
     const atRevealEnd = fanTiltAmount({ reveal: 1, straighten: 0, fanTilt: fan, restTilt: rest });
     const justAfter = fanTiltAmount({ reveal: 1, straighten: 0.02, fanTilt: fan, restTilt: rest });
     assert.ok(Math.abs(atRevealEnd - lateReveal) < 0.35);
@@ -150,10 +145,8 @@ describe("site-nav ruler lean", () => {
   });
 
   it("landCrestPeak opens at center then travels to the highlighted section", () => {
-    // Fan opens from the middle.
     assert.equal(landCrestPeak({ reveal: 0.5, straighten: 0, sectionPeak: 0 }), 0.5);
     assert.equal(landCrestPeak({ reveal: 1, straighten: 0, sectionPeak: 0 }), 0.5);
-    // Through straighten the V glides to the highlight (Card = 0).
     const early = landCrestPeak({ reveal: 1, straighten: 0.25, sectionPeak: 0 });
     const mid = landCrestPeak({ reveal: 1, straighten: 0.5, sectionPeak: 0 });
     const late = landCrestPeak({ reveal: 1, straighten: 0.85, sectionPeak: 0 });

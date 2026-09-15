@@ -36,10 +36,12 @@ Vanilla HTML/CSS/JS: `index.html`, `assets/js/card-lab.js`, `assets/js/card-fold
 | After fold | Fold locked: a short wall (~0.22 vh) on `01`. Then L-path: one H hop (`cornerVw` ≈ 1.35) onto the content column, then V through stacked sections (`legVh` 3.5 each). Viewport stays pinned; track `translate3d(-x,-y,0)` — no scale. |
 | L-path | Vertical wheel after hold: one shared path. First segment moves X; the rest only move Y down the `02`–`06` stack. Scroll-up reverses path → hold → fold. See ADR 004. |
 | Fold end | `{ top: 20, mid: 103, bot: -111 }`, viewTip −1 |
-| Fold hinges | preserve-3d stack; sheet +4px; hatch on table plane (card at `--layer-z`); 2px hinge overlap |
+| Fold hinges | preserve-3d stack; sheet +4px; hatch on table plane (card at `--layer-z`); 2px hinge overlap. Do not put `isolation` or `mix-blend-*` on preserve-3d fold ancestors — browsers flatten the 3D context. |
 | Surface hatch | Card width; cover slides up with fold (`shiftPct`); well clipped from the reveal line down. Locked opening `{ heightScale: 1.5, extendBottomPct: 0.4, layerZ: 80, wellOpacity: 1 }`. |
 | Hatch clip | Visitor: looping `assets/hatch/IMG_6909.webm` (muted, `playsinline`). Lab **Video Y** / **Video zoom** crop it; format buttons can swap local MP4 / MOV. **Measure uncached** reports payload + time to first frame with `cache: no-store`. |
 | Hatch vignette | Overlay is sized to the **visible slit below the folded card** (`hatchApertureVars`), not the full well. Lab **Vignette** (amount) / **Vignette soft** / **Vignette size** (scales the overlay on that slit; default `{ vignette: 0.85, vignetteSoft: 32, vignetteSize: 1.3 }`). |
+| Nav waveform | Lab dials baseline · tilt · lengthen · strength · opacity · epicenter span. Land fan-out opens from center, then the V glides to the active label through straighten; neighbor lean is clamped so tips do not cross. |
+| Reduced motion | `prefers-reduced-motion`: keep land fan-out and straighten; freeze only the looping idle ruler ripple after reveal. |
 | Affordance | Subtle “scroll down” once per session after settle |
 | Debug | `?debug=1` on :4173 — skip fall, same lab (sections stay collapsed), scrub fold 0→1 |
 

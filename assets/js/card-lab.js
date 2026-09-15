@@ -1,18 +1,3 @@
-/**
- * CSS 3D calling-card fall lab.
- *
- * Inspected stack (do not rebuild):
- * - Card: DOM `.physical-card` via mountPhysicalCard (paper lit map + ink layers)
- * - Paper: procedural canvas tooth (paper-grain.js) soft-light over --paper-base
- * - Ink: DOM type + optional coverage maps / SVG filters (flat by default)
- * - Motion: CSS perspective + transform-style 3D on .css-rig / .css-card
- * - Shadow: dual rectangular cast (contact + soft), flat underlay — not on face
- * - No animation library — rAF clock only
- *
- * This file extends that system: Bézier trajectory, velocity orientation,
- * cursor force, dynamic contact shadow, motion modes, debug panel.
- */
-
 import {
   mountPhysicalCard,
   toPrintContent,
@@ -88,9 +73,8 @@ const CARD = {
   urlHref: "/book",
 };
 
-/** Locked physicality — dialed on :4173 (2026-09-01). */
 const PHYS_DEFAULTS = {
-  mode: "curved", // straight | organic | curved
+  mode: "curved",
   curveAmount: 1.6,
   fallMs: 1700,
   settleMs: 520,
@@ -100,18 +84,15 @@ const PHYS_DEFAULTS = {
   cursorInfluence: 1.06,
   gravity: 2,
   airResistance: 0.3,
-  // Fall cast (in air / dropping)
   fallShadowStrength: 0.7,
   fallShadowSoftness: 2,
   fallShadowScale: 1.12,
   fallShadowReach: 0.71,
-  // Flat table cast (resting)
   flatShadowStrength: 1.2,
   flatShadowSoftness: 2,
   flatShadowScale: 1.1,
   flatShadowReach: 1.13,
   perspective: 1400,
-  // CSS mapping from normalized pose → px
   cssY: 0.5,
   cssX: 150,
   cssZ: 190,
@@ -139,7 +120,6 @@ const CURSOR_DEFAULTS = {
   xyY: 5.5,
 };
 
-/** Site-nav ruler waveform — locked dial. */
 const RULER_DEFAULTS = {
   baseline: 3.3,
   tilt: 0,
@@ -187,14 +167,12 @@ function savePhysPrefs(extra = {}) {
     };
     localStorage.setItem(PHYS_STORAGE_KEY, JSON.stringify(payload));
   } catch {
-    /* ignore quota / private mode */
   }
 }
 
 function applyPhysPrefs(saved) {
   if (!saved?.phys || typeof saved.phys !== "object") return;
   const p = saved.phys;
-  // Migrate old single-shadow dials → fall + flat
   if (
     Number.isFinite(Number(p.shadowStrength)) &&
     !Number.isFinite(Number(p.fallShadowStrength))
@@ -317,7 +295,6 @@ function smoothstep(t) {
   return x * x * (3 - 2 * x);
 }
 
-/** Gravity-weighted time remapping — accelerate into the fall. */
 function gravityT(t, g) {
   const x = clamp(t, 0, 1);
   const p = 1 + (g - 1) * 0.55;
@@ -359,9 +336,6 @@ function cubic3Dt(p0, p1, p2, p3, t) {
   };
 }
 
-/**
- * Settled: landscape card lying flat on the table (face up to camera).
- */
 const REST = {
   x: 0,
   y: 0,
@@ -371,9 +345,6 @@ const REST = {
   rotZ: 0,
 };
 
-/**
- * Normalized space: y -1 (high) → REST.y (float).
- */
 function pathControls(mode, curveAmt, drift) {
   const c = curveAmt;
   const d = drift;
@@ -574,7 +545,6 @@ function createCssEngine(root, materials) {
     hatchCover.style.setProperty("--hatch-open", String(peel.shiftPct));
   }
 
-  // Cursor: shifts position + face lean + matte lighting (ticket-style, not drag)
   let cursor = { x: 0, y: 0 };
   let cursorTarget = { x: 0, y: 0 };
   let cardLocal = { x: 0, y: 0 };
@@ -584,16 +554,12 @@ function createCssEngine(root, materials) {
   let force = { x: 0, y: 0, rotX: 0, rotY: 0, faceX: 0, faceY: 0, lift: 0 };
   let forceTarget = { x: 0, y: 0, rotX: 0, rotY: 0, faceX: 0, faceY: 0, lift: 0 };
 
-  // Smoothed pose for inertia
   let shown = null;
   let lastPose = null;
   let paperGrainLit = true;
-  /** Base surface light — dialed; tilt modulates around this */
   let litBase = mat.litOpacity;
-  /** 1 = full cursor response; 0 = flattened for fold */
   let cursorScale = 1;
   let cursorScaleTarget = 1;
-  /** True while pointer is on interactive ink (URL / phone) — mute lean. */
   let inkHotMute = false;
   let foldDisplay = 0;
   let foldViewTip = 0;
@@ -652,7 +618,6 @@ function createCssEngine(root, materials) {
     const tz = shown.z * phys.cssZ + shown.lift;
     const depthScale = 1 + shown.z * 0.04;
 
-    // Single rigid transform — face stays glued to the stock (no separate face slide)
     rig.style.transform = `translate3d(${tx}px, ${ty}px, ${tz}px) scale(${depthScale}) rotateX(${shown.rotX + shown.fRotX + tip}deg) rotateY(${shown.rotY + shown.fRotY}deg) rotateZ(${shown.rotZ}deg)`;
     const flipFx = flipMotion(flipDisplay);
     card.style.transform = `translate3d(0, 0, calc(var(--layer-z, 80) * 1px + ${flipFx.liftZ.toFixed(1)}px)) scale(${flipFx.scale.toFixed(4)})`;
@@ -680,7 +645,6 @@ function createCssEngine(root, materials) {
       sheet.style.setProperty("--shade-top", String(shade.top));
       sheet.style.setProperty("--shade-mid", String(shade.mid));
       sheet.style.setProperty("--shade-bot", String(shade.bot));
-      // React parity: fixed 4px — preserve-3d panels depth-test in front of hatch.
       sheet.style.transform = "translateZ(4px)";
     }
 
@@ -691,7 +655,6 @@ function createCssEngine(root, materials) {
         (shown.rotX + shown.fRotX) / 50 +
         cursor.x * 0.02 * cursorScale -
         cursor.y * 0.012 * cursorScale;
-      // Dial base ± mild tilt — don't crush the grain map
       const litOp = clamp(
         litBase * (0.92 + tilt * 0.14),
         litBase * 0.72,
@@ -708,12 +671,10 @@ function createCssEngine(root, materials) {
       });
     }
 
-    // Dual profiles: fall (air) ↔ flat (table), blended by height
     const liftAmt = Math.max(0, shown.lift);
     const heightNorm = clamp(-shown.y + liftAmt / 70, 0, 1.2);
     const onTable = 1 - clamp(heightNorm, 0, 1);
     const air = 1 - onTable;
-    // Prefer fall dials while dropping; height still blends during settle/lift
     const airMix = falling ? Math.max(air, 0.55) : air;
     const str = lerp(
       phys.flatShadowStrength,
@@ -765,10 +726,7 @@ function createCssEngine(root, materials) {
 
     const tiltX = Math.sin(ry);
     const tiltY = Math.sin(rx);
-    // Shadows already live inside the rig, so they inherit the card's 3D pose.
-    // Extra spin/skew/cast is for the table rest. In air, glue the silhouette.
     const table = 1 - clamp(heightNorm, 0, 1);
-    // Fixed SE bias + tilt — cast lives on one side, not under the whole plate
     const castX =
       (5 +
         air * 8 * table +
@@ -788,8 +746,6 @@ function createCssEngine(root, materials) {
     const extraZ = rz * table;
     const foreX = clamp(0.94 - Math.abs(tiltX) * 0.05 - foldAmt * 0.03, 0.78, 0.98);
     const foreY = clamp(0.94 - Math.abs(tiltY) * 0.05 - foldAmt * 0.08, 0.55, 0.98);
-    // One shared plate. Contact is only a tight umbra at rest — gone in air
-    // so the fall never reads as a second card.
     const plateScale = 0.96 + heightNorm * 0.02;
     const plateX = foreX * plateScale;
     const plateY = foreY * plateScale;
@@ -1046,7 +1002,7 @@ function boot() {
   let paperGrain = savedPrefs?.paperGrain !== false;
   let foldTarget = 0;
   let foldDisplay = 0;
-  let foldPhase = "idle"; // idle | dragging | returning | opening | open
+  let foldPhase = "idle";
   let holdTarget = 0;
   let holdDisplay = 0;
   let pathTarget = 0;
@@ -1057,8 +1013,6 @@ function boot() {
   const horizonTrack = cssRoot?.querySelector(".horizon-track");
   let staircase = null;
 
-  // Visitor surface by default; ?lab=1 or key L opens the dial (sections collapsed).
-  // ?debug=1 opens the same dial on this surface (no second localhost).
   const params = new URLSearchParams(location.search);
   const startDebug = params.has("debug");
   const startLab = params.has("lab") || startDebug;
@@ -1151,7 +1105,6 @@ function boot() {
     buttons.forEach((btn, i) => {
       const x = n <= 1 ? 0.5 : i / (n - 1);
       const dist = Math.abs(x - 0.5) / 0.5;
-      // No forced snap at 0.995 — outer labels finish on the formula alone.
       const local = clamp((progress - dist * 0.7) / 0.3, 0, 1);
       const a = local * local * (3 - 2 * local);
       const outward = (x - 0.5) * (1 - a) * 22;
@@ -1180,9 +1133,6 @@ function boot() {
     if (siteNavRevealDone && siteNavReveal >= 1 && siteNavStraighten >= 1) {
       return;
     }
-    // Instant only for an explicit skip (none today). Land reveal must still
-    // fan out even when prefers-reduced-motion is on — that flag only freezes
-    // the looping ruler ripple after the reveal finishes.
     if (instant) {
       siteNavReveal = 1;
       siteNavRevealStart = now;
@@ -1206,7 +1156,6 @@ function boot() {
   function applyNavSurface(surface) {
     if (!siteNavEl) return;
     siteNavEl.dataset.surface = surface;
-    // Full black / full white — high contrast on both grounds.
     if (surface === "dark") {
       siteNavEl.style.setProperty("--nav-fg", "255, 255, 255");
       siteNavEl.style.setProperty("--nav-fg-mute", "0.55");
@@ -1284,7 +1233,6 @@ function boot() {
     }
 
     siteNavPeak += (siteNavPeakTarget - siteNavPeak) * ease;
-    // Fan opens at center, then the V travels to the highlighted section.
     const peak = landCrestPeak({
       reveal: siteNavReveal,
       straighten: siteNavStraighten,
@@ -1361,7 +1309,6 @@ function boot() {
     const loop = (now) => {
       if (!rulerAlive) return;
       paintRuler(now);
-      // After fan-out + straighten, freeze under reduced motion (no idle ripple).
       if (
         prefersReducedMotion() &&
         siteNavRevealDone &&
@@ -1449,8 +1396,6 @@ function boot() {
     history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
   }
 
-  // Visitor surface by default; ?lab=1 or key L opens the dial (sections collapsed).
-  // ?debug=1 opens the same dial on this surface (no second localhost).
   setLab(startLab);
 
   function drop() {
@@ -1499,7 +1444,6 @@ function boot() {
     try {
       sessionStorage.setItem(HINT_KEY, "1");
     } catch {
-      /* private */
     }
     if (hintEl) {
       hintEl.dataset.visible = "false";
@@ -1740,7 +1684,6 @@ function boot() {
       pendingFoldDelta = 0;
     }
 
-    // Flatten cursor lean first so fold starts from a flat card
     css.setCursorScaleTarget(0);
 
     if (foldPhase === "opening") {
@@ -1824,7 +1767,6 @@ function boot() {
       pose = settlePose(1);
     }
 
-    // Fold lag + open/return springs (after settle)
     if (phase === "settled") {
       if (foldPhase === "opening") {
         foldTarget = 1;
@@ -1889,7 +1831,6 @@ function boot() {
     phase = "settled";
     css.setInteractive(true);
     css.applyPose(settlePose(1), false);
-    // Still fan the nav out — debug only skips the fall, not the reveal.
     updateSiteNav("01");
   }
   requestAnimationFrame(frame);

@@ -1,8 +1,3 @@
-/**
- * Locked print material.
- * Preferred look: paper grain on + flat ink (text effects off).
- * Keep in sync with calling-card/src/components/Card/types.ts defaults.
- */
 export const LOCKED_STOCK = {
   seed: 20260331,
   paperBase: "#f4f2ea",
@@ -16,7 +11,6 @@ export const LOCKED_INK = {
   relief: 0.47,
 };
 
-/** Default face: solid ink on tooth paper. */
 export const FLAT_INK = {
   density: LOCKED_INK.density,
   grain: 0,

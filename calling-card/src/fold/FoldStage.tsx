@@ -40,7 +40,6 @@ const LAG_ALPHA = 0.45;
 const RETURN_SPEED = 1.9;
 const OPEN_SPEED = 0.85;
 const ENTER_SPEED = 1.05;
-/** Wheel deltaY → fold progress (lower = more scroll to show the Z). */
 const SCROLL_GAIN = 0.00115;
 const SCROLL_IDLE_MS = 280;
 export const HINT_REVEAL_MS = 2000;
@@ -155,9 +154,7 @@ export function FoldStage() {
     setHintOut(false);
     try {
       sessionStorage.setItem(HINT_SESSION_KEY, "1");
-    } catch {
-      /* private mode */
-    }
+    } catch {}
   };
 
   useEffect(() => {

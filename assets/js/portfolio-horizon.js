@@ -1,21 +1,10 @@
-/**
- * Table travel after the locked fold/hatch.
- * L-path: hold on 01 → one H corner → continuous V stack through 02…06.
- *   docs/decisions/004-l-path-scroll-not-staircase.md
- */
-
 function clamp(n, a, b) {
   return Math.max(a, Math.min(b, n));
 }
 
 export const HORIZON = {
   holdVh: 0.22,
-  /** Single horizontal hop off the card (≥1 + front-hand width so fingers stay off-frame at rest). */
   cornerVw: 1.35,
-  /**
-   * Height of each content section in viewport heights (≥ 1).
-   * Sections stack on one column after the hop.
-   */
   legVh: 3.5,
   foldOpen: 0.992,
   lag: 0.45,
@@ -28,7 +17,7 @@ export const HORIZON = {
   ],
 };
 
-/** @deprecated use cornerVw — kept so older dials/tests naming still resolve. */
+/** @deprecated use cornerVw */
 Object.defineProperty(HORIZON, "travelVw", {
   get() {
     return this.cornerVw;
@@ -36,10 +25,6 @@ Object.defineProperty(HORIZON, "travelVw", {
   enumerable: true,
 });
 
-/**
- * Build the L-path geometry for the current viewport.
- * One column of stacked legs after a single horizontal hop off 01.
- */
 export function buildStaircase(
   viewportWidth,
   viewportHeight,
@@ -62,7 +47,6 @@ export function buildStaircase(
   let x = 0;
   let y = 0;
 
-  // Single hop off the card onto the content column — still chapter 01 until 02's leg.
   if (legs.length > 0) {
     const x1 = x + cornerPx;
     segments.push({
@@ -102,7 +86,6 @@ export function buildStaircase(
       });
       y = y1;
     }
-    // Park the next section's top in view — still leaving the current chapter.
     if (i < legs.length - 1) {
       const y1 = y + vh;
       segments.push({
@@ -188,14 +171,9 @@ export function trackPose(path, staircase) {
   };
 }
 
-/**
- * Equalizer tick heights for overall staircase path progress (0..1).
- * 12 ticks: completed = tall, current = mid, remaining = short.
- */
 export function equalizerTicks(path, tickCount = 12) {
   const n = Math.max(1, Math.floor(Number(tickCount) || 12));
   const t = clamp(Number(path) || 0, 0, 1);
-  // Lag / float never quite reaches 1 — treat the end wall as full.
   if (t >= 0.995) return Array.from({ length: n }, () => "tall");
   const p = t * n;
   /** @type {Array<"short" | "mid" | "tall">} */
@@ -208,10 +186,6 @@ export function equalizerTicks(path, tickCount = 12) {
   return ticks;
 }
 
-/**
- * Completion meter for the staircase path.
- * Visible once path has started; progress is overall path 0..1.
- */
 export function scrollMeter(path, staircase) {
   const pose = trackPose(path, staircase);
   let p = clamp(Number(path) || 0, 0, 1);
@@ -242,7 +216,6 @@ export function stationIndex(path, staircase) {
   return trackPose(path, staircase).station;
 }
 
-/** Ordered nav entries: card + content legs. */
 export function navStations(opts = HORIZON) {
   const legs = Array.isArray(opts.legs) ? opts.legs : HORIZON.legs;
   return [
@@ -254,10 +227,6 @@ export function navStations(opts = HORIZON) {
   ];
 }
 
-/**
- * Path 0..1 at the start of a station’s vertical read
- * (after its inbound corner). Station 01 is path 0.
- */
 export function pathAtStation(stationId, staircase) {
   const id = String(stationId || "01");
   if (id === "01") return 0;
@@ -266,7 +235,6 @@ export function pathAtStation(stationId, staircase) {
   let dist = 0;
   for (const seg of staircase.segments) {
     if (seg.station === id && (seg.kind === "leg" || seg.kind === "dwell")) {
-      // Nudge past the inbound corner endpoint so pose resolves as the leg.
       return clamp((dist + 1) / staircase.totalPx, 0, 1);
     }
     dist += seg.lengthPx;
@@ -282,10 +250,6 @@ export function pathAtStation(stationId, staircase) {
   return 1;
 }
 
-/**
- * Continuous 0..1 along the site-nav (label centers).
- * Flows with staircase path so the peak can glide between sections.
- */
 export function navProgress(path, staircase, opts = HORIZON) {
   const stations = navStations(opts);
   const n = stations.length;
@@ -310,7 +274,6 @@ export function navProgress(path, staircase, opts = HORIZON) {
   return (idx + local) / (n - 1);
 }
 
-/** Nearest nav label id for the current path (keeps active + peak in sync). */
 export function navActiveStation(path, staircase, opts = HORIZON) {
   const stations = navStations(opts);
   const n = stations.length;
@@ -328,12 +291,12 @@ export function wheelPixels(event) {
   return y;
 }
 
-/** @deprecated — overflow is path-based now; kept for older callers. */
+/** @deprecated overflow is path-based */
 export function overflowPx(viewportWidth, cornerVw = HORIZON.cornerVw) {
   return Math.max(0, Number(viewportWidth) || 0) * cornerVw;
 }
 
-/** @deprecated — use trackPose. */
+/** @deprecated use trackPose */
 export function trackTranslatePx(travel, overflow) {
   const x = -clamp(travel, 0, 1) * Math.max(0, Number(overflow) || 0);
   return x === 0 ? 0 : x;
@@ -425,7 +388,6 @@ export function advanceHorizon({
   };
 }
 
-/** Apply absolute layout to station nodes inside the track. */
 export function applyStaircaseLayout(track, staircase) {
   if (!track || !staircase) return;
   track.style.width = `${staircase.width}px`;

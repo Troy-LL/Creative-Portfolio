@@ -4,7 +4,6 @@
   --fold-bg: #d8d2c6;
   position: relative;
   min-height: 100dvh;
-  /* overflow/isolation/filter on 3D ancestors flatten the fold — keep this clean */
   touch-action: none;
   user-select: none;
 }
@@ -36,7 +35,6 @@
   pointer-events: none;
   visibility: hidden;
   opacity: 0;
-  /* Quiet wash only — no copy bleeding through the card */
   background:
     radial-gradient(
       ellipse 70% 50% at 50% 48%,
@@ -62,7 +60,6 @@
   place-items: center;
   padding: 8vh 4vw 14vh;
   transform-style: preserve-3d;
-  /* Keep this in the stage's 3D scene (no flatten) */
   transform: translateZ(0);
 }
 
@@ -86,7 +83,6 @@
   isolation: isolate;
 }
 
-/* Opening — same footprint as card; 2px behind card lift (no perspective shrink) */
 .fold__hatch-slot {
   position: absolute;
   inset: 0;
@@ -119,7 +115,6 @@
     var(--fold-bg);
 }
 
-/* Soft contact only — no filter (filter flattens sibling 3D panels) */
 .fold__shadow {
   position: absolute;
   left: 6%;
@@ -177,13 +172,11 @@
   position: relative;
   width: 100%;
   height: 100%;
-  /* overflow must stay visible so stock rims (rotateX/Y) aren't clipped */
   overflow: visible;
   background: var(--fold-paper);
   transform: translateZ(2px);
   transform-style: preserve-3d;
   backface-visibility: hidden;
-  /* Outer card boundary */
   box-shadow:
     inset 0 0 0 0.5px rgba(255, 252, 248, 0.45),
     0.5px 0.5px 0 rgba(40, 34, 28, 0.12);
@@ -207,7 +200,6 @@
   width: 100%;
   height: 100%;
   aspect-ratio: auto;
-  /* isolation/filter stacks inside faces must not invent a flat root */
   isolation: auto;
 }
 
@@ -218,7 +210,6 @@
 .fold-panel__print .physical-card__texture-lit,
 .fold-panel__print .physical-card__ink-relief,
 .fold-panel__print .physical-card__ink-fill--pores {
-  /* blend modes on deep descendants can flatten nested preserve-3d in WebKit */
   mix-blend-mode: normal;
 }
 
@@ -232,7 +223,6 @@
   z-index: 3;
 }
 
-/* Soft face shade — rgba only, no mix-blend (blend modes flatten 3D) */
 .fold-panel__shade {
   position: absolute;
   inset: 0;
@@ -275,7 +265,6 @@
   box-shadow: 0 1px 0 rgba(255, 252, 248, calc(var(--crease, 0) * 0.35));
 }
 
-/* Visible cardstock edge at hinges — reference white stock rim */
 .fold-panel__thickness {
   position: absolute;
   left: 0;
@@ -298,7 +287,6 @@
   opacity: calc(0.45 + var(--crease, 0) * 0.55);
 }
 
-/* Side stock edges — keep subtle so they don't read as stray flaps */
 .fold-panel__face::before,
 .fold-panel__face::after {
   content: "";
@@ -521,7 +509,6 @@
   pointer-events: auto;
 }
 
-/* —— Fold debug (?debug=1) —— */
 .fold-debug {
   position: fixed;
   top: 1rem;

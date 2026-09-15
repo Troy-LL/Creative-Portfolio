@@ -62,7 +62,6 @@ describe("portfolio L-path", () => {
     const pose = trackPose(next.path, stair);
     assert.ok(pose.x > cornerPx * 0.4);
     assert.equal(pose.y, 0);
-    // Hop still belongs to 01 — 02 only after the column leg starts.
     assert.equal(pose.station, "01");
   });
 
@@ -208,7 +207,6 @@ describe("portfolio L-path", () => {
   it("ticks station labels along the path", () => {
     const stair = buildStaircase(view.viewportWidth, view.viewportHeight);
     assert.equal(stationIndex(0, stair), "01");
-    // Mid-hop is still the card chapter — not Flagship yet.
     assert.equal(stationIndex(0.01, stair), "01");
     assert.equal(stationIndex(pathAtStation("02", stair), stair), "02");
     assert.equal(stationIndex(1, stair), "06");
@@ -224,14 +222,12 @@ describe("portfolio L-path", () => {
       if (seg.kind !== "leg") continue;
       byStation[seg.station] = (byStation[seg.station] || 0) + 1;
     }
-    // 02…05: overflow + handoff to next; 06: overflow only.
     assert.equal(byStation["02"], 2);
     assert.equal(byStation["03"], 2);
     assert.equal(byStation["04"], 2);
     assert.equal(byStation["05"], 2);
     assert.equal(byStation["06"], 1);
 
-    // Handoff 02→03 is still tagged 02 (leaving Flagship), not Shelf early.
     const after02 = stair.segments.findIndex(
       (s) => s.kind === "leg" && s.station === "02" && s.lengthPx === stair.overflow,
     );
@@ -255,7 +251,6 @@ describe("portfolio L-path", () => {
     assert.ok(p3 > p2);
     assert.equal(trackPose(p2, stair).station, "02");
     assert.equal(trackPose(p2, stair).kind, "leg");
-    // Shelf path starts when 03's top is parked — not during Flagship handoff.
     assert.ok(Math.abs(p3 - (p2 + (stair.overflow + stair.vh) / stair.totalPx)) < 0.02);
   });
 

@@ -1,9 +1,3 @@
-/**
- * Card-back initials — self-hosted faces from Troy-LL/personal `fonts/`.
- * "Front face" matches `.physical-card__ink` in Card.css.
- */
-
-/** Same stack as the calling-card print face */
 export const CARD_FRONT_FONT_FAMILY =
   'Copperplate, "Copperplate Gothic", "Trajan Pro", "Times New Roman", Times, Georgia, serif';
 

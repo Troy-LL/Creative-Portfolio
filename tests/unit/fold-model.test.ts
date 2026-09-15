@@ -63,7 +63,6 @@ describe("fold model", () => {
     assert.equal(closed.mid, 0);
     assert.equal(closed.bot, 0);
 
-    // Early: bot leads, top still near flat
     const early = panelAngles(0.2);
     assert.ok(Math.abs(early.bot) > Math.abs(early.top));
 

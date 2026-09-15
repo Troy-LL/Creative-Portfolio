@@ -1,7 +1,3 @@
-/**
- * Vanilla mount of the locked physical calling-card material.
- * Mirrors calling-card InkSurface / PrintedContent / PaperTexture.
- */
 import { buildPaperMaps } from "./paper-grain.js";
 import {
   CARD_BACK_FONT_DEFAULT,
@@ -523,7 +519,6 @@ export function mountPhysicalCard(host, opts = {}) {
     setBackFont(id) {
       applyBackFont(id);
     },
-    /** true = locked print effects; false = flat digital ink on same paper */
     setTextEffects(on) {
       ink = {
         ...ink,
@@ -538,7 +533,6 @@ export function mountPhysicalCard(host, opts = {}) {
       };
       applyInkParams();
     },
-    /** true = tooth / surface light map; false = flat paper color only */
     setPaperGrain(on) {
       applyPaperGrain(on);
     },
@@ -549,7 +543,6 @@ export function mountPhysicalCard(host, opts = {}) {
   };
 }
 
-/** Normalize fall-lab card data → printed content shape. */
 export function toPrintContent(data) {
   if (data.lines || data.name) {
     return {

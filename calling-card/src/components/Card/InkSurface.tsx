@@ -15,18 +15,11 @@ type Props = {
   filterId: string;
 };
 
-/** Remap grain so mid values show coverage pores clearly. */
 export function grainVisual(g: number): number {
   const x = Math.max(0, Math.min(1, g));
   return 1 - Math.pow(1 - x, 1.45);
 }
 
-/**
- * Three independent print systems:
- * 1) Grain — coverage map inside the black
- * 2) Absorption — narrow rim soak only (sharp core)
- * 3) Relief — thin directional contour lighting (matte, not bevel)
- */
 export function InkSurface({
   content,
   inkUrl,
@@ -42,13 +35,11 @@ export function InkSurface({
   const absorb = Math.max(0, Math.min(1, params.absorption));
   const relief = Math.max(0, Math.min(1, params.relief));
 
-  // Absorption: rim width in filter space (meaningful across 0→1)
   const coreErode = 0.15 + absorb * 1.1;
   const rimDilate = 0.2 + absorb * 1.35;
   const rimBlur = 0.25 + absorb * 1.1;
   const bleedOpacity = 0.15 + absorb * 0.55;
 
-  // Relief: tiny surfaceScale — front-of-card press, not back-bevel
   const surfaceScale = -0.35 - relief * 2.2;
   const reliefBlur = 0.35 + relief * 0.55;
   const reliefDilate = 0.4 + relief * 1.2;
@@ -104,7 +95,6 @@ export function InkSurface({
         focusable="false"
       >
         <defs>
-          {/* Absorption: sharp core + soft bleed rim only */}
           <filter
             id={absorbId}
             x="-15%"
@@ -163,7 +153,6 @@ export function InkSurface({
             </feMerge>
           </filter>
 
-          {/* Relief: light only on a thin contour band (deboss-ish, matte) */}
           <filter
             id={reliefId}
             x="-20%"
@@ -219,7 +208,6 @@ export function InkSurface({
         </defs>
       </svg>
 
-      {/* 3) Relief under print — paper reacts around contours */}
       {relief > 0.02 ? (
         <div
           className="physical-card__ink-relief"
@@ -230,7 +218,6 @@ export function InkSurface({
         </div>
       ) : null}
 
-      {/* Floor black — absorption owns the boundary */}
       <div
         className="physical-card__ink-fill physical-card__ink-fill--solid"
         style={{
@@ -241,7 +228,6 @@ export function InkSurface({
         <PrintedContent content={content} />
       </div>
 
-      {/* 1) Grain — dark coverage + pores (interior only; rim from solid) */}
       {gVis > 0.02 ? (
         <div
           className="physical-card__ink-fill physical-card__ink-fill--density"

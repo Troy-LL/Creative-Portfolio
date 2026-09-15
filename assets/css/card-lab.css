@@ -27,7 +27,6 @@ body {
   overflow: hidden;
 }
 
-/* —— Visitor surface: full-bleed table, card only —— */
 .site-stage {
   flex: 1;
   min-height: 0;
@@ -55,7 +54,6 @@ body {
   display: none !important;
 }
 
-/* Keep the card in the clear area while the dial is open */
 body.is-lab .site-stage {
   margin-right: min(360px, 40vw);
 }
@@ -188,7 +186,6 @@ button:focus-visible {
   flex: 1;
   background: var(--floor);
   min-height: 100%;
-  /* Clip the tall L-path track; fold 3D bleed stays inside .css-world */
   overflow: hidden;
 }
 
@@ -232,19 +229,12 @@ body.is-lab .pane-fps {
 }
 
 .horizon-station--card {
-  /* Above station 02 so beige masks the palm layer under the seam. */
   z-index: 2;
   width: 100%;
   height: 100%;
   background: var(--floor);
 }
 
-/*
-  Push hand = two pre-cut assets meeting at the 01|02 seam.
-  Front (push-fingers.png, 310×684): on station 01, above the floor.
-  Back (push-palm.png, 174×674): on station 02, under 01’s floor.
-  Shared scale from the fingers height; 2px seam overlap kills the hairline.
-*/
 .horizon-hand {
   --hand-h: 70vh;
   --hand-unit: calc(var(--hand-h) / 684);
@@ -260,7 +250,6 @@ body.is-lab .pane-fps {
 }
 
 .horizon-hand--front {
-  /* Runway only — off-frame at rest. Right edge hangs 2px into 02. */
   top: calc(50% - var(--hand-h) / 2);
   left: var(--horizon-vw, 100%);
   right: calc(-1 * var(--hand-seam-overlap));
@@ -273,7 +262,6 @@ body.is-lab .pane-fps {
 }
 
 .horizon-hand--back {
-  /* First screen of tall station 02; tuck 2px under station 01. */
   top: calc(50vh - var(--hand-h) / 2);
   left: calc(-1 * var(--hand-seam-overlap));
   width: calc(var(--hand-back-w) + var(--hand-seam-overlap));
@@ -289,7 +277,6 @@ body.is-lab .pane-fps {
   max-width: none;
   object-fit: fill;
   flex: none;
-  /* Avoid subpixel seams from image smoothing at the cut */
   image-rendering: auto;
   filter: saturate(0.85) brightness(0.97) contrast(1.04);
 }
@@ -297,7 +284,6 @@ body.is-lab .pane-fps {
 .horizon-hand--front .horizon-hand__img {
   width: var(--hand-front-w);
   height: var(--hand-h);
-  /* Shadow only away from the seam (left/down), not a bright fringe on the cut */
   filter: saturate(0.85) brightness(0.97) contrast(1.04)
     drop-shadow(-12px 16px 18px rgba(26, 24, 20, 0.2));
 }
@@ -349,8 +335,6 @@ body.is-lab .pane-fps {
   line-height: 1.45;
   color: var(--muted);
 }
-
-/* —— Staircase leg compositions (stations 02–06) —— */
 
 .horizon-station--leg .horizon-leg {
   min-height: 100%;
@@ -439,8 +423,6 @@ body.is-lab .pane-fps {
   color: var(--ink);
 }
 
-/* Station 02 — Flagship (black field) */
-
 .horizon-station[data-station="02"] {
   z-index: 1;
   background: #000;
@@ -516,8 +498,6 @@ body.is-lab .pane-fps {
 .horizon-leg--flagship .horizon-leg__proof {
   margin: 0;
 }
-
-/* Station 03 — Shelf */
 
 .horizon-leg--shelf .horizon-leg__head .horizon-leg__line {
   margin-top: 0.75rem;
@@ -604,8 +584,6 @@ body.is-lab .pane-fps {
 .shelf-card:focus-visible .shelf-card__caption {
   opacity: 1;
 }
-
-/* Station 04 — Archive */
 
 .horizon-leg--archive .horizon-leg__head {
   margin-bottom: 0;
@@ -737,8 +715,6 @@ body.is-lab .pane-fps {
   outline: none;
 }
 
-/* Station 05 — Person */
-
 .horizon-leg--person .person-body {
   margin-top: 1.5rem;
   display: flex;
@@ -791,8 +767,6 @@ body.is-lab .pane-fps {
   font-size: 0.82rem;
   color: rgba(26, 24, 20, 0.55);
 }
-
-/* Station 06 — Exit */
 
 .horizon-leg--exit .horizon-leg__line--lead {
   margin-top: 1.25rem;
@@ -865,11 +839,8 @@ body.is-lab .pane-fps {
   place-items: center;
   perspective: 590px;
   perspective-origin: 50% 42%;
-  /* no isolation — it flattens nested fold preserve-3d */
 }
 
-/* Extra station width is a right-edge runway for the push hand —
-   keep the card world one viewport wide and left-anchored. */
 .horizon-station--card .css-world {
   right: auto;
   width: var(--horizon-vw, 100%);
@@ -888,18 +859,15 @@ body.is-lab .pane-fps {
   position: relative;
   width: 100%;
   height: 100%;
-  /* Match React fold__stack — preserve panel depth; hatch slot stays flat */
   transform-style: preserve-3d;
 }
 
-/* Opening slot — same footprint as card; locked tune in card-fold.js */
 .css-hatch-slot {
   position: absolute;
   inset: 0;
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
-  /* Same 2D footprint as the card — stay on the table plane (card sits at --layer-z) */
   transform: none;
   transform-style: flat;
 }
@@ -1067,7 +1035,6 @@ body.is-lab .pane-fps {
   transform-style: preserve-3d;
   overflow: hidden;
   background: transparent;
-  /* isolation flattens siblings and brightens stacked thirds */
   isolation: auto;
 }
 
@@ -1091,7 +1058,6 @@ body.is-lab .pane-fps {
   display: none;
 }
 
-/* Nested Z-fold — flat at rest (reads as one card); hinged on scroll */
 .fold-sheet {
   position: absolute;
   inset: 0;
@@ -1142,7 +1108,6 @@ body.is-lab .pane-fps {
 }
 
 .fold-sheet[data-creased="false"] .fold-panel__face {
-  /* Flat rest: clip print only; no stock rims visible anyway */
   overflow: hidden;
 }
 
@@ -1184,7 +1149,6 @@ body.is-lab .pane-fps {
   isolation: auto;
 }
 
-/* Panel edges read as clip seams — hide on thirds */
 .fold-panel__print .physical-card__edge {
   display: none;
 }
@@ -1260,7 +1224,6 @@ body.is-lab .pane-fps {
   box-shadow: 0 1px 0 rgba(255, 252, 248, calc(var(--crease, 0) * 0.35));
 }
 
-/* Cardstock rim at hinges — only when creased */
 .fold-panel__thickness {
   position: absolute;
   left: 0;
@@ -1289,7 +1252,6 @@ body.is-lab .pane-fps {
 }
 
 .css-card--fold {
-  /* Hit target stays the whole card while flat / folding */
   pointer-events: none;
 }
 
@@ -1327,7 +1289,6 @@ body.is-lab .pane-fps {
 }
 
 .css-shadow {
-  /* Card-shaped cast on the table plane (contact + soft penumbra) */
   position: absolute;
   left: 50%;
   top: 50%;
@@ -1537,7 +1498,6 @@ body.is-lab .pane-fps {
   padding: 0.1rem 0.05rem;
   border: 0;
   border-radius: 0;
-  /* Beat global `button.is-active { background: #faf9f5 }` — that slab hides labels on dark. */
   background: transparent !important;
   background-color: transparent !important;
   box-shadow: none;

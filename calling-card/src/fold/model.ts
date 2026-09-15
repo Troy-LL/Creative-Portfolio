@@ -1,5 +1,3 @@
-/** Pull / snap / Z-fold / enter math. No DOM. */
-
 export const SNAP_OPEN_THRESHOLD = 0.55;
 export const ZOOM_START = 0.55;
 
@@ -39,14 +37,11 @@ export function applyLag(current: number, target: number, alpha: number): number
   return current + (target - current) * a;
 }
 
-/**
- * Mild end resistance — still reachable to 1 with a normal upward drag.
- */
 export function dampFoldDelta(deltaUpPx: number, currentFold: number): number {
   const p = Math.min(1, Math.max(0, currentFold));
   if (p <= 0.85) return deltaUpPx;
   const t = (p - 0.85) / 0.15;
-  const factor = 1 - t * 0.35; // floor ~0.65
+  const factor = 1 - t * 0.35;
   return deltaUpPx * Math.max(0.65, factor);
 }
 
@@ -83,12 +78,10 @@ function easeInOut(t: number): number {
   return x * x * (3 - 2 * x);
 }
 
-/** Stagger 0..1 so the fold ripples from the tab (bot) upward. */
 function sequential(t: number, delay: number, span = 0.72): number {
   return easeInOut((t - delay) / span);
 }
 
-/** End-state peaks (fold = 1) — tuned via ?debug=1. */
 export const FOLD_END = {
   top: 20,
   mid: 103,
@@ -96,36 +89,21 @@ export const FOLD_END = {
   viewTip: -1,
 } as const;
 
-/**
- * Wall hatch behind the card — slides up with the bot-led fold.
- * Sized to the folded card silhouette so the hole hugs the card
- * (bottom tracks the bot panel), not the flat footprint void.
- */
 export const SURFACE_PEEL = {
-  /** 1 = cover fully clears the well at fold = 1 */
   shiftPct: 1,
 } as const;
 
 export type SurfacePeel = {
-  /** 0 covering well → 1 fully slid up */
   shiftPct: number;
-  /** Always 0 — slide, not hinge */
   rotateX: number;
-  /** Hatch height as fraction of flat card (1 flat → accordion silhouette) */
   heightPct: number;
-  /** Hatch top edge in flat-card Y (0 = card top) */
   topPct: number;
 };
 
-/**
- * Nested Z-fold — sequential upward (bot → mid → top).
- * 0 = flat closed; 1 = held end pose (FOLD_END).
- */
 export function panelAngles(foldProgress: number): PanelAngles {
   return panelAnglesAtEnd(foldProgress, FOLD_END);
 }
 
-/** Same stagger, but peaks come from a custom end pose (debug / tuning). */
 export function panelAnglesAtEnd(
   foldProgress: number,
   end: PanelAngles,
@@ -147,7 +125,6 @@ export function panelAnglesAtEnd(
 const THIRD = 1 / 3;
 const DEG = Math.PI / 180;
 
-/** Visible folded stack bounds (accordion height + top). */
 export function hatchSilhouetteFromAngles(angles: PanelAngles): {
   heightPct: number;
   topPct: number;
@@ -166,10 +143,6 @@ export function hatchSilhouetteFromAngles(angles: PanelAngles): {
   return { heightPct, topPct };
 }
 
-/**
- * Where the opening becomes visible — top edge in flat-card Y (0 = card top).
- * Full card width always; slot is clipped from this line down to card bottom.
- */
 export function hatchOpeningFromAngles(angles: PanelAngles): {
   topPct: number;
   heightPct: number;
@@ -189,7 +162,6 @@ function foldOpening(foldProgress: number, end: PanelAngles = FOLD_END): {
   return hatchOpeningFromAngles(panelAnglesAtEnd(t, end));
 }
 
-/** Wall hatch — full card slot; cover slides up; well clipped from reveal line. */
 export function surfacePeel(foldProgress: number): SurfacePeel {
   const t = Math.min(1, Math.max(0, foldProgress));
   if (t === 0) {
@@ -205,7 +177,6 @@ export function surfacePeel(foldProgress: number): SurfacePeel {
   };
 }
 
-/** Same as surfacePeel but uses explicit panel angles at this fold step. */
 export function surfacePeelFromAngles(
   foldProgress: number,
   angles: PanelAngles,
@@ -229,9 +200,7 @@ export type HatchDebugState = {
   topPct: number;
   heightPct: number;
   shiftPct: number;
-  /** Pull reveal line upward — enlarges opening (↓ only for extend) */
   topPullPct: number;
-  /** Scale visible opening height */
   heightScale: number;
   extendBottomPct: number;
   depthPx: number;
@@ -259,7 +228,6 @@ function extendOpeningDown(
   return Math.min(maxH, heightPct + Math.max(0, extendBottomPct));
 }
 
-/** Apply manual hatch overrides + enlarge tweaks from the debug panel. */
 export function applyHatchDebug(
   computed: SurfacePeel,
   hatch: HatchDebugState,
@@ -284,7 +252,6 @@ export function applyHatchDebug(
   };
 }
 
-/** Crease ink from real fold geometry — 0 flat, 1 at full Z. */
 export function creaseAmount(foldProgress: number): number {
   return creaseAmountFromAngles(panelAngles(foldProgress));
 }
@@ -294,10 +261,6 @@ export function creaseAmountFromAngles(angles: PanelAngles): number {
   return Math.min(1, mag / 200);
 }
 
-/**
- * Face shade overlays (0..~0.22). Plain opacity — never filter/blend-mode
- * on 3D ancestors (those flatten nested preserve-3d).
- */
 export function panelShade(foldProgress: number): PanelAngles {
   return panelShadeFromAngles(panelAngles(foldProgress));
 }
@@ -322,7 +285,6 @@ export function enterZoom(enterProgress: number): number {
   return atZoomStart + (WORLD_SCALE_ENTER - atZoomStart) * eased;
 }
 
-/** Inside is readable once the accordion has opened past the valley. */
 export function insideReveal(foldProgress: number): number {
   const p = Math.min(1, Math.max(0, foldProgress));
   if (p < 0.55) return 0;

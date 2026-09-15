@@ -1,5 +1,3 @@
-/** Deterministic PRNG — same seed → same surface forever. Port of calling-card paperGrain. */
-
 const cache = new Map();
 
 function hash2(seed, ix, iy) {
@@ -74,10 +72,6 @@ function copyPix(d, size, tx, ty, sx, sy) {
   d[ti + 3] = 255;
 }
 
-/**
- * One height field → lit map (paper) + ink coverage / pores.
- * Grain algorithm unchanged from the locked tooth pass.
- */
 export function buildPaperMaps(seed, size = 768) {
   const key = `maps:tooth3+ink3:${seed}:${size}`;
   const hit = cache.get(key);

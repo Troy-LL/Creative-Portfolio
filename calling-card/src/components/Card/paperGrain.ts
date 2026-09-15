@@ -1,4 +1,3 @@
-/** Deterministic PRNG — same seed → same surface forever. */
 export function mulberry32(seed: number): () => number {
   let a = seed >>> 0;
   return () => {
@@ -56,13 +55,9 @@ function fbm(
 }
 
 export type PaperMaps = {
-  /** Mid-gray Lambert from paper height — soft-light on stock */
   litUrl: string;
-  /** Grayscale height (0.5 = flat) */
   heightUrl: string;
-  /** Dark ink density from same height — values stay in print-black range */
   inkUrl: string;
-  /** Extra-fine high-pass breakup from same height */
   inkBreakupUrl: string;
 };
 
@@ -109,10 +104,6 @@ function copyPix(
   d[ti + 3] = 255;
 }
 
-/**
- * One height field → lit map (paper) + height map (ink shares this).
- * Grain algorithm unchanged from the locked tooth pass.
- */
 export function buildPaperMaps(seed: number, size = 768): PaperMaps {
   const key = `maps:tooth3+ink3:${seed}:${size}`;
   const hit = cache.get(key);
@@ -129,7 +120,6 @@ export function buildPaperMaps(seed: number, size = 768): PaperMaps {
   const height = new Float32Array(size * size);
   fillHeight(seed, size, height);
 
-  // Local blur of height for high-pass
   const blurH = new Float32Array(size * size);
   for (let y = 1; y < size - 1; y++) {
     for (let x = 1; x < size - 1; x++) {
@@ -144,7 +134,6 @@ export function buildPaperMaps(seed: number, size = 768): PaperMaps {
     }
   }
 
-  // —— Height map (centered gray) ——
   const hImg = ctx.createImageData(size, size);
   const hd = hImg.data;
   for (let i = 0; i < height.length; i++) {
@@ -159,11 +148,6 @@ export function buildPaperMaps(seed: number, size = 768): PaperMaps {
   ctx.putImageData(hImg, 0, 0);
   const heightUrl = canvas.toDataURL("image/png");
 
-  /*
-   * Ink coverage map (print grain):
-   * Same paper height + much finer coverage field + sparse micro-pores.
-   * Output stays in dark print range — pores are density dips, not white holes.
-   */
   const inkImg = ctx.createImageData(size, size);
   const idata = inkImg.data;
   for (let y = 0; y < size; y++) {
@@ -174,12 +158,10 @@ export function buildPaperMaps(seed: number, size = 768): PaperMaps {
       const hi = height[i];
       const fine = hi - (blurH[i] || 0);
 
-      // Ultra-fine coverage (thousands of cells across the card)
       const covA = fbm(u * 420, v * 440, seed + 301, 3, 2.25, 0.5);
       const covB = fbm(u * 680 + v * 40, v * 620, seed + 302, 2, 2.4, 0.45);
       const coverage = covA * 0.55 + covB * 0.45;
 
-      // Sparse pore seeds gated by paper micro-valleys
       const poreNoise = fbm(u * 900, v * 920, seed + 303, 2);
       const inValley = hi < -0.04 || fine < -0.03;
       const pore =
@@ -189,10 +171,8 @@ export function buildPaperMaps(seed: number, size = 768): PaperMaps {
             ? (poreNoise - 0.88) * 0.9
             : 0;
 
-      // Base dark + paper-correlated variation + pore dip (still dark)
       let t = 0.42 + hi * 0.35 + fine * 0.55 + (coverage - 0.5) * 0.55;
       t = Math.max(0, Math.min(1, t - pore * 0.55));
-      // #0e0c0a … #2a2722 — never near white
       const g = Math.round(12 + t * 30);
       const o = i * 4;
       idata[o] = g;
@@ -204,7 +184,6 @@ export function buildPaperMaps(seed: number, size = 768): PaperMaps {
   ctx.putImageData(inkImg, 0, 0);
   const inkUrl = canvas.toDataURL("image/png");
 
-  // Coverage alpha helper for grain intensity (same structure, used as multiply)
   const brImg = ctx.createImageData(size, size);
   const bd = brImg.data;
   for (let y = 0; y < size; y++) {
@@ -222,7 +201,6 @@ export function buildPaperMaps(seed: number, size = 768): PaperMaps {
           : poreNoise > 0.88
             ? (poreNoise - 0.88) * 1.1
             : 0;
-      // Mid-gray map for soft-light pores on top of density fill
       const g = Math.round(128 + (0.5 - pore) * 50 + fine * 40);
       const o = i * 4;
       const c = Math.max(90, Math.min(160, g));
@@ -233,7 +211,6 @@ export function buildPaperMaps(seed: number, size = 768): PaperMaps {
   ctx.putImageData(brImg, 0, 0);
   const inkBreakupUrl = canvas.toDataURL("image/png");
 
-  // —— Lit map (paper surface — unchanged) ——
   const lx = -0.48;
   const ly = -0.58;
   const lz = 0.66;
@@ -279,7 +256,6 @@ export function buildPaperMaps(seed: number, size = 768): PaperMaps {
   return maps;
 }
 
-/** @deprecated use buildPaperMaps */
 export function buildPaperLitDataUrl(seed: number, size = 768): string {
   return buildPaperMaps(seed, size).litUrl;
 }

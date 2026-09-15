@@ -44,9 +44,7 @@ export function PrintedContent({ content, inkRole = "solid" }: Props) {
                   const value = content.phone ?? "";
                   try {
                     await navigator.clipboard.writeText(value);
-                  } catch {
-                    /* ignore — host may block clipboard */
-                  }
+                  } catch {}
                 }}
               >
                 {content.phone}

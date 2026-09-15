@@ -1,5 +1,3 @@
-/** Curved calling-card fall → flat rest. Pure math; locked PHYS from card-lab. */
-
 export const FALL_PHYS = {
   mode: "curved" as const,
   curveAmount: 1.6,
@@ -9,11 +7,9 @@ export const FALL_PHYS = {
   rotationResponse: 0.7,
   gravity: 2,
   airResistance: 0.3,
-  /** CSS mapping from normalized pose → px (matches card-lab) */
   cssY: 0.48,
   cssX: 150,
   cssZ: 190,
-  /** Resting translateZ before fold viewTip (matches FoldStage rest). */
   restZ: 40,
 };
 
@@ -128,7 +124,6 @@ function secondaryDrift(t: number, air: number) {
   };
 }
 
-/** rawT in 0…1 along the fall. */
 export function fallPoseAt(rawT: number, phys = FALL_PHYS): FallPose {
   const t = gravityT(rawT, phys.gravity);
   const { p0, p1, p2, p3 } = pathControls(phys.curveAmount, phys.lateralDrift);
@@ -151,7 +146,6 @@ export function fallPoseAt(rawT: number, phys = FALL_PHYS): FallPose {
   };
 }
 
-/** u in 0…1 settle after fall lands. */
 export function settlePoseAt(u: number, phys = FALL_PHYS): FallPose {
   const end = fallPoseAt(1, phys);
   const damp = Math.exp(-5.2 * u) * Math.sin(u * Math.PI * 2.15);
@@ -172,7 +166,6 @@ export function fallRestPose(): FallPose {
   return { ...REST };
 }
 
-/** Map normalized fall pose → CSS transform pieces for the fold card rig. */
 export function fallCssTransform(
   pose: FallPose,
   stageHeightPx: number,

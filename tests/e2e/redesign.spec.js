@@ -92,7 +92,6 @@ test.describe("redesign at root", () => {
   test("site nav fans out when the card lands after replay", async ({
     page,
   }) => {
-    // OS reduced-motion used to snap the reveal and hide the fan-out entirely.
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/?debug=1");
     const nav = page.locator("[data-site-nav]");
@@ -107,7 +106,6 @@ test.describe("redesign at root", () => {
     });
     await expect(nav).toBeVisible();
 
-    // Mid-reveal: outer labels lag the center (fan-out), not already done.
     await expect
       .poll(
         async () =>

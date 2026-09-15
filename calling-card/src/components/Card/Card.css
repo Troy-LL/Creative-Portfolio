@@ -1,11 +1,5 @@
-/**
- * Pale bone uncoated stock — depth from height-lit surface, not louder noise.
- * Blank-stock first. No glow washes. Emboss off.
- */
-
 .physical-card {
   --paper-base: #f4f2ea;
-  /* Soft-light of dense tooth map — keep modest; density lives in the map */
   --paper-lit-opacity: 0.11;
   --paper-lit-scale: 100% 100%;
   --ink-color: #1a1814;
@@ -32,7 +26,6 @@
   pointer-events: none;
 }
 
-/* Quiet contact — object on a table */
 .physical-card__contact-shadow {
   position: absolute;
   left: 10%;
@@ -58,7 +51,6 @@
   height: 100%;
 }
 
-/* Flat pale bone — no cloudy radial glow */
 .physical-card__surface {
   position: relative;
   width: 100%;
@@ -68,7 +60,6 @@
   background: var(--paper-base);
 }
 
-/* Height-lit map: soft-light = luminance scatter only */
 .physical-card__texture {
   position: absolute;
   inset: 0;
@@ -86,12 +77,10 @@
   mix-blend-mode: soft-light;
 }
 
-/* No separate luminous wash — lighting is in the height map */
 .physical-card__light {
   display: none;
 }
 
-/* Micro thickness / cut edge */
 .physical-card__edge {
   position: absolute;
   inset: 0;
@@ -103,7 +92,6 @@
     0.7px 0.9px 0 rgba(32, 30, 26, 0.035);
 }
 
-/* —— Ink in paper (shared height map, no emboss) —— */
 .physical-card__relief,
 .physical-card__ink-surface {
   position: absolute;
@@ -235,13 +223,11 @@
   opacity: 0.88;
 }
 
-/* Relief glyphs = paper-colored alpha masks for contour lighting */
 .physical-card__ink--relief {
   color: var(--paper-base, #f4f2ea) !important;
   opacity: 1 !important;
 }
 
-/* Dark ink coverage map + pore soft-light (density dips, not white holes) */
 .physical-card__ink--density,
 .physical-card__ink--breakup {
   color: transparent !important;
@@ -261,7 +247,6 @@
   background-image: var(--ink-pore-url);
 }
 
-/* Name stays title case — "Troy Lazaro" as written */
 .physical-card__ink--name {
   font-size: calc(clamp(1.05rem, 3vw, 1.4rem) * var(--print-scale, 1));
   letter-spacing: 0.14em;

@@ -14,4 +14,8 @@
 - Superseded staircase ADR: `docs/decisions/003-staircase-scroll-not-pure-horizontal.md`
 - Superseded shutter ADR: `docs/decisions/001-shutter-entry-not-paper-tear.md`
 
+## Conventions
+
+- No narrative inline comments in source — notes go in markdown. Rule: `.cursor/rules/no-narrative-code-comments.mdc`.
+
 Scratch is local thinking only. Do not map it. Do not commit it unless asked.

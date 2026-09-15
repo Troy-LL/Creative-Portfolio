@@ -1,24 +1,12 @@
-/**
- * Site-nav ruler tick pose helpers (no DOM).
- * Keeps the land fan-out from crossing neighboring ticks,
- * and eases fan lean/height with fanK after reveal.
- */
-
 function clamp(n, a, b) {
   return Math.max(a, Math.min(b, n));
 }
 
-/** Ease-out quint — most of the motion early, soft landing at the end. */
 export function easeOutQuint(t) {
   const u = clamp(Number(t) || 0, 0, 1);
   return 1 - (1 - u) ** 5;
 }
 
-/**
- * Appear-wave radius 0…~1 during land reveal → straighten.
- * Keeps growing after reveal so edge ticks ease in instead of popping
- * the instant reveal hits 1.
- */
 export function fanAppearRadius({ reveal = 0, straighten = 0 } = {}) {
   const r = clamp(Number(reveal) || 0, 0, 1);
   const s = clamp(Number(straighten) || 0, 0, 1);
@@ -26,11 +14,6 @@ export function fanAppearRadius({ reveal = 0, straighten = 0 } = {}) {
   return 0.58 + easeOutQuint(s) * 0.5;
 }
 
-/**
- * Tilt multiplier for ruler lean during land reveal → rest.
- * Brief full fan, then settles hard during reveal so the V does not linger.
- * Straighten finishes the last bit to restTilt.
- */
 export function fanTiltAmount({
   reveal = 0,
   straighten = 0,
@@ -41,9 +24,7 @@ export function fanTiltAmount({
   const rest = Math.max(0, Number(restTilt) || 0);
   const r = clamp(Number(reveal) || 0, 0, 1);
   const s = clamp(Number(straighten) || 0, 0, 1);
-  /** Reveal progress where lean starts easing upright. */
   const settleAt = 0.15;
-  /** Fraction of the fan→rest drop completed by reveal end. */
   const revealShare = 0.92;
 
   let settle = 0;
@@ -57,7 +38,6 @@ export function fanTiltAmount({
   return fan + (rest - fan) * settle;
 }
 
-/** Stations whose field needs light nav ink (black / dark grounds). */
 const DARK_NAV_STATIONS = new Set(["02"]);
 
 /** @returns {"light" | "dark"} */
@@ -65,10 +45,7 @@ export function navSurfaceForStation(stationId) {
   return DARK_NAV_STATIONS.has(String(stationId || "")) ? "dark" : "light";
 }
 
-/**
- * Contrast under the fixed top-center nav, from track pose + layout.
- * @returns {"light" | "dark"}
- */
+/** @returns {"light" | "dark"} */
 export function navSurfaceFromPose(pose, staircase) {
   if (!pose || !staircase) return "light";
   const cols = Array.isArray(staircase.layout) ? staircase.layout : [];
@@ -89,10 +66,6 @@ export function navSurfaceFromPose(pose, staircase) {
   return "light";
 }
 
-/**
- * Fan authority during land: 1 early, then decays with tilt mid-reveal,
- * finishes through straighten so the shock crest dies with the V.
- */
 export function fanAuthority({ reveal = 0, straighten = 0 } = {}) {
   const r = clamp(Number(reveal) || 0, 0, 1);
   const s = clamp(Number(straighten) || 0, 0, 1);
@@ -109,12 +82,6 @@ export function fanAuthority({ reveal = 0, straighten = 0 } = {}) {
   return 1 - settle;
 }
 
-/**
- * Epicenter x (0…1) for the land fan → highlighted section.
- * Opens from center during reveal, then travels to `sectionPeak` through
- * straighten so the V glides to the active label instead of snapping or
- * parking in the middle.
- */
 export function landCrestPeak({
   reveal = 0,
   straighten = 0,
@@ -124,16 +91,11 @@ export function landCrestPeak({
   const s = clamp(Number(straighten) || 0, 0, 1);
   const target = clamp(Number(sectionPeak) || 0, 0, 1);
   if (r < 1) return 0.5;
-  // Ease-in-out: soft leave from center, soft arrive on the highlight.
   const u = s;
   const travel = u < 0.5 ? 4 * u * u * u : 1 - (-2 * u + 2) ** 3 / 2;
   return 0.5 + (target - 0.5) * travel;
 }
 
-/**
- * One tick's appear / height / lean / opacity for a given clock.
- * Ripple is not gated on reveal; crest eases 7.5→3.2 via fanK.
- */
 export function rulerTickPose({
   x,
   peak,
@@ -177,22 +139,13 @@ export function rulerTickPose({
   return { appear, height, lean, opacity };
 }
 
-/**
- * Max |Δlean| between neighbors so tips stay clear at the given spacing/height.
- * Transform-origin is top-center; tips swing ~height * sin(θ).
- */
 export function maxLeanDeltaDeg(spacingPx, heightPx) {
   const spacing = Math.max(0, Number(spacingPx) || 0);
   const height = Math.max(1, Number(heightPx) || 1);
   if (!(spacing > 0)) return 8;
-  // Stay under the geometric tip-clear angle with a little margin.
   return clamp((Math.atan(spacing / height) * 180) / Math.PI * 0.82, 2.5, 14);
 }
 
-/**
- * Forward + backward pass so no adjacent pair exceeds maxAbsDelta.
- * Returns a new array; input is not mutated.
- */
 export function limitNeighborLean(leans, maxAbsDelta) {
   const n = leans.length;
   if (n < 2) return leans.map((v) => Number(v) || 0);
@@ -213,7 +166,6 @@ export function limitNeighborLean(leans, maxAbsDelta) {
   return out;
 }
 
-/** Tip of a tick with top-center origin at (x, 0), angle in degrees CW. */
 export function tickTip(x, height, deg) {
   const rad = ((Number(deg) || 0) * Math.PI) / 180;
   const h = Math.max(0, Number(height) || 0);
@@ -238,14 +190,12 @@ function onSegment(ax, ay, bx, by, cx, cy) {
   );
 }
 
-/** True if open segments AB and CD properly intersect (shared endpoint ≠ cross). */
 export function segmentsIntersect(ax, ay, bx, by, cx, cy, dx, dy) {
   const o1 = orient(ax, ay, bx, by, cx, cy);
   const o2 = orient(ax, ay, bx, by, dx, dy);
   const o3 = orient(cx, cy, dx, dy, ax, ay);
   const o4 = orient(cx, cy, dx, dy, bx, by);
   if (o1 !== o2 && o3 !== o4) {
-    // Ignore shared top anchors (adjacent ticks share no x, but tips can meet).
     const shareEnd =
       (Math.abs(ax - cx) < 1e-9 && Math.abs(ay - cy) < 1e-9) ||
       (Math.abs(ax - dx) < 1e-9 && Math.abs(ay - dy) < 1e-9) ||
@@ -268,7 +218,6 @@ export function neighborTicksCross(x0, h0, deg0, x1, h1, deg1) {
   return segmentsIntersect(a.x, a.y, b.x, b.y, c.x, c.y, d.x, d.y);
 }
 
-/** Count adjacent pairs whose segments cross. */
 export function countCrossingPairs(xs, heights, leans) {
   let n = 0;
   for (let i = 0; i < xs.length - 1; i++) {

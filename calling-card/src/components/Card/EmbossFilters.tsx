@@ -1,23 +1,15 @@
 type Mode = "deboss" | "emboss";
 
 type Props = {
-  /** Unique filter id prefix */
   id: string;
-  /** 0.1–0.8 visual depth. Drives surfaceScale, blur, halo. */
   depth: number;
   mode?: Mode;
 };
 
-/**
- * Glyph → height field → directional lighting.
- * Light fixed upper-left (azimuth 315°).
- * Deboss = pressed into stock (letterpress). Emboss = raised.
- */
 export function EmbossFilters({ id, depth, mode = "deboss" }: Props) {
   const d = Math.max(0.05, Math.min(1, depth));
   const sign = mode === "deboss" ? -1 : 1;
 
-  // Map depth → physical filter strength (0.45 ≈ clearly physical)
   const surfaceGlyph = sign * (2.2 + d * 14);
   const surfacePaper = sign * (1.2 + d * 7);
   const blurGlyph = 0.35 + d * 1.35;
@@ -39,7 +31,6 @@ export function EmbossFilters({ id, depth, mode = "deboss" }: Props) {
       focusable="false"
     >
       <defs>
-        {/* Blind stamp: lighting only — paper reacts around glyph contours */}
         <filter
           id={paperId}
           x="-35%"
@@ -97,7 +88,6 @@ export function EmbossFilters({ id, depth, mode = "deboss" }: Props) {
             <feDistantLight azimuth={315} elevation={42} />
           </feSpecularLighting>
 
-          {/* Halo = paper field minus glyph core */}
           <feComposite
             in="paperLit"
             in2="SourceAlpha"
@@ -123,7 +113,6 @@ export function EmbossFilters({ id, depth, mode = "deboss" }: Props) {
             <feMergeNode in="specIn" />
           </feMerge>
 
-          {/* Soft falloff mask so deformation dies into paper */}
           <feGaussianBlur
             in="dilated"
             stdDeviation={blurPaper * 1.1}
@@ -137,7 +126,6 @@ export function EmbossFilters({ id, depth, mode = "deboss" }: Props) {
           />
         </filter>
 
-        {/* Ink: preserve dark print + contour lighting on glyph height */}
         <filter
           id={inkId}
           x="-30%"
@@ -187,7 +175,6 @@ export function EmbossFilters({ id, depth, mode = "deboss" }: Props) {
             result="specIn"
           />
 
-          {/* Ink body */}
           <feComposite
             in="SourceGraphic"
             in2="diffIn"
@@ -209,7 +196,6 @@ export function EmbossFilters({ id, depth, mode = "deboss" }: Props) {
             result="inkBevel"
           />
 
-          {/* Tiny absorption soften at edge — not a shadow */}
           <feMorphology
             in="SourceAlpha"
             operator="erode"
