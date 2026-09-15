@@ -67,6 +67,14 @@ import {
   wheelPixels,
 } from "./portfolio-horizon.js";
 import { mountHorizonStations } from "./horizon-stations.js";
+import {
+  limitNeighborLean,
+  maxLeanDeltaDeg,
+  fanTiltAmount,
+  fanAppearRadius,
+  navSurfaceFromPose,
+  easeOutQuint,
+} from "./site-nav-ruler.js";
 
 const CARD = {
   phone: "0975 644 6519",
@@ -1073,13 +1081,18 @@ function boot() {
   const siteNavRuler = document.querySelector("[data-site-nav-ruler]");
   const RULER_TICKS = 96;
   const NAV_REVEAL_MS = 1500;
+  const NAV_STRAIGHTEN_MS = 1200;
+  const NAV_FAN_TILT = 1.15;
   let siteNavActiveId = "01";
   let siteNavPeak = 0;
   let siteNavPeakTarget = 0;
   let siteNavReveal = 0;
   let siteNavRevealStart = 0;
   let siteNavRevealDone = false;
+  let siteNavStraighten = 0;
+  let siteNavStraightenStart = 0;
   let rulerAlive = false;
+  let rulerFrozen = false;
   let rulerClock = 0;
   /** @type {number[]} */
   let rulerNoise = [];
@@ -1156,16 +1169,26 @@ function boot() {
     siteNavReveal = 0;
     siteNavRevealStart = 0;
     siteNavRevealDone = false;
+    siteNavStraighten = 0;
+    siteNavStraightenStart = 0;
+    rulerFrozen = false;
     applyLabelReveal(0);
     if (siteNavEl) siteNavEl.dataset.revealed = "false";
   }
 
-  function beginSiteNavReveal(now = performance.now()) {
-    if (siteNavRevealDone && siteNavReveal >= 1) return;
-    if (startDebug || prefersReducedMotion()) {
+  function beginSiteNavReveal(now = performance.now(), instant = false) {
+    if (siteNavRevealDone && siteNavReveal >= 1 && siteNavStraighten >= 1) {
+      return;
+    }
+    // Instant only for an explicit skip (none today). Land reveal must still
+    // fan out even when prefers-reduced-motion is on — that flag only freezes
+    // the looping ruler ripple after the reveal finishes.
+    if (instant) {
       siteNavReveal = 1;
       siteNavRevealStart = now;
       siteNavRevealDone = true;
+      siteNavStraighten = 1;
+      siteNavStraightenStart = now;
       applyLabelReveal(1);
       return;
     }
@@ -1179,7 +1202,7 @@ function boot() {
     return "01";
   }
 
-  function updateSiteNav(stationId) {
+  function updateSiteNav(stationId, { instantReveal = false } = {}) {
     if (!siteNavEl || !siteNavLabels) return;
     const show = phase === "settled";
     siteNavEl.hidden = !show;
@@ -1189,10 +1212,12 @@ function boot() {
       return;
     }
 
-    beginSiteNavReveal();
+    beginSiteNavReveal(performance.now(), instantReveal);
     siteNavActiveId = activeStationId(stationId);
     const stair = staircase || syncStaircase();
     siteNavPeakTarget = navProgress(pathDisplay, stair);
+    const pose = trackPose(pathDisplay, stair);
+    siteNavEl.dataset.surface = navSurfaceFromPose(pose, stair);
 
     const buttons = [...siteNavLabels.querySelectorAll(".site-nav__item")];
     const n = buttons.length || 1;
@@ -1223,8 +1248,20 @@ function boot() {
         siteNavReveal = 1;
         siteNavRevealDone = true;
         applyLabelReveal(1);
+        if (!siteNavStraightenStart) siteNavStraightenStart = now;
       }
+    } else if (siteNavRevealDone && siteNavStraighten < 1) {
+      if (!siteNavStraightenStart) siteNavStraightenStart = now;
+      const u = clamp(
+        (now - siteNavStraightenStart) / NAV_STRAIGHTEN_MS,
+        0,
+        1,
+      );
+      siteNavStraighten = u;
     }
+
+    const straightenEased =
+      siteNavReveal < 1 ? 0 : easeOutQuint(siteNavStraighten);
 
     siteNavPeak += (siteNavPeakTarget - siteNavPeak) * ease;
     // During the opening shockwave the epicenter is the middle; then it follows progress.
@@ -1233,20 +1270,26 @@ function boot() {
         ? 0.5 + (siteNavPeak - 0.5) * siteNavReveal
         : siteNavPeak;
     const t = now * 0.001;
-    // Overshoot past the edges so Card/Exit ticks fully land in the fan-out.
-    const radius = siteNavReveal * 0.58;
+    // Grow through straighten so edge ticks ease in — no pop when reveal ends.
+    const radius = fanAppearRadius({
+      reveal: siteNavReveal,
+      straighten: siteNavStraighten,
+    });
+    // Reduced motion: no continuous ripple, but the land shockwave still fans.
+    const waveStrength = reduce ? 0 : rulerFeel.strength;
+    const rulerW = siteNavRuler.clientWidth || 1;
+    const spacing = n > 1 ? rulerW / (n - 1) : rulerW;
+
+    /** @type {{ appear: number, height: number, lean: number, opacity: number }[]} */
+    const motion = [];
+    let maxH = 2.8;
 
     ticks.forEach((tick, i) => {
       const x = n <= 1 ? 0.5 : i / (n - 1);
       const distC = Math.abs(x - 0.5);
-      const appear =
-        siteNavReveal >= 1
-          ? 1
-          : clamp((radius - distC + 0.04) / 0.08, 0, 1);
+      const appear = clamp((radius - distC + 0.04) / 0.08, 0, 1);
       if (appear <= 0) {
-        tick.style.opacity = "0";
-        tick.style.height = "0px";
-        tick.style.transform = "rotate(0deg)";
+        motion[i] = { appear: 0, height: 0, lean: 0, opacity: 0 };
         return;
       }
 
@@ -1258,42 +1301,70 @@ function boot() {
       const ripple =
         (Math.sin(dist * 14 - t * 2.1 + (rulerPhase[i] ?? 0)) * 0.7 +
           Math.sin(dist * 6.5 - t * 1.15 + i * 0.08) * 0.45) *
-        rulerFeel.strength;
-      // Shockwave front: tall V crest expanding outward while revealing.
+        waveStrength;
+      // Height crest fades through straighten so length doesn't snap with lean.
       const front = Math.exp(-Math.abs(distC - radius) * 26);
       const shock =
-        siteNavReveal < 1 ? front * (1.15 - siteNavReveal * 0.55) : 0;
+        siteNavReveal < 1
+          ? front * (1.15 - siteNavReveal * 0.55)
+          : front * 0.6 * (1 - straightenEased);
+      // Locked rest tilt can be 0 (flat ruler). Land reveal still needs lean
+      // or the “fan-out” is only a faint height wave and reads as missing.
+      // After reveal, fanTiltAmount eases lean upright — no snap to rest.
+      const tiltNow = fanTiltAmount({
+        reveal: siteNavReveal,
+        straighten: siteNavStraighten,
+        fanTilt: NAV_FAN_TILT,
+        restTilt: Number(rulerFeel.tilt) || 0,
+      });
+      // Smooth fan lean (no shock). Scale by appear so new ticks ease in.
       const lean =
         side *
-        (6 +
-          envelope * 22 +
-          ripple * (10 + envelope * 18) +
-          shock * 28) *
-        rulerFeel.tilt;
+        (6 + envelope * 18 + ripple * (8 + envelope * 14)) *
+        tiltNow *
+        appear;
       rulerNoise[i] =
-        (rulerNoise[i] ?? 0.5) * 0.88 + Math.random() * 0.12;
-      const jitter = (rulerNoise[i] - 0.5) * (0.9 + envelope * 1.4);
+        (rulerNoise[i] ?? 0.5) * 0.88 + (reduce ? 0.5 : Math.random()) * 0.12;
+      const jitter = reduce
+        ? 0
+        : (rulerNoise[i] - 0.5) * (0.9 + envelope * 1.4);
       const base = rulerFeel.baseline + ((i * 17) % 3) * 0.35;
       const crest = envelope * envelope * 7.5 * rulerFeel.lengthen;
       const waveLen = ripple * (1.4 + envelope * 3.2) * rulerFeel.lengthen;
       const shockLen = shock * 11 * rulerFeel.lengthen;
-      const h = Math.max(2.8, base + crest + waveLen + shockLen + jitter);
-      tick.style.height = `${h.toFixed(2)}px`;
-      tick.style.transform = `rotate(${lean.toFixed(2)}deg)`;
-      const vis = siteNavReveal >= 1 ? 1 : appear;
-      tick.style.opacity = String(
-        (0.3 + envelope * 0.45) * vis * rulerFeel.opacity,
-      );
+      const height = Math.max(2.8, base + crest + waveLen + shockLen + jitter);
+      const opacity = (0.3 + envelope * 0.45) * appear * rulerFeel.opacity;
+      motion[i] = { appear, height, lean, opacity };
+      if (height > maxH) maxH = height;
+    });
+
+    const leanCap = maxLeanDeltaDeg(spacing, maxH);
+    const limited = limitNeighborLean(
+      motion.map((m) => m?.lean ?? 0),
+      leanCap,
+    );
+
+    ticks.forEach((tick, i) => {
+      const m = motion[i];
+      if (!m || m.appear <= 0) {
+        tick.style.opacity = "0";
+        tick.style.height = "0px";
+        tick.style.transform = "rotate(0deg)";
+        return;
+      }
+      // Soften display lean so limitNeighborLean cascades don't click at the end.
+      const prev = Number(tick.dataset.lean) || 0;
+      const shown = prev * 0.72 + limited[i] * 0.28;
+      tick.dataset.lean = String(shown);
+      tick.style.height = `${m.height.toFixed(2)}px`;
+      tick.style.transform = `rotate(${shown.toFixed(2)}deg)`;
+      tick.style.opacity = String(m.opacity);
     });
   }
 
   function startRulerAlive() {
     if (rulerAlive) return;
-    if (prefersReducedMotion()) {
-      siteNavPeak = siteNavPeakTarget;
-      siteNavReveal = 1;
-      siteNavRevealDone = true;
-      applyLabelReveal(1);
+    if (rulerFrozen) {
       paintRuler(performance.now());
       return;
     }
@@ -1301,6 +1372,17 @@ function boot() {
     const loop = (now) => {
       if (!rulerAlive) return;
       paintRuler(now);
+      // After fan-out + straighten, freeze under reduced motion (no idle ripple).
+      if (
+        prefersReducedMotion() &&
+        siteNavRevealDone &&
+        siteNavStraighten >= 1
+      ) {
+        rulerFrozen = true;
+        rulerAlive = false;
+        rulerClock = 0;
+        return;
+      }
       rulerClock = requestAnimationFrame(loop);
     };
     rulerClock = requestAnimationFrame(loop);
@@ -1818,6 +1900,7 @@ function boot() {
     phase = "settled";
     css.setInteractive(true);
     css.applyPose(settlePose(1), false);
+    // Still fan the nav out — debug only skips the fall, not the reveal.
     updateSiteNav("01");
   }
   requestAnimationFrame(frame);

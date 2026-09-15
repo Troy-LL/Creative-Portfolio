@@ -10,7 +10,8 @@
 - Three trees (root card-lab, calling-card lab, archived OS): `docs/architecture.md`
 - Entry fold-open UI (fall, tooth, flip, fold, hatch, motion): `docs/design.md`
 - Fold-open entry, not paper tear: `docs/decisions/002-fold-open-entry-not-paper-tear.md`
-- Staircase scroll (H chapter / V leg): `docs/decisions/003-staircase-scroll-not-pure-horizontal.md`
+- L-path scroll (one H hop, then V stack): `docs/decisions/004-l-path-scroll-not-staircase.md`
+- Superseded staircase ADR: `docs/decisions/003-staircase-scroll-not-pure-horizontal.md`
 - Superseded shutter ADR: `docs/decisions/001-shutter-entry-not-paper-tear.md`
 
 Scratch is local thinking only. Do not map it. Do not commit it unless asked.

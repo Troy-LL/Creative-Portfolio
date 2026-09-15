@@ -15,7 +15,7 @@ import {
 
 const view = { viewportHeight: 800, viewportWidth: 1200 };
 
-describe("portfolio staircase", () => {
+describe("portfolio L-path", () => {
   it("does not advance the path while fold is still closing", () => {
     const next = advanceHorizon({
       fold: 0.4,
@@ -83,7 +83,9 @@ describe("portfolio staircase", () => {
     });
     assert.equal(intoLeg.kind, "leg");
     const pose = trackPose(intoLeg.path, stair);
-    assert.ok(Math.abs(pose.x - view.viewportWidth) < 1e-6);
+    assert.ok(
+      Math.abs(pose.x - view.viewportWidth * HORIZON.cornerVw) < 1e-6,
+    );
     assert.ok(pose.y > 50);
     assert.equal(pose.station, "02");
   });
@@ -148,7 +150,41 @@ describe("portfolio staircase", () => {
     assert.equal(toFold.kind, "fold");
   });
 
-  it("builds staggered columns: 01 then 02–06 legs", () => {
+  it("L-path: only one horizontal corner, then stacked vertical legs", () => {
+    const stair = buildStaircase(view.viewportWidth, view.viewportHeight);
+    const corners = stair.segments.filter((s) => s.kind === "corner");
+    assert.equal(corners.length, 1);
+    assert.equal(stair.segments.filter((s) => s.kind === "dwell").length, 0);
+    const cornerPx = view.viewportWidth * HORIZON.cornerVw;
+    assert.equal(stair.layout[1].x, cornerPx);
+    assert.equal(stair.layout[2].x, cornerPx);
+    assert.ok(stair.layout[2].y > stair.layout[1].y);
+  });
+
+  it("after the first corner, further scroll stays on one X while Y grows through later stations", () => {
+    const stair = buildStaircase(view.viewportWidth, view.viewportHeight);
+    const cornerPx = view.viewportWidth * HORIZON.cornerVw;
+    const atCornerEnd = advanceHorizon({
+      fold: 1,
+      hold: 1,
+      path: 0,
+      deltaPx: cornerPx,
+      ...view,
+    });
+    const deep = advanceHorizon({
+      fold: 1,
+      hold: 1,
+      path: atCornerEnd.path,
+      deltaPx: view.viewportHeight * 8,
+      ...view,
+    });
+    const pose = trackPose(deep.path, stair);
+    assert.ok(Math.abs(pose.x - cornerPx) < 1e-6);
+    assert.ok(pose.y > view.viewportHeight);
+    assert.ok(["03", "04", "05", "06"].includes(pose.station));
+  });
+
+  it("builds 01 then stacked 02–06 legs on one column", () => {
     const stair = buildStaircase(view.viewportWidth, view.viewportHeight);
     assert.equal(stair.layout[0].id, "01");
     assert.deepEqual(
@@ -156,9 +192,15 @@ describe("portfolio staircase", () => {
       ["02", "03", "04", "05", "06"],
     );
     assert.ok(stair.totalPx > view.viewportWidth);
-    assert.equal(stair.layout[1].x, view.viewportWidth);
+    assert.equal(stair.layout[1].x, view.viewportWidth * HORIZON.cornerVw);
     assert.equal(stair.layout[1].y, 0);
     assert.ok(stair.layout[2].y > 0);
+  });
+
+  it("legs stay long enough for a vertical read after the hop", () => {
+    assert.ok(HORIZON.legVh >= 3);
+    const stair = buildStaircase(view.viewportWidth, view.viewportHeight);
+    assert.ok(stair.overflow >= view.viewportHeight * 1.5);
   });
 
   it("ticks station labels along the path", () => {
@@ -211,7 +253,7 @@ describe("portfolio staircase", () => {
     assert.equal(equalizerTicks(0.997).every((t) => t === "tall"), true);
   });
 
-  it("scroll meter reports progress while on the staircase path", () => {
+  it("scroll meter reports progress while on the path", () => {
     const stair = buildStaircase(view.viewportWidth, view.viewportHeight);
     const hold = scrollMeter(0, stair);
     assert.equal(hold.visible, false);
@@ -230,16 +272,25 @@ describe("portfolio staircase", () => {
     assert.ok(meter.ticks.includes("tall") || meter.ticks.includes("mid"));
   });
 
-  it("legs stay long enough that a vertical read exists before the next corner", () => {
-    assert.ok(HORIZON.legVh >= 3);
-    const stair = buildStaircase(view.viewportWidth, view.viewportHeight);
-    assert.ok(stair.overflow >= view.viewportHeight * 1.5);
-    assert.ok(stair.cornerHoldPx > 0);
-    assert.ok(stair.segments.some((s) => s.kind === "dwell"));
-  });
-
   it("first page wall is short so leaving 01 is easy", () => {
     assert.ok(HORIZON.holdVh > 0);
     assert.ok(HORIZON.holdVh <= 0.28);
+  });
+
+  it("station 01 spans the hop so the push hand can exit off-frame", () => {
+    assert.ok(HORIZON.cornerVw >= 1.3 && HORIZON.cornerVw <= 1.45);
+    const stair = buildStaircase(1440, 900);
+    const cornerPx = 1440 * HORIZON.cornerVw;
+    assert.ok(Math.abs(stair.layout[0].w - cornerPx) < 1e-6);
+    assert.ok(stair.layout[0].w >= stair.vw);
+    assert.equal(stair.layout[1].x, stair.layout[0].w);
+    assert.ok(Math.abs(stair.width - (cornerPx + stair.vw)) < 1e-6);
+    assert.equal(stair.segments.filter((s) => s.kind === "corner").length, 1);
+    const atCornerEnd = trackPose(
+      stair.segments[0].lengthPx / stair.totalPx,
+      stair,
+    );
+    assert.ok(Math.abs(atCornerEnd.x - cornerPx) < 1e-6);
+    assert.ok(atCornerEnd.x >= stair.vw);
   });
 });

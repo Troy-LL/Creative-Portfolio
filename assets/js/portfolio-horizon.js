@@ -1,7 +1,7 @@
 /**
  * Table travel after the locked fold/hatch.
- * Staircase: hold on 01 → H corner → V leg → H corner → V leg → …
- *   docs/decisions/003-staircase-scroll-not-pure-horizontal.md
+ * L-path: hold on 01 → one H corner → continuous V stack through 02…06.
+ *   docs/decisions/004-l-path-scroll-not-staircase.md
  */
 
 function clamp(n, a, b) {
@@ -10,18 +10,13 @@ function clamp(n, a, b) {
 
 export const HORIZON = {
   holdVh: 0.22,
-  /** Horizontal chapter hop in viewport widths. */
-  cornerVw: 1,
+  /** Single horizontal hop off the card (≥1 + front-hand width so fingers stay off-frame at rest). */
+  cornerVw: 1.35,
   /**
-   * Total height of each content leg in viewport heights (≥ 1).
-   * Keep this roomy — short legs make the H corner feel like a whip.
+   * Height of each content section in viewport heights (≥ 1).
+   * Sections stack on one column after the hop.
    */
   legVh: 3.5,
-  /**
-   * Stillness after a leg finishes, before the next horizontal corner.
-   * Lets the chapter land before the axis flips.
-   */
-  cornerHoldVh: 0.32,
   foldOpen: 0.992,
   lag: 0.45,
   legs: [
@@ -42,8 +37,8 @@ Object.defineProperty(HORIZON, "travelVw", {
 });
 
 /**
- * Build the staircase geometry for the current viewport.
- * Columns are staggered: each leg’s top sits at the previous leg’s bottom.
+ * Build the L-path geometry for the current viewport.
+ * One column of stacked legs after a single horizontal hop off 01.
  */
 export function buildStaircase(
   viewportWidth,
@@ -56,14 +51,10 @@ export function buildStaircase(
   const legVh = Math.max(1, Number(opts.legVh) || 3.5);
   const legH = legVh * vh;
   const overflow = Math.max(0, legH - vh);
-  const cornerHoldPx = Math.max(
-    0,
-    vh * Math.max(0, Number(opts.cornerHoldVh) || 0),
-  );
   const legs = Array.isArray(opts.legs) ? opts.legs : HORIZON.legs;
 
   const layout = [
-    { id: "01", x: 0, y: 0, w: vw, h: vh, kind: "card" },
+    { id: "01", x: 0, y: 0, w: Math.max(vw, cornerPx), h: vh, kind: "card" },
   ];
   /** @type {Array<{ kind: string, lengthPx: number, x0: number, y0: number, x1: number, y1: number, station: string }>} */
   const segments = [];
@@ -71,8 +62,8 @@ export function buildStaircase(
   let x = 0;
   let y = 0;
 
-  for (let i = 0; i < legs.length; i += 1) {
-    const leg = legs[i];
+  // Single hop off the card onto the content column.
+  if (legs.length > 0) {
     const x1 = x + cornerPx;
     segments.push({
       kind: "corner",
@@ -81,9 +72,13 @@ export function buildStaircase(
       y0: y,
       x1,
       y1: y,
-      station: leg.id,
+      station: legs[0].id,
     });
     x = x1;
+  }
+
+  for (let i = 0; i < legs.length; i += 1) {
+    const leg = legs[i];
     layout.push({
       id: leg.id,
       x,
@@ -107,18 +102,19 @@ export function buildStaircase(
       });
       y = y1;
     }
-    // Pause at the foot of the chapter before the next sideways hop
-    // (skip after the last leg — that is the end wall).
-    if (cornerHoldPx > 0 && i < legs.length - 1) {
+    // Bring the next section’s top into view (continuous stack, no H corner).
+    if (i < legs.length - 1) {
+      const y1 = y + vh;
       segments.push({
-        kind: "dwell",
-        lengthPx: cornerHoldPx,
+        kind: "leg",
+        lengthPx: vh,
         x0: x,
         y0: y,
         x1: x,
-        y1: y,
-        station: leg.id,
+        y1,
+        station: legs[i + 1].id,
       });
+      y = y1;
     }
   }
 
@@ -135,7 +131,7 @@ export function buildStaircase(
     vw,
     vh,
     overflow,
-    cornerHoldPx,
+    cornerHoldPx: 0,
   };
 }
 
@@ -424,6 +420,7 @@ export function applyStaircaseLayout(track, staircase) {
   if (!track || !staircase) return;
   track.style.width = `${staircase.width}px`;
   track.style.height = `${staircase.height}px`;
+  track.style.setProperty("--horizon-vw", `${staircase.vw}px`);
   for (const col of staircase.layout) {
     const el = track.querySelector(`[data-station="${col.id}"]`);
     if (!el) continue;

@@ -1,6 +1,6 @@
 # Staircase scroll, not a pure horizontal strip
 
-Status: Accepted
+Status: Superseded by [004-l-path-scroll-not-staircase.md](004-l-path-scroll-not-staircase.md)
 
 ## Context
 
@@ -21,7 +21,4 @@ We will not use: infinite free roamlane, nested scroll traps that fight the whee
 
 ## Consequences
 
-- `docs/design.md` owns the visitor scroll story; this ADR is the axis rule.
-- `assets/js/portfolio-horizon.js` owns hold + staircase path (corners and legs). Placeholder stations `02`–`04` ship in `index.html`; real section bodies replace those stubs without changing this axis rule.
-- Each section declares its own wall (and may change floor color). Vertical legs stay long enough to read (`legVh` ≥ ~3); a short dwell after each chapter (except the last) lands before the next horizontal hop so the axis flip does not feel like a whip. Horizontal hops stay roughly one viewport unless a later ADR says otherwise.
-- Section map (flagship, shelf, archive, person, book exit) can evolve in design docs without changing this axis rule.
+- Superseded: chapter changes after `02` are no longer horizontal corners. See ADR 004 (L-path: one H hop, then vertical stack).

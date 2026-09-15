@@ -188,7 +188,7 @@ button:focus-visible {
   flex: 1;
   background: var(--floor);
   min-height: 100%;
-  /* Clip the tall staircase track; fold 3D bleed stays inside .css-world */
+  /* Clip the tall L-path track; fold 3D bleed stays inside .css-world */
   overflow: hidden;
 }
 
@@ -232,8 +232,86 @@ body.is-lab .pane-fps {
 }
 
 .horizon-station--card {
+  /* Above station 02 so beige masks the palm layer under the seam. */
+  z-index: 2;
   width: 100%;
   height: 100%;
+  background: var(--floor);
+}
+
+/*
+  Push hand = two pre-cut assets meeting at the 01|02 seam.
+  Front (push-fingers.png, 310×684): on station 01, above the floor.
+  Back (push-palm.png, 174×674): on station 02, under 01’s floor.
+  Shared scale from the fingers height; 2px seam overlap kills the hairline.
+*/
+.horizon-hand {
+  --hand-h: 70vh;
+  --hand-unit: calc(var(--hand-h) / 684);
+  --hand-front-w: calc(310 * var(--hand-unit));
+  --hand-back-w: calc(174 * var(--hand-unit));
+  --hand-back-h: calc(674 * var(--hand-unit));
+  --hand-seam-overlap: 2px;
+  position: absolute;
+  box-sizing: border-box;
+  overflow: visible;
+  pointer-events: none;
+  user-select: none;
+}
+
+.horizon-hand--front {
+  /* Runway only — off-frame at rest. Right edge hangs 2px into 02. */
+  top: calc(50% - var(--hand-h) / 2);
+  left: var(--horizon-vw, 100%);
+  right: calc(-1 * var(--hand-seam-overlap));
+  width: auto;
+  height: var(--hand-h);
+  z-index: 4;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.horizon-hand--back {
+  /* First screen of tall station 02; tuck 2px under station 01. */
+  top: calc(50vh - var(--hand-h) / 2);
+  left: calc(-1 * var(--hand-seam-overlap));
+  width: calc(var(--hand-back-w) + var(--hand-seam-overlap));
+  height: var(--hand-back-h);
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.horizon-hand__img {
+  display: block;
+  max-width: none;
+  object-fit: fill;
+  flex: none;
+  /* Avoid subpixel seams from image smoothing at the cut */
+  image-rendering: auto;
+  filter: saturate(0.85) brightness(0.97) contrast(1.04);
+}
+
+.horizon-hand--front .horizon-hand__img {
+  width: var(--hand-front-w);
+  height: var(--hand-h);
+  /* Shadow only away from the seam (left/down), not a bright fringe on the cut */
+  filter: saturate(0.85) brightness(0.97) contrast(1.04)
+    drop-shadow(-12px 16px 18px rgba(26, 24, 20, 0.2));
+}
+
+.horizon-hand--back .horizon-hand__img {
+  width: var(--hand-back-w);
+  height: var(--hand-back-h);
+  margin-left: var(--hand-seam-overlap);
+}
+
+@media (max-width: 719px) {
+  .horizon-hand {
+    display: none;
+  }
 }
 
 .horizon-station--leg {
@@ -361,7 +439,38 @@ body.is-lab .pane-fps {
   color: var(--ink);
 }
 
-/* Station 02 — Flagship */
+/* Station 02 — Flagship (black field) */
+
+.horizon-station[data-station="02"] {
+  z-index: 1;
+  background: #000;
+  color: rgba(244, 242, 234, 0.9);
+}
+
+.horizon-station[data-station="02"] .horizon-mark {
+  color: rgba(244, 242, 234, 0.28);
+}
+
+.horizon-station[data-station="02"] .horizon-leg__kicker {
+  color: rgba(244, 242, 234, 0.45);
+}
+
+.horizon-station[data-station="02"] .horizon-leg__title,
+.horizon-station[data-station="02"] .horizon-leg__line,
+.horizon-station[data-station="02"] .horizon-leg__proof {
+  color: rgba(244, 242, 234, 0.92);
+}
+
+.horizon-station[data-station="02"] .horizon-leg__cta {
+  color: rgba(244, 242, 234, 0.88);
+  border-color: rgba(244, 242, 234, 0.35);
+}
+
+.horizon-station[data-station="02"] .horizon-leg__cta:hover,
+.horizon-station[data-station="02"] .horizon-leg__cta:focus-visible {
+  color: #fff;
+  border-color: rgba(244, 242, 234, 0.7);
+}
 
 .horizon-leg--flagship .horizon-leg__head {
   margin-bottom: 0;
@@ -375,8 +484,8 @@ body.is-lab .pane-fps {
   aspect-ratio: 16 / 10;
   overflow: hidden;
   box-shadow:
-    0 1px 0 rgba(26, 24, 20, 0.08),
-    0 18px 36px rgba(26, 24, 20, 0.12);
+    0 1px 0 rgba(0, 0, 0, 0.4),
+    0 18px 36px rgba(0, 0, 0, 0.45);
 }
 
 .flagship-media__video {
@@ -391,7 +500,7 @@ body.is-lab .pane-fps {
 .flagship-media__veil {
   position: absolute;
   inset: 0;
-  background: var(--floor);
+  background: #000;
   opacity: calc(0.52 * (1 - var(--veil-clear)));
   pointer-events: none;
   transition: opacity 0.12s linear;
@@ -757,6 +866,13 @@ body.is-lab .pane-fps {
   perspective: 590px;
   perspective-origin: 50% 42%;
   /* no isolation — it flattens nested fold preserve-3d */
+}
+
+/* Extra station width is a right-edge runway for the push hand —
+   keep the card world one viewport wide and left-anchored. */
+.horizon-station--card .css-world {
+  right: auto;
+  width: var(--horizon-vw, 100%);
 }
 
 .css-rig {
@@ -1458,6 +1574,32 @@ body.is-lab .pane-fps {
   color: rgba(26, 24, 20, 0.7);
 }
 
+.site-nav[data-surface="dark"] .site-nav__item {
+  color: rgba(244, 242, 234, calc(0.22 + 0.55 * var(--nav-lit, 0)));
+}
+
+.site-nav[data-surface="dark"] .site-nav__item.is-active {
+  color: rgba(244, 242, 234, calc(0.35 + 0.55 * var(--nav-lit, 1)));
+}
+
+.site-nav[data-surface="dark"] .site-nav__item:hover,
+.site-nav[data-surface="dark"] .site-nav__item:focus-visible {
+  color: rgba(244, 242, 234, 0.72);
+}
+
+.site-nav[data-surface="dark"] .site-nav__item.is-active:hover,
+.site-nav[data-surface="dark"] .site-nav__item.is-active:focus-visible {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.site-nav[data-surface="dark"] .site-nav__tick {
+  background: rgba(244, 242, 234, 0.38);
+}
+
+.site-nav[data-surface="dark"] .site-nav__item:focus-visible {
+  outline-color: rgba(244, 242, 234, 0.45);
+}
+
 .site-nav__item:focus {
   outline: none;
   background: transparent;
@@ -1494,10 +1636,8 @@ body.is-lab .pane-fps {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .site-nav__item {
+  .site-nav[data-revealed="true"] .site-nav__item {
     transition: none;
-    opacity: 1;
-    transform: none;
   }
 }
 

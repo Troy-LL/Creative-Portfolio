@@ -13,7 +13,7 @@ Three trees. Do not collapse them into one app.
 
 `index.html` → `assets/js/card-lab.js` (fall, cursor, flip, scroll) → `assets/js/card-fold.js` (fold / hatch / flip motion) → `assets/js/portfolio-horizon.js` (hold then table travel after fold) → `assets/js/card-material/mount-physical-card.js` (stock + ink + back mark).
 
-After entry, navigation is a **staircase** (horizontal chapter changes, vertical legs inside a chapter): `docs/decisions/003-staircase-scroll-not-pure-horizontal.md`. Horizon builds staggered columns (`buildStaircase` / `trackPose`); placeholder legs `02`–`04` are in `index.html`. See `docs/design.md`.
+After entry, navigation is an **L-path** (one horizontal hop off the card, then a vertical stack of chapters): `docs/decisions/004-l-path-scroll-not-staircase.md`. Horizon builds one content column (`buildStaircase` / `trackPose`); placeholder legs `02`–`06` are in `index.html`. See `docs/design.md`.
 
 Styles: `assets/css/card-lab.css`, `assets/css/card-back-fonts.css`, plus `calling-card/src/components/Card/Card.css` for the print face.
 
