@@ -1537,10 +1537,18 @@ body.is-lab .pane-fps {
   padding: 0.1rem 0.05rem;
   border: 0;
   border-radius: 0;
-  background: transparent;
-  background-color: transparent;
+  /* Beat global `button.is-active { background: #faf9f5 }` — that slab hides labels on dark. */
+  background: transparent !important;
+  background-color: transparent !important;
   box-shadow: none;
-  color: rgba(26, 24, 20, calc(0.16 + 0.5 * var(--nav-lit, 0)));
+  color: rgba(
+    var(--nav-fg, 0, 0, 0),
+    calc(
+      var(--nav-fg-mute, 0.45) +
+        (var(--nav-fg-hot, 1) - var(--nav-fg-mute, 0.45)) *
+          var(--nav-lit, 0)
+    )
+  );
   cursor: pointer;
   font-family: Georgia, "Times New Roman", Times, serif;
   font-size: 0.52rem;
@@ -1551,7 +1559,7 @@ body.is-lab .pane-fps {
   text-transform: uppercase;
   opacity: 0;
   transform: translate(0, 6px);
-  transition: color 180ms ease;
+  transition: color 220ms ease;
   will-change: transform, opacity;
 }
 
@@ -1561,43 +1569,43 @@ body.is-lab .pane-fps {
 }
 
 .site-nav__item.is-active {
-  color: rgba(26, 24, 20, calc(0.2 + 0.48 * var(--nav-lit, 1)));
+  background: transparent !important;
+  background-color: transparent !important;
+  color: rgba(
+    var(--nav-fg, 0, 0, 0),
+    calc(
+      var(--nav-fg-mute, 0.45) +
+        (var(--nav-fg-hot, 1) - var(--nav-fg-mute, 0.45)) *
+          var(--nav-lit, 1)
+    )
+  );
 }
 
 .site-nav__item:hover,
 .site-nav__item:focus-visible {
-  color: rgba(26, 24, 20, 0.55);
+  background: transparent !important;
+  color: rgba(var(--nav-fg, 0, 0, 0), 1);
 }
 
 .site-nav__item.is-active:hover,
 .site-nav__item.is-active:focus-visible {
-  color: rgba(26, 24, 20, 0.7);
+  background: transparent !important;
+  color: rgba(var(--nav-fg, 0, 0, 0), 1);
 }
 
-.site-nav[data-surface="dark"] .site-nav__item {
-  color: rgba(244, 242, 234, calc(0.22 + 0.55 * var(--nav-lit, 0)));
-}
-
-.site-nav[data-surface="dark"] .site-nav__item.is-active {
-  color: rgba(244, 242, 234, calc(0.35 + 0.55 * var(--nav-lit, 1)));
-}
-
-.site-nav[data-surface="dark"] .site-nav__item:hover,
-.site-nav[data-surface="dark"] .site-nav__item:focus-visible {
-  color: rgba(244, 242, 234, 0.72);
-}
-
-.site-nav[data-surface="dark"] .site-nav__item.is-active:hover,
-.site-nav[data-surface="dark"] .site-nav__item.is-active:focus-visible {
-  color: rgba(255, 255, 255, 0.88);
-}
-
-.site-nav[data-surface="dark"] .site-nav__tick {
-  background: rgba(244, 242, 234, 0.38);
-}
-
-.site-nav[data-surface="dark"] .site-nav__item:focus-visible {
-  outline-color: rgba(244, 242, 234, 0.45);
+.site-nav__tick {
+  display: block;
+  flex: 1 1 0;
+  width: 1px;
+  max-width: 1px;
+  min-width: 1px;
+  height: 4px;
+  margin: 0 auto;
+  border-radius: 0;
+  background: rgba(var(--nav-fg, 0, 0, 0), var(--nav-tick-a, 0.75));
+  transform-origin: top center;
+  will-change: transform;
+  transition: background-color 220ms ease;
 }
 
 .site-nav__item:focus {
@@ -1619,20 +1627,6 @@ body.is-lab .pane-fps {
   margin-top: 0.22rem;
   overflow: visible;
   pointer-events: none;
-}
-
-.site-nav__tick {
-  display: block;
-  flex: 1 1 0;
-  width: 1px;
-  max-width: 1px;
-  min-width: 1px;
-  height: 4px;
-  margin: 0 auto;
-  border-radius: 0;
-  background: rgba(26, 24, 20, 0.32);
-  transform-origin: top center;
-  will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {

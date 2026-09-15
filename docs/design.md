@@ -10,7 +10,7 @@ After the fold locks open, a short wall of extra downward scroll holds that pose
 
 The hop off `01` runs past one viewport (`cornerVw` ≈ 1.35). Station `01` is that wide, but the card world stays one viewport wide and left-anchored (centered in the resting frame). The extra width is a right-side runway for the dual-layer push hand. A decorative hand sits on the `01`→`02` seam: `.horizon-hand--front` (`assets/hands/push-fingers.png`, on top of `01`) and `.horizon-hand--back` (`assets/hands/push-palm.png`, in `02` under `01`’s floor). Same display height (~70vh) so the cut edges join; runway-clipped off-frame at rest (`cornerVw` ≈ 1.35). Station `02` is a black field. The hand is `aria-hidden` and non-interactive.
 
-**Shipped today:** L-path after fold — hold on `01`, one H hop onto `02`, then V through `02`–`06` (flagship / shelf / archive / person / exit) on one column. Scroll-up reverses the stack → hop → hold → fold.
+**Shipped today:** L-path after fold — hold on `01`, one H hop onto `02`, then V through `02`–`06` (flagship / shelf / archive / person / exit) on one column. The hop still counts as chapter `01` for nav; each handoff between stacked legs stays on the leaving chapter until the next section’s top is parked. Scroll-up reverses the stack → hop → hold → fold.
 
 Done when (entry): fall → settle → cursor OK → click flips to back → scroll flattens → fold to end pose with hatch cover slide in sync and the WebM window visible in the slit → short wall → first horizontal hop onto `02`, without the card scaling. Flat rest reads as one sheet (no panel seams, no paper outline halo). Real flagship copy on `02` is a later done-line.
 

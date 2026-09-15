@@ -1,7 +1,7 @@
 /**
- * Site-nav ruler tick lean helpers (no DOM).
+ * Site-nav ruler tick pose helpers (no DOM).
  * Keeps the land fan-out from crossing neighboring ticks,
- * and eases fan lean upright after reveal.
+ * and eases fan lean/height with fanK after reveal.
  */
 
 function clamp(n, a, b) {
@@ -75,6 +75,84 @@ export function navSurfaceFromPose(pose, staircase) {
     }
   }
   return "light";
+}
+
+/**
+ * Fan authority 1 during reveal, then 1→0 through straighten (ease-out quint).
+ * Phase A: 1. Phase B: ease down. Phase C idle: 0.
+ */
+export function fanAuthority({ reveal = 0, straighten = 0 } = {}) {
+  const r = clamp(Number(reveal) || 0, 0, 1);
+  const s = clamp(Number(straighten) || 0, 0, 1);
+  if (r < 1) return 1;
+  return 1 - easeOutQuint(s);
+}
+
+/**
+ * Epicenter x (0…1) for the land fan → idle crest.
+ * Hold center through reveal + straighten so the shockwave does not slam
+ * toward the active section (Card = left) and read as a rebound/snap.
+ * After land, `release` 0…1 eases the crest onto `sectionPeak`.
+ */
+export function landCrestPeak({
+  reveal = 0,
+  straighten = 0,
+  sectionPeak = 0.5,
+  release = 0,
+} = {}) {
+  const r = clamp(Number(reveal) || 0, 0, 1);
+  const s = clamp(Number(straighten) || 0, 0, 1);
+  if (r < 1 || s < 1) return 0.5;
+  const target = clamp(Number(sectionPeak) || 0, 0, 1);
+  const free = clamp(Number(release) || 0, 0, 1);
+  return 0.5 + (target - 0.5) * free;
+}
+
+/**
+ * One tick's appear / height / lean / opacity for a given clock.
+ * Ripple is not gated on reveal; crest eases 7.5→3.2 via fanK.
+ */
+export function rulerTickPose({
+  x,
+  peak,
+  radius,
+  time,
+  reveal,
+  straighten,
+  tilt,
+  feel,
+  noise = 0.5,
+  phaseA = 0,
+  phaseB = 0,
+  stagger = 0,
+  reduce = false,
+} = {}) {
+  const fanK = fanAuthority({ reveal, straighten });
+  const distC = Math.abs(x - 0.5);
+  const appear = clamp((radius - distC + 0.04) / 0.08, 0, 1);
+  if (appear <= 0) return { appear: 0, height: 0, lean: 0, opacity: 0 };
+  const signed = x - peak;
+  const dist = Math.abs(signed);
+  const side = signed < 0 ? -1 : 1;
+  const span = Math.max(0.15, feel.epicenter);
+  const envelope = Math.exp(-dist * (4.2 / span));
+  const waveStrength = reduce ? 0 : feel.strength;
+  const ripple =
+    (Math.sin(dist * 14 - time * 2.1 + phaseA) * 0.7 +
+      Math.sin(dist * 6.5 - time * 1.15 + phaseB) * 0.45) *
+    waveStrength;
+  const front = Math.exp(-Math.abs(distC - radius) * 26);
+  const shock = front * (1.15 - clamp(reveal, 0, 1) * 0.55) * fanK;
+  const lean =
+    side * (6 + envelope * 18 + ripple * (8 + envelope * 14)) * tilt * appear;
+  const jitter = reduce ? 0 : (noise - 0.5) * (0.9 + envelope * 1.4);
+  const base = feel.baseline + stagger;
+  const crest = envelope * envelope * (3.2 + 4.3 * fanK) * feel.lengthen;
+  const waveLen = ripple * (1.4 + envelope * 3.2) * feel.lengthen;
+  const shockLen = shock * 11 * feel.lengthen;
+  const height = Math.max(2.8, base + crest + waveLen + shockLen + jitter);
+  const opacity = (0.3 + envelope * 0.45) * appear * feel.opacity;
+  return { appear, height, lean, opacity };
 }
 
 /**

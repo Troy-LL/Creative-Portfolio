@@ -62,7 +62,7 @@ export function buildStaircase(
   let x = 0;
   let y = 0;
 
-  // Single hop off the card onto the content column.
+  // Single hop off the card onto the content column — still chapter 01 until 02's leg.
   if (legs.length > 0) {
     const x1 = x + cornerPx;
     segments.push({
@@ -72,7 +72,7 @@ export function buildStaircase(
       y0: y,
       x1,
       y1: y,
-      station: legs[0].id,
+      station: "01",
     });
     x = x1;
   }
@@ -102,7 +102,7 @@ export function buildStaircase(
       });
       y = y1;
     }
-    // Bring the next section’s top into view (continuous stack, no H corner).
+    // Park the next section's top in view — still leaving the current chapter.
     if (i < legs.length - 1) {
       const y1 = y + vh;
       segments.push({
@@ -112,7 +112,7 @@ export function buildStaircase(
         y0: y,
         x1: x,
         y1,
-        station: legs[i + 1].id,
+        station: leg.id,
       });
       y = y1;
     }
@@ -308,6 +308,16 @@ export function navProgress(path, staircase, opts = HORIZON) {
   const a1 = anchors[idx + 1];
   const local = a1 > a0 ? clamp((p - a0) / (a1 - a0), 0, 1) : 0;
   return (idx + local) / (n - 1);
+}
+
+/** Nearest nav label id for the current path (keeps active + peak in sync). */
+export function navActiveStation(path, staircase, opts = HORIZON) {
+  const stations = navStations(opts);
+  const n = stations.length;
+  if (n <= 1) return "01";
+  const prog = navProgress(path, staircase, opts);
+  const idx = Math.round(prog * (n - 1));
+  return stations[clamp(idx, 0, n - 1)].id;
 }
 
 export function wheelPixels(event) {
