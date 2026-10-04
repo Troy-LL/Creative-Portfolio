@@ -1,6 +1,6 @@
 # 02 — Feel (workbench)
 
-Locked 2026-09-12 by Troy.
+Locked 2026-09-12 by Troy. Overall redesign feel: [feel.md](feel.md).
 
 Current workbench after the `01` card/hatch. Not a museum. Not `Welcome.` as the product. `03` is parked.
 
@@ -18,6 +18,25 @@ Furniture trays/bezels. Live or sandbox UI inside only when peek is earned.
 - **EditLayer:** peek when the editor runs; else quiet plate.
 
 Never fake demo, store tile, or twin MacBooks.
+
+## Objects
+
+Smooth skeuomorphism. Troy wants this (2026-10-04). Soft realism: a real object, lit like a studio product shot. Geometry stays believable. Surfaces stay clean — matte plastic, a soft contact shadow, one quiet light. No leather grain, gloss, or wear. Build rules: [smooth-skeuomorphism.md](smooth-skeuomorphism.md).
+
+The bone-paper room stays. This is the object inside a frame when a peek earns a physical control.
+
+- **Nord Stage 4** — photoreal end. A digital twin of a real instrument. Studio-clean finish.
+- **MX-6 faders** — the center. A real device, simplified. Matte black plastic, soft inner shadows, one LED. Live page: [songwrap.app](https://songwrap.app).
+- **Etch A Sketch / golden ticket** — same rendering on the object. The page around it stays flat. The object is the control.
+
+Edges, so it does not drift:
+
+- Classic skeuomorphism keeps the ornament (stitches, wood, felt, gloss). Leave that out.
+- Neo-skeuomorphism keeps light and material and drops the specific object.
+- Neumorphism extrudes one soft material. These objects stay separate parts.
+- Claymorphism inflates the form into toy-clay.
+
+Not a toybox.
 
 ## Axis (do not drift)
 
